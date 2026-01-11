@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Olb Messenger</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; display: flex; height: 100vh; background: #0A0A0A; color: white; font-family: 'Montserrat'; }
+        
+        /* Sidebar */
+        .sidebar { width: 350px; border-right: 1px solid #222; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+        .chat-list { flex-grow: 1; overflow-y: auto; }
+        .chat-item { padding: 20px; border-bottom: 1px solid #111; cursor: pointer; display: flex; gap: 15px; align-items: center; }
+        .chat-item:hover { background: #1a1a1a; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #C5A059; }
+
+        /* Chat Window */
+        .main-chat { flex-grow: 1; display: flex; flex-direction: column; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
+        .chat-header { padding: 20px; background: #141414; display: flex; justify-content: space-between; align-items: center; }
+        .messages-area { flex-grow: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        .message { max-width: 60%; padding: 12px 18px; border-radius: 15px; font-size: 0.9rem; }
+        .sent { align-self: flex-end; background: #C5A059; color: black; border-bottom-right-radius: 2px; }
+        .received { align-self: flex-start; background: #222; border-bottom-left-radius: 2px; }
+
+        .input-area { padding: 20px; background: #141414; display: flex; gap: 15px; }
+        input { flex-grow: 1; padding: 15px; border-radius: 25px; border: none; background: #000; color: white; }
+        
+        /* Nav Links */
+        .nav-link { color: #C5A059; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span style="font-family: 'Bodoni Moda'; font-size: 1.2rem;">Messages</span>
+            <a href="profile.html" class="nav-link">PROFILE</a>
+        </div>
+        <div class="chat-list">
+            <div class="chat-item" onclick="loadChat('Master Tailor')">
+                <div class="avatar"></div>
+                <div>
+                    <div style="font-weight: 700;">Master Tailor Segun</div>
+                    <div style="font-size: 0.7rem; opacity: 0.5;">The Agbada is ready for fitting...</div>
+                </div>
+            </div>
+            <div class="chat-item" onclick="location.href='contacts.html'">
+                <div style="text-align: center; width: 100%; color: #C5A059; font-size: 0.8rem;">+ VIEW ALL CONTACTS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-chat">
+        <div class="chat-header">
+            <div id="active-user">Master Tailor Segun</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" style="color: #ff4444; margin-right: 15px;">LOGOUT</a>
+                <a href="contacts.html" class="nav-link">DETAILS</a>
+            </div>
+        </div>
+        
+        <div class="messages-area" id="chat-box">
+            <div class="message received">Good morning, Alexander. We have finished the embroidery on your velvet suit.</div>
+            <div class="message sent">That's great news! Can I see a photo of the lapel?</div>
+            <div class="message received">Of course. Sending it through the gallery now.</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="msg-input" placeholder="Type a message...">
+            <button onclick="sendMessage()" style="background:none; border:none; color:#C5A059; font-weight:800; cursor:pointer;">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('msg-input');
+            if(!input.value) return;
+            const box = document.getElementById('chat-box');
+            box.innerHTML += `<div class="message sent">${input.value}</div>`;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>
