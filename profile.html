@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NACOS Letterhead - Refurbished</title>
+    <title>NACOS Letterhead - Resolved Alignment</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -62,9 +62,8 @@
             color: #006837;
         }
 
-        /* Header Title - 12pt */
+        /* 12pt for Headers */
         .header-text h1 { font-size: 12pt; margin: 0; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
-        /* Sub-headers - 10pt */
         .header-text p { font-size: 10pt; margin: 2px 0; font-weight: bold; color: #1a1a1a; }
         
         .motto-tag { 
@@ -97,7 +96,7 @@
         .letter-content { position: relative; z-index: 3; margin-top: 40px; font-size: 10pt; line-height: 1.5; }
         .address-block { margin-bottom: 30px; line-height: 1.3; }
         
-        /* Subject Line - 12pt */
+        /* 12pt for Subject */
         .subject-line { 
             text-align: center; 
             font-weight: 900; 
@@ -107,9 +106,9 @@
             text-transform: uppercase;
         }
 
-        /* SIGNATURES - V-SHAPE */
+        /* SIGNATURE V-SHAPE ALIGNMENT */
         .sig-section-top {
-            margin-top: 60px;
+            margin-top: 70px;
             display: flex;
             justify-content: space-between;
             position: relative;
@@ -118,9 +117,10 @@
 
         .sig-holder { text-align: center; width: 190px; font-size: 10pt; }
         .dotted-line { border-top: 1.5px dotted #000; margin-bottom: 5px; width: 100%; }
+        /* Dropping the middle signature down to form the 'V' shape */
         .sig-mid { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
 
-        /* FOOTER - 12pt */
+        /* FOOTER - 12pt with Rounded top */
         .footer-bar {
             position: absolute;
             bottom: 12mm;
@@ -146,12 +146,13 @@
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
+            box-shadow: 0 4px #004525;
         }
     </style>
 </head>
 <body>
 
-    <button class="download-btn" onclick="generatePDF()">DOWNLOAD PDF</button>
+    <button class="download-btn" onclick="generatePDF()">DOWNLOAD FINAL PDF</button>
 
     <div id="letterhead">
         <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="watermark">
@@ -235,11 +236,15 @@
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('letterhead');
-            const canvas = await html2canvas(element, { scale: 4, useCORS: true, backgroundColor: "#ffffff" });
+            const canvas = await html2canvas(element, { 
+                scale: 4, 
+                useCORS: true, 
+                backgroundColor: "#ffffff" 
+            });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-            pdf.save('NACOS_Letterhead.pdf');
+            pdf.save('NACOS_Account_Opening.pdf');
         }
     </script>
 </body>
