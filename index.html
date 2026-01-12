@@ -3,163 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OLB Portal | Secure Access</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,800;1,800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>DG-Portal | Buy. Sell. Connect.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
-        :root { 
-            --gold: #C5A059; 
-            --gold-dim: rgba(197, 160, 89, 0.15);
-            --bg: #080808; 
-            --card: #111111; 
-            --text: #F9F9F7; 
-            --input-bg: #000000;
+        :root {
+            --dg-blue: #1e3a8a;       /* Deep Trust Blue */
+            --dg-green: #10b981;      /* Emerald Action Green */
+            --dg-light-bg: #f8fafc;
+            --dg-border: #e2e8f0;
+            --dg-white: #ffffff;
+            --dg-text: #1e293b;
         }
 
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Montserrat', sans-serif; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0;
-            background-image: radial-gradient(circle at 2px 2px, rgba(197, 160, 89, 0.05) 1px, transparent 0);
-            background-size: 40px 40px;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--dg-light-bg); color: var(--dg-text); overflow-x: hidden; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            background: var(--dg-blue);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        .auth-card { 
-            background: var(--card); 
-            padding: 50px 40px; 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            width: 100%; 
-            max-width: 420px; 
-            text-align: center; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            position: relative;
-        }
+        .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: -1px; }
+        .logo span { color: var(--dg-green); }
 
-        /* Gold accent corner */
-        .auth-card::after {
-            content: ''; position: absolute; top: 0; right: 0;
-            width: 40px; height: 40px;
-            border-top: 2px solid var(--gold); border-right: 2px solid var(--gold);
-        }
-
-        .logo { 
-            font-family: 'Bodoni Moda'; 
-            font-size: 3rem; 
-            letter-spacing: 8px;
-            margin-bottom: 10px; 
-            color: var(--gold);
-            font-style: italic;
-        }
-
-        h3 { font-weight: 300; letter-spacing: 3px; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 40px; opacity: 0.8; }
-
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; left: 15px; top: 17px; color: var(--gold); font-size: 0.9rem; opacity: 0.6; }
-
-        input { 
-            width: 100%; padding: 16px 16px 16px 45px; 
-            background: var(--input-bg); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            color: white; 
-            outline: none; 
-            font-family: 'Montserrat';
-            transition: 0.3s;
-            box-sizing: border-box;
-        }
-
-        input:focus { border-color: var(--gold); background: rgba(197, 160, 89, 0.02); }
-
-        .btn-primary { 
-            width: 100%; padding: 18px; 
-            background: var(--gold); 
-            border: none; 
-            color: black;
-            font-weight: 700; 
-            letter-spacing: 2px;
-            cursor: pointer; 
-            margin-top: 10px;
-            transition: 0.4s;
-        }
-
-        .btn-primary:hover { background: #e2bc77; transform: translateY(-2px); }
-
-        .divider { margin: 30px 0; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; opacity: 0.3; text-transform: uppercase; }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: white; opacity: 0.1; }
-
-        .btn-google { 
-            width: 100%; padding: 15px; 
-            background: transparent; 
-            color: var(--text); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            font-weight: 600; 
-            cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; gap: 12px; 
+        .id-badge {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--dg-green);
+            color: var(--dg-green);
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        .btn-google:hover { background: rgba(255,255,255,0.05); }
+        /* --- MAIN LAYOUT --- */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 20px;
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Sidebar & Navigation */
+        .menu-list { list-style: none; }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.3s;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: var(--dg-blue);
+            color: white;
+        }
+
+        /* --- POSTING AREA --- */
+        .post-box {
+            background: var(--dg-white);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--dg-border);
+        }
+
+        .post-input {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-size: 1.1rem;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--dg-border);
+            padding-top: 15px;
+        }
+
+        .media-upload { color: var(--dg-blue); cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.9rem;}
+        
+        .sell-btn {
+            background: var(--dg-green);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .sell-btn:hover { transform: scale(1.05); }
+
+        /* --- FEED / TIMELINE --- */
+        .card {
+            background: var(--dg-white);
+            border: 1px solid var(--dg-border);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header { padding: 15px; display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--dg-blue); }
+        
+        .card-content { padding: 0 15px 15px 15px; }
+        .card-image { width: 100%; max-height: 400px; object-fit: cover; background: #eee; }
+
+        .price-tag {
+            display: inline-block;
+            background: var(--dg-green);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .card-footer {
+            display: flex;
+            padding: 10px 15px;
+            border-top: 1px solid var(--dg-border);
+            gap: 20px;
+        }
+
+        .action-link { 
+            display: flex; align-items: center; gap: 5px; font-size: 0.9rem; 
+            cursor: pointer; color: var(--dg-blue); text-decoration: none; font-weight: 600;
+        }
+
+        /* --- CHAT BOX --- */
+        .chat-sidebar {
+            background: var(--dg-white);
+            border-radius: 15px;
+            padding: 15px;
+            height: fit-content;
+            border: 1px solid var(--dg-border);
+        }
+
+        .chat-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid var(--dg-border);
+            cursor: pointer;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            .sidebar, .chat-sidebar { display: none; }
+        }
+
+        /* Hidden Utility */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="auth-card">
-        <div class="logo">OLB</div>
-        <h3>Atelier Access</h3>
-        
-        <form id="loginForm">
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="username" placeholder="Username" required>
-            </div>
-            <div class="input-group">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="email" placeholder="Gmail Address" required>
-            </div>
-            <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="password" placeholder="Secure Password" required>
-            </div>
-            
-            <button type="submit" class="btn-primary">ENTER ATELIER</button>
-        </form>
+    <nav>
+        <div class="logo">DG<span>Portal</span></div>
+        <div class="id-badge" id="myID">DG-XXXXXX</div>
+    </nav>
 
-        <div class="divider">Identity verification</div>
-        
-        <button class="btn-google" onclick="handleGoogleLogin()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="16"> 
-            Continue with Google
-        </button>
+    <div class="container">
+        <aside class="sidebar">
+            <ul class="menu-list">
+                <li class="menu-item active"><i data-lucide="home"></i> Home Feed</li>
+                <li class="menu-item"><i data-lucide="shopping-bag"></i> My Shop</li>
+                <li class="menu-item"><i data-lucide="bell"></i> Notifications</li>
+                <li class="menu-item"><i data-lucide="settings"></i> Settings</li>
+            </ul>
+        </aside>
+
+        <main>
+            <div class="post-box">
+                <textarea class="post-input" id="postInput" placeholder="What are you selling today?" rows="2"></textarea>
+                <div id="preview-container"></div>
+                <div class="post-actions">
+                    <label class="media-upload">
+                        <i data-lucide="image"></i> Add Photo
+                        <input type="file" id="imageInput" class="hidden" accept="image/*" onchange="previewImage(event)">
+                    </label>
+                    <input type="number" id="priceInput" placeholder="$ Price" style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 5px;">
+                    <button class="sell-btn" onclick="createNewPost()">Post to Portal</button>
+                </div>
+            </div>
+
+            <div id="timeline">
+                </div>
+        </main>
+
+        <aside class="chat-sidebar">
+            <h4 style="margin-bottom: 15px;">Recent Chats</h4>
+            <div class="chat-user">
+                <div class="avatar">DG</div>
+                <div>
+                    <div style="font-weight: 600;">DG-Support</div>
+                    <div style="font-size: 0.8rem; color: #666;">Online</div>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <script>
-        const loginForm = document.getElementById('loginForm');
+        // Initialize Icons
+        lucide.createIcons();
 
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-
-            // --- IDENTITY REGISTRATION LOGIC ---
-            // This stores the user in the device memory so the Chat page can read it.
-            localStorage.setItem('currentUser', username);
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('sessionStart', new Date().getTime());
-
-            // Redirect to the portal
-            window.location.href = 'portal.html'; 
-        });
-
-        function handleGoogleLogin() {
-            // Simulated Google Auth - capturing a generic identity
-            localStorage.setItem('currentUser', 'Guest_Client_' + Math.floor(Math.random()*999));
-            window.location.href = 'portal.html';
+        // 1. UNIQUE ID GENERATION
+        const myID = document.getElementById('myID');
+        let userId = localStorage.getItem('dg_user_id');
+        
+        if (!userId) {
+            userId = 'DG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            localStorage.setItem('dg_user_id', userId);
         }
+        myID.innerText = userId;
+
+        // 2. IMAGE PREVIEW LOGIC
+        let currentImageData = null;
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const container = document.getElementById('preview-container');
+                container.innerHTML = `<img src="${reader.result}" style="width:100px; border-radius:10px; margin-bottom:10px;">`;
+                currentImageData = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // 3. POSTING LOGIC
+        const timeline = document.getElementById('timeline');
+
+        function createNewPost() {
+            const text = document.getElementById('postInput').value;
+            const price = document.getElementById('priceInput').value;
+
+            if (!text && !currentImageData) return alert("Please add some content!");
+
+            const postHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="avatar">${userId.substring(3,5)}</div>
+                        <div style="font-weight:600">${userId}</div>
+                    </div>
+                    ${currentImageData ? `<img src="${currentImageData}" class="card-image">` : ''}
+                    <div class="card-content">
+                        <p>${text}</p>
+                        ${price ? `<span class="price-tag">$${price}</span>` : ''}
+                    </div>
+                    <div class="card-footer">
+                        <span class="action-link"><i data-lucide="heart" size="18"></i> Like</span>
+                        <span class="action-link" onclick="simulateCall('${userId}')"><i data-lucide="phone" size="18"></i> Call</span>
+                        <span class="action-link"><i data-lucide="message-circle" size="18"></i> Chat</span>
+                    </div>
+                </div>
+            `;
+
+            timeline.insertAdjacentHTML('afterbegin', postHTML);
+            lucide.createIcons(); // Refresh icons for new elements
+
+            // Clear inputs
+            document.getElementById('postInput').value = '';
+            document.getElementById('priceInput').value = '';
+            document.getElementById('preview-container').innerHTML = '';
+            currentImageData = null;
+        }
+
+        // 4. CALL SIMULATION
+        function simulateCall(target) {
+            alert(`Initiating secure DG-Voice call to ${target}... \n(Connecting via WebRTC)`);
+        }
+
+        // Load some dummy initial posts
+        window.onload = () => {
+            document.getElementById('postInput').value = "Welcome to the portal! Start by listing an item.";
+            createNewPost();
+        };
     </script>
 </body>
 </html>
