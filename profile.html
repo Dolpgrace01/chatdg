@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NACOS Official Letterhead</title>
+    <title>NACOS Letterhead - Cambria 12/14</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* Base Setup */
+        /* Document Setup */
         body { background: #525659; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        /* A4 Page Styling */
         #letterhead {
             width: 210mm;
             height: 297mm;
@@ -17,13 +16,12 @@
             padding: 12mm 15mm;
             box-sizing: border-box;
             position: relative;
-            font-family: "Cambria", serif; /* User Requested Font */
+            font-family: "Cambria", serif;
             color: #1a1a1a;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            overflow: hidden;
         }
 
-        /* Top Branding Header */
+        /* HEADER SECTION */
         .header-graphic {
             position: relative;
             display: flex;
@@ -63,14 +61,16 @@
             color: #006837;
         }
 
-        /* Capitalized Header Text Size 14pt */
+        /* Header Title - 14pt Capitalized */
         .header-text h1 { font-size: 14pt; margin: 0; font-weight: 800; line-height: 1.1; }
+        
+        /* Header Sub-details - 12pt */
         .header-text p { font-size: 12pt; margin: 2px 0; font-weight: bold; color: #333; }
-        .motto-tag { background: #006837; color: white !important; display: inline-block; padding: 2px 8px; font-size: 9pt !important; margin-top: 4px !important;}
+        .motto-tag { background: #006837; color: white !important; display: inline-block; padding: 2px 8px; font-size: 10pt !important; margin-top: 4px !important;}
 
         .right-seal { width: 70px; height: 70px; z-index: 2; margin-left: 10px;}
 
-        /* Watermark Settings */
+        /* WATERMARK */
         .watermark {
             position: absolute;
             top: 50%;
@@ -82,19 +82,17 @@
             pointer-events: none;
         }
 
-        /* Document Body - 12pt as requested */
-        .meta-data { display: flex; justify-content: space-between; font-size: 12pt; margin-top: 15px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        /* BODY CONTENT */
+        .meta-data { display: flex; justify-content: space-between; font-size: 12pt; margin-top: 15px; font-weight: bold; }
         
         .letter-content { position: relative; z-index: 3; margin-top: 30px; font-size: 12pt; line-height: 1.5; }
         
         .address-block { margin-bottom: 25px; line-height: 1.3;}
         
-        /* Subject Text Size 14pt */
+        /* Subject Line - 14pt Capitalized */
         .subject-line { text-align: center; font-weight: 800; text-decoration: underline; margin: 25px 0; font-size: 14pt; text-transform: uppercase;}
 
-        .request-text { text-align: justify; margin: 20px 0; }
-
-        /* Signature Alignment */
+        /* SIGNATURE SECTION */
         .sig-section-top {
             margin-top: 40px;
             display: flex;
@@ -103,12 +101,9 @@
             height: 120px;
         }
 
-        .sig-holder { text-align: center; width: 170px; font-size: 12pt; }
+        .sig-holder { text-align: center; width: 180px; font-size: 12pt; }
         .dotted-line { border-top: 1.5px dotted #000; margin-bottom: 5px; width: 100%; }
-
         .sig-mid { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
-
-        .signing-off-label { margin-top: 35px; font-weight: bold; font-size: 12pt; margin-bottom: 10px;}
 
         .sig-section-bottom {
             display: flex;
@@ -116,10 +111,10 @@
             margin-top: 30px;
         }
 
-        /* 14pt for Capitalized names in signatures */
+        /* Signatory Names - 14pt for Capitalized entries */
         .caps-name { font-size: 14pt; font-weight: bold; }
 
-        /* Green Footer Bar */
+        /* FOOTER */
         .footer-bar {
             position: absolute;
             bottom: 12mm;
@@ -129,20 +124,19 @@
             color: white;
             text-align: center;
             padding: 8px 0;
-            font-size: 14pt; /* Caps bar */
+            font-size: 14pt;
             font-weight: bold;
             border-radius: 8px;
-            letter-spacing: 0.5px;
         }
 
         .controls { margin-bottom: 20px; }
-        .btn { padding: 12px 25px; background: #006837; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; font-size: 16px; }
+        .btn { padding: 12px 25px; background: #006837; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <button class="btn" onclick="generatePDF()">Download Exact PDF</button>
+        <button class="btn" onclick="generatePDF()">DOWNLOAD PDF</button>
     </div>
 
     <div id="letterhead">
@@ -151,8 +145,8 @@
         <div class="header-graphic">
             <div class="green-curve"></div>
             <div class="logo-group">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="logo-main" alt="NACOS">
-                <img src="https://i.imgur.com/8fSbh8m.png" class="logo-crest" alt="FEDPOLY EDE">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="logo-main">
+                <img src="https://i.imgur.com/8fSbh8m.png" class="logo-crest">
             </div>
             <div class="header-text">
                 <h1>NIGERIA ASSOCIATION OF COMPUTING STUDENT (NACOS)</h1>
@@ -165,7 +159,6 @@
 
         <div class="meta-data">
             <span>Our Ref: __________________</span>
-            <span>Your Ref: __________________</span>
             <span>Date: __________________</span>
         </div>
 
@@ -181,7 +174,7 @@
 
             <div class="subject-line">Request for Opening of New Corporate Account</div>
 
-            <p class="request-text">
+            <p>
                 The Nigeria Association of Computing Students (NACOS), Federal Polytechnic Ede Chapter, 
                 through the School of Computing Technology, officially requests the opening of a 
                 new corporate account with Polaris Bank to facilitate the association's 
@@ -193,7 +186,7 @@
             
             <p>Thanks.</p>
 
-            <p class="signing-off-label">Signing off:</p>
+            <p style="font-weight: bold;">Signing off:</p>
 
             <div class="sig-section-top">
                 <div class="sig-holder">
@@ -210,7 +203,7 @@
                 </div>
             </div>
 
-            <p class="signing-off-label" style="margin-top:20px;">Signing on:</p>
+            <p style="font-weight: bold; margin-top:20px;">Signing on:</p>
 
             <div class="sig-section-bottom">
                 <div class="sig-holder">
@@ -233,12 +226,11 @@
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('letterhead');
-            // High DPI capture
             const canvas = await html2canvas(element, { scale: 3, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-            pdf.save('NACOS_Official_Letter.pdf');
+            pdf.save('NACOS_Polaris_Letter.pdf');
         }
     </script>
 </body>
