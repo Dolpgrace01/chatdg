@@ -55,29 +55,21 @@
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
         .hidden { display: none !important; }
 
-        /* --- FEED STYLES --- */
+        /* --- FEED & COMMENTS --- */
         .create-box { background: var(--card); border-radius: 24px; padding: 18px; border: 1px solid var(--border); margin-bottom: 25px; }
         .post-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; }
         .post-img { width: 100%; object-fit: cover; max-height: 450px; }
-        .price-tag { background: var(--accent); color: white; padding: 5px 12px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; }
+        .comment-section { background: var(--bg); padding: 10px 15px; border-top: 1px solid var(--border); }
+        .comment-item { font-size: 0.8rem; margin-bottom: 5px; line-height: 1.4; }
+        .comment-item b { color: var(--primary); margin-right: 5px; }
 
-        /* --- MESSAGING STYLES --- */
-        .thread { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 20px; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .thread:hover { background: var(--card); }
-        .avatar { width: 50px; height: 50px; border-radius: 16px; background: var(--primary); display: grid; place-items: center; color: white; font-weight: 800; font-size: 1.2rem; }
-
-        #chat-window { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; }
-        .msg-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; }
-        .sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .received { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
-
-        /* --- CALLING OVERLAY --- */
-        #call-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 4000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
-        }
-        .call-btn { width: 70px; height: 70px; border-radius: 50%; border: none; display: grid; place-items: center; color: white; cursor: pointer; }
+        /* --- PROFILE PAGE --- */
+        .profile-header { text-align: center; padding: 20px 0; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 30px; background: var(--primary); margin: 0 auto 15px; display: grid; place-items: center; color: white; font-size: 2.5rem; font-weight: 800; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border); }
+        .stat-val { display: block; font-weight: 800; font-size: 1.1rem; }
+        .stat-lbl { font-size: 0.7rem; opacity: 0.6; }
 
         /* --- BOTTOM NAV --- */
         .bottom-nav {
@@ -89,25 +81,22 @@
         .nav-link.active { color: var(--primary); opacity: 1; }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <div id="auth-gate">
         <div class="auth-card">
             <h1 style="text-align: center; margin-bottom: 10px;">DG <span>ELITE</span></h1>
-            <p style="text-align: center; font-size: 0.8rem; opacity: 0.6; margin-bottom: 20px;">Secure Mobile Commerce Portal</p>
             <input type="text" id="reg-name" placeholder="Full Name">
-            <input type="email" id="reg-email" placeholder="Gmail Address">
             <input type="tel" id="reg-phone" placeholder="Phone Number">
-            <input type="password" id="reg-pass" placeholder="Password">
-            <button class="btn-main" onclick="initApp()">Create DG Identity</button>
+            <button class="btn-main" onclick="initApp()">Enter Portal</button>
         </div>
     </div>
 
     <header>
         <div class="logo">DG <span>ELITE</span></div>
         <div style="display: flex; align-items: center; gap: 12px;">
-            <i data-lucide="sun" id="theme-icon" onclick="toggleTheme()" style="cursor:pointer"></i>
-            <div class="dg-badge" id="user-display-id">DG-XXXX</div>
+            <i data-lucide="moon" id="theme-icon" onclick="toggleTheme()" style="cursor:pointer"></i>
+            <div class="dg-badge" id="user-display-id">DG-ID</div>
         </div>
     </header>
 
@@ -117,55 +106,32 @@
                 <textarea id="post-input" placeholder="What are you selling today?" rows="2"></textarea>
                 <img id="img-preview" style="width:100%; border-radius:15px; margin-bottom:10px; display:none;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label style="cursor: pointer; color: var(--primary);">
-                        <i data-lucide="image"></i>
-                        <input type="file" class="hidden" accept="image/*" onchange="handleImage(event)">
-                    </label>
-                    <input type="number" id="post-price" placeholder="$ Price" style="width: 80px; margin: 0;">
+                    <label style="cursor: pointer; color: var(--primary);"><i data-lucide="image"></i><input type="file" class="hidden" accept="image/*" onchange="handleImage(event)"></label>
+                    <input type="number" id="post-price" placeholder="$" style="width: 70px; margin: 0;">
                     <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="addPost()">Post</button>
                 </div>
             </div>
             <div id="timeline"></div>
         </section>
 
-        <section id="msg-tab" class="hidden">
-            <h2 style="margin-bottom: 20px;">Conversations</h2>
-            <div id="inbox">
-                <div class="thread" onclick="openChat('DG-SUPPORT-SYS')">
-                    <div class="avatar" style="background: var(--accent);">S</div>
-                    <div style="flex:1">
-                        <div style="font-weight:700">DG Support</div>
-                        <div style="font-size:0.8rem; opacity:0.6">Encrypted connection active.</div>
-                    </div>
-                </div>
+        <section id="profile-tab" class="hidden">
+            <div class="profile-header">
+                <div class="profile-avatar" id="p-avatar">?</div>
+                <h2 id="p-name">Username</h2>
+                <p id="p-id" style="color: var(--primary); font-weight: 700; font-size: 0.9rem;">DG-XXXX</p>
             </div>
+            <div class="stats-grid">
+                <div class="stat-card"><span class="stat-val">12</span><span class="stat-lbl">Posts</span></div>
+                <div class="stat-card"><span class="stat-val">4.8</span><span class="stat-lbl">Rating</span></div>
+                <div class="stat-card"><span class="stat-val">1.2k</span><span class="stat-lbl">Sold</span></div>
+            </div>
+            <button class="btn-main" style="background: var(--danger);" onclick="location.reload()">Logout Session</button>
         </section>
-    </div>
-
-    <div id="chat-window" class="hidden">
-        <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px;">
-            <i data-lucide="arrow-left" onclick="closeChat()"></i>
-            <div id="chat-title" style="font-weight:800; flex:1">Chat</div>
-            <i data-lucide="phone" onclick="startCall()" style="color:var(--accent)"></i>
-        </div>
-        <div class="msg-display" id="msg-display"></div>
-        <div style="padding: 15px; display:flex; gap:10px; background:var(--card)">
-            <input type="text" id="chat-input" placeholder="Type a message..." style="margin:0">
-            <button class="btn-main" style="width:auto" onclick="sendMessage()"><i data-lucide="send"></i></button>
-        </div>
-    </div>
-
-    <div id="call-overlay" class="hidden">
-        <div class="avatar" style="width:100px; height:100px; font-size:2rem; margin-bottom:20px;">DG</div>
-        <h2 id="call-name">Calling...</h2>
-        <p style="opacity:0.6; margin-bottom:40px;">End-to-end Encrypted</p>
-        <button class="call-btn" style="background:var(--danger)" onclick="endCall()"><i data-lucide="phone-off"></i></button>
     </div>
 
     <nav class="bottom-nav">
         <div class="nav-link active" onclick="switchTab('home', this)"><i data-lucide="home"></i></div>
-        <div class="nav-link" onclick="switchTab('msg', this)"><i data-lucide="message-circle"></i></div>
-        <div class="nav-link" onclick="alert('Profile settings coming soon!')"><i data-lucide="user"></i></div>
+        <div class="nav-link" onclick="switchTab('profile', this)"><i data-lucide="user"></i></div>
     </nav>
 
     <script>
@@ -173,32 +139,27 @@
         let user = {};
         let currentImgData = null;
 
-        // 1. AUTH & INITIALIZATION
         function initApp() {
             const name = document.getElementById('reg-name').value;
             const phone = document.getElementById('reg-phone').value;
-            if(!name || !phone) return alert("Fill required info!");
-
+            if(!name || !phone) return;
             const id = "DG-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + phone.slice(-4);
             user = { name, phone, id };
-            
             document.getElementById('user-display-id').innerText = id;
+            document.getElementById('p-name').innerText = name;
+            document.getElementById('p-id').innerText = id;
+            document.getElementById('p-avatar').innerText = name[0].toUpperCase();
             document.getElementById('auth-gate').style.display = 'none';
-            
-            // Welcome Post
-            addPost("System Initialized. Welcome to DG Elite.", 0);
         }
 
-        // 2. THEME TOGGLE
-        function toggleTheme() {
-            const b = document.body;
-            const isDark = b.getAttribute('data-theme') === 'dark';
-            b.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-            lucide.createIcons();
+        function switchTab(tab, el) {
+            document.getElementById('home-tab').classList.add('hidden');
+            document.getElementById('profile-tab').classList.add('hidden');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.remove('hidden');
+            el.classList.add('active');
         }
 
-        // 3. IMAGE HANDLING
         function handleImage(e) {
             const reader = new FileReader();
             reader.onload = () => {
@@ -210,73 +171,46 @@
             reader.readAsDataURL(e.target.files[0]);
         }
 
-        // 4. POSTING LOGIC
-        function addPost(customTxt = null, customPrice = null) {
-            const text = customTxt || document.getElementById('post-input').value;
-            const price = customPrice !== null ? customPrice : document.getElementById('post-price').value;
-            if(!text && !currentImgData) return;
-
+        function addPost() {
+            const text = document.getElementById('post-input').value;
+            const price = document.getElementById('post-price').value;
+            const pid = Date.now();
             const postHTML = `
                 <div class="post-card">
                     <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                        <div class="avatar" style="width:35px; height:35px; font-size:0.8rem; border-radius:10px;">${user.name[0]}</div>
-                        <div style="flex:1">
-                            <div style="font-weight:700; font-size:0.85rem;">${user.name}</div>
-                            <div style="font-size:0.7rem; opacity:0.5">${user.id}</div>
-                        </div>
+                        <div class="profile-avatar" style="width:35px; height:35px; font-size:0.8rem; border-radius:10px; margin:0;">${user.name[0]}</div>
+                        <div style="flex:1"><div style="font-weight:700; font-size:0.85rem;">${user.name}</div></div>
                         ${price > 0 ? `<div class="price-tag">$${price}</div>` : ''}
                     </div>
                     ${currentImgData ? `<img src="${currentImgData}" class="post-img">` : ''}
                     <div style="padding:15px; font-size:0.95rem;">${text}</div>
-                    <div style="padding:12px; display:flex; justify-content:space-around; border-top:1px solid var(--border); opacity:0.7; font-weight:700; font-size:0.8rem;">
-                        <div style="cursor:pointer" onclick="this.style.color='var(--danger)'"><i data-lucide="heart" size="16"></i> Like</div>
-                        <div style="cursor:pointer" onclick="openChat('${user.id}')"><i data-lucide="message-square" size="16"></i> Chat</div>
-                        <div style="cursor:pointer" onclick="startCall('${user.name}')"><i data-lucide="phone" size="16"></i> Call</div>
+                    <div class="comment-section">
+                        <div id="comments-${pid}"></div>
+                        <input type="text" placeholder="Add a comment..." style="padding:8px; font-size:0.8rem;" onkeypress="postComment(event, ${pid})">
                     </div>
-                </div>
-            `;
+                </div>`;
             document.getElementById('timeline').insertAdjacentHTML('afterbegin', postHTML);
-            lucide.createIcons();
-
-            // Clear inputs
             document.getElementById('post-input').value = '';
-            document.getElementById('post-price').value = '';
             document.getElementById('img-preview').style.display = 'none';
             currentImgData = null;
+            lucide.createIcons();
         }
 
-        // 5. CHAT & TABS
-        function switchTab(tab, el) {
-            document.getElementById('home-tab').classList.add('hidden');
-            document.getElementById('msg-tab').classList.add('hidden');
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(tab + '-tab').classList.remove('hidden');
-            el.classList.add('active');
+        function postComment(e, pid) {
+            if(e.key === 'Enter' && e.target.value) {
+                const container = document.getElementById(`comments-${pid}`);
+                container.innerHTML += `<div class="comment-item"><b>${user.id}:</b> ${e.target.value}</div>`;
+                e.target.value = '';
+            }
         }
 
-        function openChat(id) {
-            document.getElementById('chat-title').innerText = id;
-            document.getElementById('chat-window').classList.remove('hidden');
+        function toggleTheme() {
+            const b = document.body;
+            const isDark = b.getAttribute('data-theme') === 'dark';
+            b.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
         }
-
-        function closeChat() { document.getElementById('chat-window').classList.add('hidden'); }
-
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            if(!input.value) return;
-            document.getElementById('msg-display').innerHTML += `<div class="bubble sent">${input.value}</div>`;
-            input.value = '';
-            const d = document.getElementById('msg-display');
-            d.scrollTop = d.scrollHeight;
-        }
-
-        // 6. CALLS
-        function startCall(target = "User") {
-            document.getElementById('call-name').innerText = "Calling " + target + "...";
-            document.getElementById('call-overlay').classList.remove('hidden');
-        }
-        function endCall() { document.getElementById('call-overlay').classList.add('hidden'); }
     </script>
 </body>
 </html>
