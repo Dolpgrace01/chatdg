@@ -2,83 +2,273 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Olb Messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olb | Timeline & Messenger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@800&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --gold: #C5A059;
+            --bg: #000000;
+            --card: #16181c;
+            --border: #2f3336;
+            --text-main: #eff3f4;
+            --text-dim: #71767b;
+        }
+
         * { box-sizing: border-box; }
-        body { margin: 0; display: flex; height: 100vh; background: #0A0A0A; color: white; font-family: 'Montserrat'; }
-        
-        /* Sidebar */
-        .sidebar { width: 350px; border-right: 1px solid #222; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
-        .chat-list { flex-grow: 1; overflow-y: auto; }
-        .chat-item { padding: 20px; border-bottom: 1px solid #111; cursor: pointer; display: flex; gap: 15px; align-items: center; }
-        .chat-item:hover { background: #1a1a1a; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #C5A059; }
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: 'Montserrat', sans-serif; 
+            display: flex; 
+            justify-content: center;
+            height: 100vh;
+        }
 
-        /* Chat Window */
-        .main-chat { flex-grow: 1; display: flex; flex-direction: column; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
-        .chat-header { padding: 20px; background: #141414; display: flex; justify-content: space-between; align-items: center; }
-        .messages-area { flex-grow: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        
-        .message { max-width: 60%; padding: 12px 18px; border-radius: 15px; font-size: 0.9rem; }
-        .sent { align-self: flex-end; background: #C5A059; color: black; border-bottom-right-radius: 2px; }
-        .received { align-self: flex-start; background: #222; border-bottom-left-radius: 2px; }
+        /* Layout Structure */
+        .container { display: flex; width: 100%; max-width: 1250px; height: 100%; }
 
-        .input-area { padding: 20px; background: #141414; display: flex; gap: 15px; }
-        input { flex-grow: 1; padding: 15px; border-radius: 25px; border: none; background: #000; color: white; }
-        
-        /* Nav Links */
-        .nav-link { color: #C5A059; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
+        /* Left Navigation (X-Style) */
+        nav.sidebar {
+            width: 275px;
+            padding: 10px 20px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-item:hover { background: #181818; }
+        .nav-item.active { font-weight: 700; color: var(--gold); }
+        .logo-box { padding: 15px; font-family: 'Bodoni Moda'; font-size: 2rem; color: var(--gold); }
+
+        /* Center: Timeline */
+        main.timeline {
+            flex-grow: 1;
+            max-width: 600px;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-header {
+            padding: 15px 20px;
+            backdrop-filter: blur(12px);
+            background: rgba(0,0,0,0.65);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Post Creation Box */
+        .post-box {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+        }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; background: #222; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .post-input-container { flex-grow: 1; }
+        textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            resize: none;
+            outline: none;
+            padding-top: 10px;
+            font-family: inherit;
+        }
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+        .post-btn {
+            background: var(--gold);
+            color: black;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Individual Post Style */
+        .post {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            transition: 0.2s;
+        }
+        .post:hover { background: rgba(255,255,255,0.02); }
+        .post-content .handle { color: var(--text-dim); font-weight: 400; margin-left: 5px; }
+        .post-text { margin-top: 5px; line-height: 1.4; font-size: 0.95rem; }
+
+        /* Right: Messenger Integration */
+        .messenger-aside {
+            width: 375px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+        .msg-list-header { padding: 20px; font-weight: 700; border-bottom: 1px solid var(--border); }
+        .chat-preview {
+            padding: 15px 20px;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .chat-preview:hover { background: #16181c; }
+
+        /* Floating Chat Modal (Bottom Right) */
+        #active-chat-window {
+            position: fixed;
+            bottom: 0;
+            right: 80px;
+            width: 320px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 15px 15px 0 0;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .msg-header { padding: 10px 15px; background: var(--card); border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; }
+        .msg-body { height: 300px; overflow-y: auto; padding: 15px; font-size: 0.85rem; }
+        .msg-input { padding: 10px; border-top: 1px solid var(--border); display: flex; }
+        .msg-input input { background: #202327; border: none; color: white; border-radius: 20px; padding: 8px 15px; width: 100%; }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <span style="font-family: 'Bodoni Moda'; font-size: 1.2rem;">Messages</span>
-            <a href="profile.html" class="nav-link">PROFILE</a>
-        </div>
-        <div class="chat-list">
-            <div class="chat-item" onclick="loadChat('Master Tailor')">
-                <div class="avatar"></div>
-                <div>
-                    <div style="font-weight: 700;">Master Tailor Segun</div>
-                    <div style="font-size: 0.7rem; opacity: 0.5;">The Agbada is ready for fitting...</div>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo-box">OLB</div>
+            <div class="nav-item active"><i class="fas fa-home"></i> Home</div>
+            <div class="nav-item"><i class="fas fa-hashtag"></i> Explore</div>
+            <div class="nav-item"><i class="fas fa-bell"></i> Notifications</div>
+            <div class="nav-item"><i class="fas fa-envelope"></i> Messages</div>
+            <div class="nav-item"><i class="fas fa-user"></i> Profile</div>
+            <button class="post-btn" style="width: 100%; margin-top: 20px; padding: 15px;">Post</button>
+        </nav>
+
+        <main class="timeline">
+            <div class="timeline-header">For you</div>
+            
+            <div class="post-box">
+                <div class="avatar"><img src="https://ui-avatars.com/api/?name=Me&background=C5A059&color=fff" alt=""></div>
+                <div class="post-input-container">
+                    <textarea id="postTextArea" rows="2" placeholder="What is happening in the Atelier?"></textarea>
+                    <div class="post-actions">
+                        <div style="color: var(--gold); display: flex; gap: 15px; font-size: 0.9rem;">
+                            <i class="far fa-image"></i>
+                            <i class="fas fa-poll-h"></i>
+                            <i class="far fa-smile"></i>
+                        </div>
+                        <button class="post-btn" onclick="createPost()">Post</button>
+                    </div>
                 </div>
             </div>
-            <div class="chat-item" onclick="location.href='contacts.html'">
-                <div style="text-align: center; width: 100%; color: #C5A059; font-size: 0.8rem;">+ VIEW ALL CONTACTS</div>
+
+            <div id="feed">
+                <div class="post">
+                    <div class="avatar"><img src="https://ui-avatars.com/api/?name=Master+Tailor&background=222&color=C5A059" alt=""></div>
+                    <div class="post-content">
+                        <div style="font-weight: 700;">Master Tailor Segun <span class="handle">@segun_atelier · 2h</span></div>
+                        <div class="post-text">Just finished the final stitching on the Equity Crew '26 signature blazers. The velvet texture is exquisite. 🧵✨</div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
+
+        <aside class="messenger-aside">
+            <div class="msg-list-header">Direct Messages</div>
+            <div class="chat-preview" onclick="openChat('Alexander')">
+                <div class="avatar"><img src="https://ui-avatars.com/api/?name=Alexander&background=C5A059&color=000" alt=""></div>
+                <div>
+                    <div style="font-weight: 700;">Alexander</div>
+                    <div style="font-size: 0.8rem; color: var(--text-dim);">The lapel looks perfect...</div>
+                </div>
+            </div>
+        </aside>
     </div>
 
-    <div class="main-chat">
-        <div class="chat-header">
-            <div id="active-user">Master Tailor Segun</div>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link" style="color: #ff4444; margin-right: 15px;">LOGOUT</a>
-                <a href="contacts.html" class="nav-link">DETAILS</a>
-            </div>
+    <div id="active-chat-window">
+        <div class="msg-header">
+            <span id="chat-user-name" style="font-weight: 700; font-size: 0.9rem;">Chat</span>
+            <i class="fas fa-times" style="cursor: pointer;" onclick="closeChat()"></i>
         </div>
-        
-        <div class="messages-area" id="chat-box">
-            <div class="message received">Good morning, Alexander. We have finished the embroidery on your velvet suit.</div>
-            <div class="message sent">That's great news! Can I see a photo of the lapel?</div>
-            <div class="message received">Of course. Sending it through the gallery now.</div>
+        <div class="msg-body" id="chat-box">
+            <div style="background: #222; padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; width: fit-content;">Good morning. Your suit is ready.</div>
         </div>
-
-        <div class="input-area">
-            <input type="text" id="msg-input" placeholder="Type a message...">
-            <button onclick="sendMessage()" style="background:none; border:none; color:#C5A059; font-weight:800; cursor:pointer;">SEND</button>
+        <div class="msg-input">
+            <input type="text" id="chat-input" placeholder="Start a new message" onkeypress="if(event.key==='Enter') sendDirectMessage()">
         </div>
     </div>
 
     <script>
-        function sendMessage() {
-            const input = document.getElementById('msg-input');
-            if(!input.value) return;
+        // Use the username registered from the Login page
+        const currentStudent = localStorage.getItem('currentUser') || "Student_Node";
+
+        function createPost() {
+            const text = document.getElementById('postTextArea').value;
+            if(!text.trim()) return;
+
+            const feed = document.getElementById('feed');
+            const newPost = `
+                <div class="post">
+                    <div class="avatar"><img src="https://ui-avatars.com/api/?name=${currentStudent}&background=C5A059&color=000" alt=""></div>
+                    <div class="post-content">
+                        <div style="font-weight: 700;">${currentStudent} <span class="handle">@${currentStudent.toLowerCase()} · just now</span></div>
+                        <div class="post-text">${text}</div>
+                    </div>
+                </div>
+            `;
+            feed.insertAdjacentHTML('afterbegin', newPost);
+            document.getElementById('postTextArea').value = '';
+        }
+
+        function openChat(name) {
+            document.getElementById('chat-user-name').innerText = name;
+            document.getElementById('active-chat-window').style.display = 'flex';
+        }
+
+        function closeChat() {
+            document.getElementById('active-chat-window').style.display = 'none';
+        }
+
+        function sendDirectMessage() {
+            const input = document.getElementById('chat-input');
             const box = document.getElementById('chat-box');
-            box.innerHTML += `<div class="message sent">${input.value}</div>`;
+            if(!input.value.trim()) return;
+
+            box.innerHTML += `<div style="background: var(--gold); color: black; padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; margin-left: auto; width: fit-content;">${input.value}</div>`;
             input.value = '';
             box.scrollTop = box.scrollHeight;
         }
