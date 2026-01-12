@@ -3,167 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NACOS Letterhead Generator</title>
+    <title>NACOS Exact Letterhead</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --nacos-green: #006837;
+        :root { --green: #006837; }
+        body { background: #525659; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 0; }
+        
+        /* Configuration Panel */
+        .config-panel {
+            background: #fff; width: 210mm; padding: 20px; border-radius: 8px; margin-bottom: 20px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .upload-box { border: 2px dashed #ccc; padding: 10px; text-align: center; border-radius: 5px; cursor: pointer; }
+        
+        /* A4 Page Styling */
+        .a4-page {
+            width: 210mm; height: 297mm; background: white; position: relative;
+            padding: 15mm 20mm; box-sizing: border-box; overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
-        body {
-            background: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* EXACT ALIGNMENT ELEMENTS */
+        .header-strip {
+            border-top: 18pt solid var(--green);
+            padding-top: 15pt; display: flex; align-items: flex-start;
+            border-bottom: 2pt solid var(--green); padding-bottom: 10pt;
+            position: relative; z-index: 10;
+        }
+        .logo-slot { width: 90pt; height: 90pt; object-fit: contain; }
+        
+        .header-text { flex: 1; text-align: center; color: var(--green); }
+        .header-text h1 { font-size: 19pt; margin: 0; font-weight: 900; line-height: 1.1; letter-spacing: -0.5px; }
+        .header-text p { font-size: 9.5pt; margin: 3px 0; font-weight: 700; line-height: 1.2; text-transform: uppercase; }
+
+        .meta-info { display: flex; justify-content: space-between; margin-top: 35pt; font-size: 10.5pt; }
+
+        /* The Watermark */
+        #watermark-preview {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 450pt; opacity: 0.1; z-index: 1; pointer-events: none;
         }
 
-        /* A4 Paper Styling */
-        .page {
-            width: 210mm;
-            height: 297mm;
-            padding: 15mm;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
+        .main-content { position: relative; z-index: 5; margin-top: 40pt; font-size: 11pt; line-height: 1.5; color: #1a1a1a; }
+        .address { margin-bottom: 25pt; font-weight: 600; }
+        .subject { text-align: center; text-decoration: underline; font-weight: 900; margin: 35pt 0; font-size: 11.5pt; }
 
-        /* Header Section */
-        .header-container {
-            border-top: 15px solid var(--nacos-green);
-            padding-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px solid var(--nacos-green);
-            padding-bottom: 10px;
-        }
+        /* Signatures Exact Spacing */
+        .sig-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10pt; margin-top: 60pt; text-align: center; }
+        .sig-box { display: flex; flex-direction: column; align-items: center; font-size: 10pt; }
+        .line { border-top: 1pt dotted #000; width: 140pt; margin-bottom: 5pt; }
 
-        .logo-left { width: 80px; height: auto; }
-        .logo-right { width: 70px; height: auto; }
+        .signing-off { font-weight: 900; margin-top: 40pt; font-size: 11pt; }
+        .bottom-sigs { display: flex; justify-content: space-between; margin-top: 45pt; text-align: center; }
 
-        .header-text {
-            text-align: center;
-            flex: 1;
-            color: var(--nacos-green);
-        }
-
-        .header-text h1 {
-            font-size: 18pt;
-            margin: 0;
-            font-weight: 900;
-        }
-
-        .header-text p {
-            font-size: 9pt;
-            margin: 2px 0;
-            line-height: 1.2;
-            font-weight: bold;
-        }
-
-        /* Reference & Date Lines */
-        .meta-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            font-size: 10pt;
-        }
-
-        /* Watermark */
-        .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            opacity: 0.08;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* Content Body */
-        .content {
-            position: relative;
-            z-index: 1;
-            margin-top: 40px;
-            font-size: 11pt;
-            line-height: 1.5;
-        }
-
-        .address-block { margin-bottom: 30px; }
-        .subject {
-            text-align: center;
-            text-decoration: underline;
-            font-weight: bold;
-            margin: 40px 0;
-        }
-
-        /* Signature Grid */
-        .signature-section {
-            margin-top: 60px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            text-align: center;
-            gap: 10px;
-        }
-
-        .signing-off {
-            margin-top: 40px;
-            font-weight: bold;
-        }
-
-        .bottom-signatures {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            text-align: center;
-        }
-
-        .sig-line {
-            border-top: 1px dotted #000;
-            width: 180px;
-            margin: 0 auto 5px;
-        }
-
-        .controls {
-            margin-bottom: 20px;
-        }
-
-        .btn-download {
-            background: #006837;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        @media print {
-            .controls { display: none; }
-            body { background: white; padding: 0; }
-            .page { box-shadow: none; margin: 0; }
-        }
+        .btn-print { background: #006837; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; grid-column: span 2; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <button class="btn-download" onclick="downloadPDF()">Download PDF</button>
+    <div class="config-panel">
+        <div class="upload-box" onclick="document.getElementById('logo-up').click()">
+            <b>Upload Logo (Top Left/Right)</b>
+            <input type="file" id="logo-up" hidden onchange="loadImg(this, '.logo-slot')">
+        </div>
+        <div class="upload-box" onclick="document.getElementById('bg-up').click()">
+            <b>Upload Background Watermark</b>
+            <input type="file" id="bg-up" hidden onchange="loadImg(this, '#watermark-preview')">
+        </div>
+        <button class="btn-print" onclick="generatePDF()">DOWNLOAD EXACT PDF</button>
     </div>
 
-    <div class="page" id="letterhead">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="watermark" alt="Watermark">
+    <div class="a4-page" id="printable-area">
+        <img id="watermark-preview" src="" alt="">
 
-        <div class="header-container">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="logo-left">
+        <div class="header-strip">
+            <img src="" class="logo-slot" alt="">
             <div class="header-text">
                 <h1>NIGERIA ASSOCIATION OF COMPUTING STUDENT (NACOS)</h1>
                 <p>FEDERAL POLYTECHNIC EDE CHAPTER</p>
@@ -171,7 +88,7 @@
                 <p>ROOM B 231 SET, IONI TRIAMING EDE, OSUN STATE.</p>
                 <p>Email: nacosfedegm@ali.com, Tel: 0803452334</p>
             </div>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="logo-right">
+            <img src="" class="logo-slot" alt="">
         </div>
 
         <div class="meta-info">
@@ -180,8 +97,8 @@
             <div>Date:..............................</div>
         </div>
 
-        <div class="content">
-            <div class="address-block">
+        <div class="main-content">
+            <div class="address">
                 The Manager<br>
                 Polaris Bank<br>
                 Federal Polytechnic Ede,<br>
@@ -197,32 +114,32 @@
             <p>We hereby request that 09069992540 be alert line.</p>
             <p>We hereby request the president, and either the other signatories should be able to withdraw from the account.</p>
             
-            <p>Thanks</p>
+            <p style="margin-top: 20pt;">Thanks</p>
 
-            <div class="signature-section">
-                <div>
-                    <div class="sig-line"></div>
+            <div class="sig-grid">
+                <div class="sig-box">
+                    <div class="line"></div>
                     <b>Fadalyiro Joel Femi</b><br>President
                 </div>
-                <div>
-                    <div class="sig-line"></div>
+                <div class="sig-box">
+                    <div class="line"></div>
                     <b>Egunjobi Imolesyo</b><br>Financial Secretary
                 </div>
-                <div>
-                    <div class="sig-line"></div>
+                <div class="sig-box">
+                    <div class="line"></div>
                     <b>Asimiya Qudus Ajibola</b><br>General Secretary
                 </div>
             </div>
 
             <div class="signing-off">Signing off:</div>
 
-            <div class="bottom-signatures">
-                <div>
-                    <div class="sig-line"></div>
+            <div class="bottom-sigs">
+                <div class="sig-box">
+                    <div class="line"></div>
                     <b>OLANIYI BABATUNDE OLAMILEKAN</b><br>President
                 </div>
-                <div>
-                    <div class="sig-line"></div>
+                <div class="sig-box">
+                    <div class="line"></div>
                     <b>OMOLADE BOLUWATIFE DORCAS</b><br>Financial Secretary
                 </div>
             </div>
@@ -230,26 +147,36 @@
     </div>
 
     <script>
-        async function downloadPDF() {
+        // Real-time image loader
+        function loadImg(input, targetSelector) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const targets = document.querySelectorAll(targetSelector);
+                    targets.forEach(t => t.src = e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function generatePDF() {
             const { jsPDF } = window.jspdf;
-            const element = document.getElementById('letterhead');
+            const element = document.getElementById('printable-area');
             
-            // Use html2canvas to capture the page with high scale for clarity
+            // High DPI capture for print quality
             const canvas = await html2canvas(element, {
-                scale: 3,
+                scale: 4, // Very high resolution
                 useCORS: true,
-                logging: false
+                backgroundColor: "#ffffff"
             });
             
-            const imgData = canvas.toDataURL('image/png');
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
             
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('NACOS_Letter_Head.pdf');
+            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+            pdf.save('NACOS_Official_Letter.pdf');
         }
     </script>
 </body>
