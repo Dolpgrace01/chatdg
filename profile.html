@@ -1,50 +1,256 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile | Olb Messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NACOS Letterhead Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
-        body { background: #0A0A0A; color: white; font-family: 'Montserrat'; padding: 50px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 20px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
-        .stat-card { background: #141414; padding: 20px; border-radius: 10px; border-left: 3px solid #C5A059; }
-        .btn-back { color: #C5A059; text-decoration: none; font-size: 0.8rem; }
+        :root {
+            --nacos-green: #006837;
+        }
+
+        body {
+            background: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* A4 Paper Styling */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            padding: 15mm;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header-container {
+            border-top: 15px solid var(--nacos-green);
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--nacos-green);
+            padding-bottom: 10px;
+        }
+
+        .logo-left { width: 80px; height: auto; }
+        .logo-right { width: 70px; height: auto; }
+
+        .header-text {
+            text-align: center;
+            flex: 1;
+            color: var(--nacos-green);
+        }
+
+        .header-text h1 {
+            font-size: 18pt;
+            margin: 0;
+            font-weight: 900;
+        }
+
+        .header-text p {
+            font-size: 9pt;
+            margin: 2px 0;
+            line-height: 1.2;
+            font-weight: bold;
+        }
+
+        /* Reference & Date Lines */
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            font-size: 10pt;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Content Body */
+        .content {
+            position: relative;
+            z-index: 1;
+            margin-top: 40px;
+            font-size: 11pt;
+            line-height: 1.5;
+        }
+
+        .address-block { margin-bottom: 30px; }
+        .subject {
+            text-align: center;
+            text-decoration: underline;
+            font-weight: bold;
+            margin: 40px 0;
+        }
+
+        /* Signature Grid */
+        .signature-section {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .signing-off {
+            margin-top: 40px;
+            font-weight: bold;
+        }
+
+        .bottom-signatures {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .sig-line {
+            border-top: 1px dotted #000;
+            width: 180px;
+            margin: 0 auto 5px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .btn-download {
+            background: #006837;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        @media print {
+            .controls { display: none; }
+            body { background: white; padding: 0; }
+            .page { box-shadow: none; margin: 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <a href="portal.html" class="btn-back">← BACK TO CHAT</a>
-            <h2 style="font-family: 'Bodoni Moda';">Account Settings</h2>
-        </div>
 
-        <div style="text-align: center; margin-top: 40px;">
-            <div style="width: 100px; height: 100px; background: #C5A059; border-radius: 50%; margin: 0 auto;"></div>
-            <h3>Alexander Zenith</h3>
-            <p style="opacity: 0.5;">zenith@gmail.com</p>
-        </div>
-
-        <div class="stat-grid">
-            <div class="stat-card">
-                <div style="font-size: 0.6rem; color: #C5A059;">TOTAL ORDERS</div>
-                <div style="font-size: 1.5rem; font-weight: 800;">12</div>
-            </div>
-            <div class="stat-card">
-                <div style="font-size: 0.6rem; color: #C5A059;">MEMBERSHIP</div>
-                <div style="font-size: 1.5rem; font-weight: 800;">GOLD</div>
-            </div>
-        </div>
-
-        <h4 style="margin-top: 40px; border-bottom: 1px solid #222; padding-bottom: 10px;">Saved Measurements</h4>
-        <div class="stat-grid">
-            <p>Chest: 42"</p>
-            <p>Waist: 34"</p>
-            <p>Shoulder: 18.5"</p>
-            <p>Sleeve: 25"</p>
-        </div>
-
-        <button onclick="location.href='index.html'" style="margin-top: 50px; width: 100%; padding: 15px; background: transparent; border: 1px solid #ff4444; color: #ff4444; cursor: pointer;">DELETE ACCOUNT</button>
+    <div class="controls">
+        <button class="btn-download" onclick="downloadPDF()">Download PDF</button>
     </div>
+
+    <div class="page" id="letterhead">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="watermark" alt="Watermark">
+
+        <div class="header-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="logo-left">
+            <div class="header-text">
+                <h1>NIGERIA ASSOCIATION OF COMPUTING STUDENT (NACOS)</h1>
+                <p>FEDERAL POLYTECHNIC EDE CHAPTER</p>
+                <p>(OFFICE OF THE COMMITTEE CENTER)</p>
+                <p>ROOM B 231 SET, IONI TRIAMING EDE, OSUN STATE.</p>
+                <p>Email: nacosfedegm@ali.com, Tel: 0803452334</p>
+            </div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="logo-right">
+        </div>
+
+        <div class="meta-info">
+            <div>Our Ref:.................................................</div>
+            <div>Your Ref:.................................................</div>
+            <div>Date:..............................</div>
+        </div>
+
+        <div class="content">
+            <div class="address-block">
+                The Manager<br>
+                Polaris Bank<br>
+                Federal Polytechnic Ede,<br>
+                Osun State.
+            </div>
+
+            <p>Dear sir</p>
+
+            <div class="subject">CHANGE OF ACCOUNT SIGNATORIES</div>
+
+            <p>The above name is to introduce the following new signatures to the association through account No. <b>1150777852</b>.</p>
+
+            <p>We hereby request that 09069992540 be alert line.</p>
+            <p>We hereby request the president, and either the other signatories should be able to withdraw from the account.</p>
+            
+            <p>Thanks</p>
+
+            <div class="signature-section">
+                <div>
+                    <div class="sig-line"></div>
+                    <b>Fadalyiro Joel Femi</b><br>President
+                </div>
+                <div>
+                    <div class="sig-line"></div>
+                    <b>Egunjobi Imolesyo</b><br>Financial Secretary
+                </div>
+                <div>
+                    <div class="sig-line"></div>
+                    <b>Asimiya Qudus Ajibola</b><br>General Secretary
+                </div>
+            </div>
+
+            <div class="signing-off">Signing off:</div>
+
+            <div class="bottom-signatures">
+                <div>
+                    <div class="sig-line"></div>
+                    <b>OLANIYI BABATUNDE OLAMILEKAN</b><br>President
+                </div>
+                <div>
+                    <div class="sig-line"></div>
+                    <b>OMOLADE BOLUWATIFE DORCAS</b><br>Financial Secretary
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('letterhead');
+            
+            // Use html2canvas to capture the page with high scale for clarity
+            const canvas = await html2canvas(element, {
+                scale: 3,
+                useCORS: true,
+                logging: false
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('NACOS_Letter_Head.pdf');
+        }
+    </script>
 </body>
 </html>
