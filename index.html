@@ -3,305 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DG-Portal | Buy. Sell. Connect.</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>DG-Elite | Premium Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <style>
         :root {
-            --dg-blue: #1e3a8a;       /* Deep Trust Blue */
-            --dg-green: #10b981;      /* Emerald Action Green */
-            --dg-light-bg: #f8fafc;
-            --dg-border: #e2e8f0;
-            --dg-white: #ffffff;
-            --dg-text: #1e293b;
+            --primary: #6366f1; /* Indigo */
+            --accent: #10b981; /* Emerald */
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #e2e8f0;
+            --glass: rgba(255, 255, 255, 0.8);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        [data-theme="dark"] {
+            --bg: #020617;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --border: #334155;
+            --glass: rgba(15, 23, 42, 0.8);
+        }
 
-        body { background-color: var(--dg-light-bg); color: var(--dg-text); overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, color 0.3s; }
 
-        /* --- NAVIGATION --- */
+        body { background: var(--bg); color: var(--text); }
+
+        /* --- LOGIN OVERLAY --- */
+        #auth-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .auth-card {
+            background: var(--card); padding: 2rem; border-radius: 24px;
+            width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+        }
+
+        .auth-input {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px;
+            border: 1px solid var(--border); background: var(--bg); color: var(--text);
+        }
+
+        .auth-btn {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+
+        /* --- DASHBOARD --- */
         nav {
-            background: var(--dg-blue);
-            color: white;
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100; padding: 1rem 5%;
+            background: var(--glass); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
-        .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: -1px; }
-        .logo span { color: var(--dg-green); }
-
-        .id-badge {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--dg-green);
-            color: var(--dg-green);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+        .main-container {
+            max-width: 1200px; margin: 0 auto; display: grid;
+            grid-template-columns: 250px 1fr; gap: 30px; padding: 2rem;
         }
 
-        /* --- MAIN LAYOUT --- */
-        .container {
-            display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 20px;
-            max-width: 1300px;
-            margin: 20px auto;
-            padding: 0 20px;
+        .post-card {
+            background: var(--card); border-radius: 20px; padding: 20px;
+            border: 1px solid var(--border); margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        /* Sidebar & Navigation */
-        .menu-list { list-style: none; }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: 0.3s;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        .menu-item:hover, .menu-item.active {
-            background: var(--dg-blue);
-            color: white;
+        .user-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .user-id { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
+
+        .price-chip {
+            background: var(--accent); color: white; padding: 4px 12px;
+            border-radius: 8px; font-weight: bold; font-size: 0.8rem;
         }
 
-        /* --- POSTING AREA --- */
-        .post-box {
-            background: var(--dg-white);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--dg-border);
+        .post-image { width: 100%; border-radius: 15px; margin: 15px 0; display: block; }
+
+        /* --- INTERACTION BAR --- */
+        .interaction-bar {
+            display: flex; gap: 20px; border-top: 1px solid var(--border);
+            padding-top: 15px; margin-top: 10px;
         }
 
-        .post-input {
-            width: 100%;
-            border: none;
-            resize: none;
-            font-size: 1.1rem;
-            outline: none;
-            margin-bottom: 15px;
+        .btn-action {
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; opacity: 0.8;
+        }
+        .btn-action:hover { opacity: 1; color: var(--primary); }
+        .liked { color: #ef4444; opacity: 1; }
+
+        /* --- COMMENTS AREA --- */
+        .comments-section {
+            background: var(--bg); border-radius: 12px; padding: 10px; margin-top: 15px;
+        }
+        .comment-input {
+            width: 100%; background: transparent; border: none; 
+            padding: 8px; color: var(--text); outline: none;
         }
 
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--dg-border);
-            padding-top: 15px;
-        }
+        .theme-toggle { cursor: pointer; padding: 8px; border-radius: 50%; background: var(--border); }
 
-        .media-upload { color: var(--dg-blue); cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.9rem;}
-        
-        .sell-btn {
-            background: var(--dg-green);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 25px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .sell-btn:hover { transform: scale(1.05); }
-
-        /* --- FEED / TIMELINE --- */
-        .card {
-            background: var(--dg-white);
-            border: 1px solid var(--dg-border);
-            border-radius: 15px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .card-header { padding: 15px; display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--dg-blue); }
-        
-        .card-content { padding: 0 15px 15px 15px; }
-        .card-image { width: 100%; max-height: 400px; object-fit: cover; background: #eee; }
-
-        .price-tag {
-            display: inline-block;
-            background: var(--dg-green);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .card-footer {
-            display: flex;
-            padding: 10px 15px;
-            border-top: 1px solid var(--dg-border);
-            gap: 20px;
-        }
-
-        .action-link { 
-            display: flex; align-items: center; gap: 5px; font-size: 0.9rem; 
-            cursor: pointer; color: var(--dg-blue); text-decoration: none; font-weight: 600;
-        }
-
-        /* --- CHAT BOX --- */
-        .chat-sidebar {
-            background: var(--dg-white);
-            border-radius: 15px;
-            padding: 15px;
-            height: fit-content;
-            border: 1px solid var(--dg-border);
-        }
-
-        .chat-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid var(--dg-border);
-            cursor: pointer;
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; }
-            .sidebar, .chat-sidebar { display: none; }
-        }
-
-        /* Hidden Utility */
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body data-theme="light">
+
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h2 style="margin-bottom: 20px;">Join DG-Elite</h2>
+            <input type="text" id="reg-user" class="auth-input" placeholder="Username">
+            <input type="email" id="reg-email" class="auth-input" placeholder="Gmail Address">
+            <input type="tel" id="reg-phone" class="auth-input" placeholder="Phone Number (for calling)">
+            <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
+            <button class="auth-btn" onclick="handleAuth()">Create Unique DG-ID</button>
+        </div>
+    </div>
 
     <nav>
-        <div class="logo">DG<span>Portal</span></div>
-        <div class="id-badge" id="myID">DG-XXXXXX</div>
+        <div style="font-size: 1.5rem; font-weight: 900;">DG <span style="color: var(--primary);">ELITE</span></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div id="nav-dg-id" class="user-id"></div>
+            <div class="theme-toggle" onclick="toggleTheme()"><i data-lucide="moon"></i></div>
+        </div>
     </nav>
 
-    <div class="container">
-        <aside class="sidebar">
-            <ul class="menu-list">
-                <li class="menu-item active"><i data-lucide="home"></i> Home Feed</li>
-                <li class="menu-item"><i data-lucide="shopping-bag"></i> My Shop</li>
-                <li class="menu-item"><i data-lucide="bell"></i> Notifications</li>
-                <li class="menu-item"><i data-lucide="settings"></i> Settings</li>
-            </ul>
-        </aside>
-
-        <main>
-            <div class="post-box">
-                <textarea class="post-input" id="postInput" placeholder="What are you selling today?" rows="2"></textarea>
-                <div id="preview-container"></div>
-                <div class="post-actions">
-                    <label class="media-upload">
-                        <i data-lucide="image"></i> Add Photo
-                        <input type="file" id="imageInput" class="hidden" accept="image/*" onchange="previewImage(event)">
-                    </label>
-                    <input type="number" id="priceInput" placeholder="$ Price" style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 5px;">
-                    <button class="sell-btn" onclick="createNewPost()">Post to Portal</button>
-                </div>
-            </div>
-
-            <div id="timeline">
-                </div>
-        </main>
-
-        <aside class="chat-sidebar">
-            <h4 style="margin-bottom: 15px;">Recent Chats</h4>
-            <div class="chat-user">
-                <div class="avatar">DG</div>
-                <div>
-                    <div style="font-weight: 600;">DG-Support</div>
-                    <div style="font-size: 0.8rem; color: #666;">Online</div>
-                </div>
+    <div class="main-container">
+        <aside>
+            <div class="post-card" style="position: sticky; top: 100px;">
+                <h4 style="margin-bottom: 15px;">Sell Something</h4>
+                <textarea id="postContent" class="auth-input" placeholder="What's for sale?" rows="3"></textarea>
+                <input type="number" id="postPrice" class="auth-input" placeholder="Price ($)">
+                <button class="auth-btn" onclick="publishPost()">Post Now</button>
             </div>
         </aside>
+
+        <main id="app-feed">
+            </main>
     </div>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
-        // 1. UNIQUE ID GENERATION
-        const myID = document.getElementById('myID');
-        let userId = localStorage.getItem('dg_user_id');
-        
-        if (!userId) {
-            userId = 'DG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-            localStorage.setItem('dg_user_id', userId);
+        let currentUser = null;
+
+        // 1. AUTHENTICATION LOGIC
+        function handleAuth() {
+            const user = document.getElementById('reg-user').value;
+            const phone = document.getElementById('reg-phone').value;
+            
+            if(!user || !phone) return alert("Fill required fields");
+
+            const dgId = "DG-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + phone.slice(-4);
+            
+            currentUser = {
+                username: user,
+                phone: phone,
+                dgId: dgId
+            };
+
+            document.getElementById('nav-dg-id').innerText = dgId;
+            document.getElementById('auth-overlay').classList.add('hidden');
+            
+            // Initial Welcome Post
+            publishPost("Welcome to my new portal! Connect with me via the call button.", 0);
         }
-        myID.innerText = userId;
 
-        // 2. IMAGE PREVIEW LOGIC
-        let currentImageData = null;
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const container = document.getElementById('preview-container');
-                container.innerHTML = `<img src="${reader.result}" style="width:100px; border-radius:10px; margin-bottom:10px;">`;
-                currentImageData = reader.result;
-            }
-            reader.readAsDataURL(event.target.files[0]);
+        // 2. THEME TOGGLE
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.querySelector('.theme-toggle').innerHTML = isDark ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
+            lucide.createIcons();
         }
 
-        // 3. POSTING LOGIC
-        const timeline = document.getElementById('timeline');
+        // 3. POSTING & INTERACTION
+        function publishPost(customText = null, customPrice = null) {
+            const text = customText || document.getElementById('postContent').value;
+            const price = customPrice !== null ? customPrice : document.getElementById('postPrice').value;
+            const feed = document.getElementById('app-feed');
 
-        function createNewPost() {
-            const text = document.getElementById('postInput').value;
-            const price = document.getElementById('priceInput').value;
+            if(!text) return;
 
-            if (!text && !currentImageData) return alert("Please add some content!");
-
-            const postHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <div class="avatar">${userId.substring(3,5)}</div>
-                        <div style="font-weight:600">${userId}</div>
+            const postId = Date.now();
+            const html = `
+                <div class="post-card" id="post-${postId}">
+                    <div class="user-meta">
+                        <div style="width:40px; height:40px; border-radius:12px; background:var(--primary); display:grid; place-items:center; color:white; font-weight:bold;">${currentUser.username[0].toUpperCase()}</div>
+                        <div>
+                            <div style="font-weight:700;">${currentUser.username}</div>
+                            <div class="user-id">${currentUser.dgId}</div>
+                        </div>
+                        <div style="margin-left:auto">${price > 0 ? `<span class="price-chip">$${price}</span>` : ''}</div>
                     </div>
-                    ${currentImageData ? `<img src="${currentImageData}" class="card-image">` : ''}
-                    <div class="card-content">
-                        <p>${text}</p>
-                        ${price ? `<span class="price-tag">$${price}</span>` : ''}
+                    <p>${text}</p>
+                    <div class="interaction-bar">
+                        <div class="btn-action" onclick="this.classList.toggle('liked')"><i data-lucide="heart" size="18"></i> Like</div>
+                        <div class="btn-action" onclick="initiateCall('${currentUser.phone}')"><i data-lucide="phone" size="18"></i> Call</div>
+                        <div class="btn-action" onclick="focusComment(${postId})"><i data-lucide="message-circle" size="18"></i> Chat</div>
                     </div>
-                    <div class="card-footer">
-                        <span class="action-link"><i data-lucide="heart" size="18"></i> Like</span>
-                        <span class="action-link" onclick="simulateCall('${userId}')"><i data-lucide="phone" size="18"></i> Call</span>
-                        <span class="action-link"><i data-lucide="message-circle" size="18"></i> Chat</span>
+                    <div class="comments-section">
+                        <div id="comments-list-${postId}"></div>
+                        <input type="text" class="comment-input" placeholder="Write a comment..." onkeypress="addComment(event, ${postId})">
                     </div>
                 </div>
             `;
 
-            timeline.insertAdjacentHTML('afterbegin', postHTML);
-            lucide.createIcons(); // Refresh icons for new elements
-
+            feed.insertAdjacentHTML('afterbegin', html);
+            lucide.createIcons();
+            
             // Clear inputs
-            document.getElementById('postInput').value = '';
-            document.getElementById('priceInput').value = '';
-            document.getElementById('preview-container').innerHTML = '';
-            currentImageData = null;
+            if(!customText) {
+                document.getElementById('postContent').value = '';
+                document.getElementById('postPrice').value = '';
+            }
         }
 
-        // 4. CALL SIMULATION
-        function simulateCall(target) {
-            alert(`Initiating secure DG-Voice call to ${target}... \n(Connecting via WebRTC)`);
+        function addComment(e, postId) {
+            if(e.key === 'Enter' && e.target.value) {
+                const list = document.getElementById(`comments-list-${postId}`);
+                list.innerHTML += `<div style="font-size:0.8rem; margin:5px 0;"><strong>${currentUser.dgId}:</strong> ${e.target.value}</div>`;
+                e.target.value = '';
+            }
         }
 
-        // Load some dummy initial posts
-        window.onload = () => {
-            document.getElementById('postInput').value = "Welcome to the portal! Start by listing an item.";
-            createNewPost();
-        };
+        function initiateCall(num) {
+            alert(`System: Connecting to encrypted DG-Line...\nDialing: ${num}`);
+        }
+
+        function focusComment(id) {
+            document.querySelector(`#post-${id} .comment-input`).focus();
+        }
     </script>
 </body>
 </html>
