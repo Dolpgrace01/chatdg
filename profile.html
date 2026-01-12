@@ -2,47 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NACOS Official Letterhead - Account Opening Request</title>
+    <title>NACOS Exact Letterhead - Account Opening</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { background: #525659; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { background: #333; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
         #letterhead {
             width: 210mm;
             height: 297mm;
             background: white;
-            padding: 12mm 15mm;
+            padding: 10mm 18mm;
             box-sizing: border-box;
             position: relative;
             font-family: "Cambria", serif;
             color: #1a1a1a;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
             overflow: hidden;
         }
 
-        /* HEADER SECTION */
+        /* HEADER SECTION - EXACT REPRODUCTION */
         .header-graphic {
             position: relative;
             display: flex;
             align-items: center;
-            /* Thick green line on top */
-            border-top: 8px solid #006837;
-            border-bottom: 2px solid #333;
-            padding-top: 10px;
+            border-top: 10px solid #006837; /* Thick green bar from photo */
+            border-bottom: 2.5px solid #000;
+            padding-top: 12px;
             padding-bottom: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        /* Green backlay stops before the text */
         .green-curve {
             position: absolute;
-            left: -15mm;
+            left: -18mm;
             top: 0;
-            width: 210px;
-            height: 90px;
+            width: 205px; /* Stops before association name */
+            height: 95px;
             background: #006837;
-            border-bottom-right-radius: 90% 100%;
+            border-bottom-right-radius: 95% 100%;
             z-index: 1;
         }
 
@@ -51,40 +48,41 @@
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-left: 5px;
         }
 
-        .logo-main { width: 68px; height: 68px; background: #fff; border-radius: 50%; padding: 2px; }
-        .logo-crest { width: 42px; height: 42px; object-fit: contain;}
+        .logo-main { width: 72px; height: 72px; background: #fff; border-radius: 50%; padding: 2px; }
+        .logo-crest { width: 45px; height: 45px; object-fit: contain;}
 
         .header-text {
             flex: 1;
-            padding-left: 12px;
+            padding-left: 15px;
             z-index: 2;
             color: #006837;
         }
 
-        /* 14pt Caps for Header */
-        .header-text h1 { font-size: 14pt; margin: 0; font-weight: 800; line-height: 1.1; text-transform: uppercase;}
-        .header-text p { font-size: 11pt; margin: 1px 0; font-weight: bold; color: #1a1a1a; }
+        /* 14pt Caps Header */
+        .header-text h1 { font-size: 14pt; margin: 0; font-weight: 900; line-height: 1.1; text-transform: uppercase; letter-spacing: -0.2px; }
+        /* 12pt Sub-headers */
+        .header-text p { font-size: 11.5pt; margin: 2px 0; font-weight: bold; color: #1a1a1a; }
         
         .motto-tag { 
             background: #006837; 
             color: white !important; 
             display: inline-block; 
-            padding: 2px 12px; 
-            font-size: 9pt !important; 
-            margin-top: 4px !important;
-            font-style: italic;
+            padding: 2px 10px; 
+            font-size: 9.5pt !important; 
+            margin-top: 5px !important;
+            font-weight: bold;
         }
 
-        .right-seal { width: 65px; height: 65px; z-index: 2; margin-left: 10px;}
+        .right-seal { width: 72px; height: 72px; z-index: 2; margin-left: 10px;}
 
-        /* WATERMARK */
+        /* WATERMARK - EXACT CENTER */
         .watermark {
             position: absolute;
-            top: 48%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 145mm;
@@ -93,71 +91,77 @@
             pointer-events: none;
         }
 
-        /* CONTENT */
-        .meta-data { display: flex; justify-content: space-between; font-size: 12pt; margin-top: 15px; font-weight: bold; }
-        .letter-content { position: relative; z-index: 3; margin-top: 35px; font-size: 12pt; line-height: 1.5; }
-        .address-block { margin-bottom: 25px; line-height: 1.3;}
+        /* CONTENT STYLING */
+        .meta-data { display: flex; justify-content: space-between; font-size: 12pt; margin-top: 20px; font-weight: bold; }
+        .letter-content { position: relative; z-index: 3; margin-top: 40px; font-size: 12pt; line-height: 1.5; text-align: justify; }
+        .address-block { margin-bottom: 30px; line-height: 1.3; text-align: left; }
         
-        /* 14pt Caps for Subject */
+        /* 14pt Caps Subject */
         .subject-line { 
             text-align: center; 
-            font-weight: 800; 
+            font-weight: 900; 
             text-decoration: underline; 
-            margin: 25px 0; 
+            margin: 35px 0; 
             font-size: 14pt; 
             text-transform: uppercase;
         }
 
-        /* SIGNATURES */
+        /* SIGNATURES - V-SHAPE ALIGNMENT */
         .sig-section-top {
-            margin-top: 40px;
+            margin-top: 50px;
             display: flex;
             justify-content: space-between;
             position: relative;
-            height: 115px;
+            height: 120px;
         }
 
-        .sig-holder { text-align: center; width: 185px; font-size: 11pt; }
-        .dotted-line { border-top: 1.5px dotted #000; margin-bottom: 5px; width: 100%; }
+        .sig-holder { text-align: center; width: 190px; font-size: 11.5pt; }
+        .dotted-line { border-top: 1.8px dotted #000; margin-bottom: 6px; width: 100%; }
         .sig-mid { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
 
         .sig-section-bottom {
             display: flex;
             justify-content: space-between;
-            margin-top: 35px;
+            margin-top: 45px;
         }
 
-        /* 14pt Caps for Signature Names */
+        /* 14pt Caps for Names */
         .caps-name { font-size: 14pt; font-weight: bold; text-transform: uppercase; }
 
-        /* FOOTER - RADIUS ONLY ON TOP */
+        /* FOOTER - TOP RADIUS ONLY */
         .footer-bar {
             position: absolute;
             bottom: 12mm;
-            left: 15mm;
-            right: 15mm;
+            left: 18mm;
+            right: 18mm;
             background: #006837;
             color: white;
             text-align: center;
             padding: 12px 0;
             font-size: 14pt;
             font-weight: bold;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            border-bottom: 0;
-            letter-spacing: 0.5px;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+            letter-spacing: 0.8px;
         }
 
-        .controls { margin-bottom: 20px; }
-        .btn { padding: 12px 25px; background: #006837; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; box-shadow: 0 4px #004525; }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #004525; }
+        .download-btn {
+            margin-bottom: 20px;
+            padding: 15px 35px;
+            background: #006837;
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <button class="btn" onclick="generatePDF()">DOWNLOAD ACCOUNT REQUEST PDF</button>
-    </div>
+    <button class="download-btn" onclick="generatePDF()">DOWNLOAD PDF NOW</button>
 
     <div id="letterhead">
         <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Nacos_logo.png" class="watermark">
@@ -196,24 +200,24 @@
 
             <p>
                 The Nigeria Association of Computing Students (NACOS), Federal Polytechnic Ede Chapter, 
-                acting through the School of Computing Technology, hereby formally requests the 
-                opening of a new corporate bank account with your branch.
+                acting under the School of Computing Technology, formally requests the opening of a 
+                new corporate account with Polaris Bank for the association's financial management.
             </p>
 
             <p>
-                This account is intended to manage the financial contributions and operations of 
-                the association. We request that the following mobile number: <b>09069995848</b> 
-                be registered as the official alert line for all transactions.
+                We request that the official alert line for this account be registered under the mobile 
+                number: <b>09069995848</b>. 
             </p>
 
             <p>
-                Furthermore, we request that the President and either of the other two appointed 
-                signatories be granted the authority to withdraw funds from the account.
+                The association further requests that the President, alongside either of the other 
+                two designated signatories, be authorized to conduct withdrawals and financial 
+                transactions on behalf of the association.
             </p>
             
-            <p>Thanks.</p>
+            <p>Thank you for your anticipated cooperation.</p>
 
-            <p style="font-weight: bold; margin-bottom: 5px;">Signing off:</p>
+            <p style="font-weight: bold; margin-bottom: 8px;">Signing off:</p>
 
             <div class="sig-section-top">
                 <div class="sig-holder">
@@ -230,7 +234,7 @@
                 </div>
             </div>
 
-            <p style="font-weight: bold; margin-top:25px; margin-bottom: 5px;">Signing on:</p>
+            <p style="font-weight: bold; margin-top:30px; margin-bottom: 8px;">Signing on:</p>
 
             <div class="sig-section-bottom">
                 <div class="sig-holder">
@@ -253,9 +257,17 @@
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('letterhead');
-            const canvas = await html2canvas(element, { scale: 3, useCORS: true });
+            
+            // Set high scale for print quality (3 or 4)
+            const canvas = await html2canvas(element, { 
+                scale: 4, 
+                useCORS: true,
+                backgroundColor: "#ffffff"
+            });
+            
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');
+            
             pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
             pdf.save('NACOS_Account_Opening_Request.pdf');
         }
