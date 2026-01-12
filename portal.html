@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG SELLER | Seller Portal</title>
+    <title>DG ELITE | Premium Seller Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -14,6 +14,7 @@
         :root {
             --bg: #020617; --card: #0f172a; --primary: #6366f1;
             --gold: #fbbf24; --text: #f8fafc; --border: rgba(255, 255, 255, 0.1);
+            --danger: #ef4444;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -28,86 +29,97 @@
             border: 1px solid var(--border); 
             border-radius: 32px; 
             padding: 25px; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
         }
 
         .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 8px; margin-left: 5px; }
+        label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 8px; }
         
         input, textarea, select { 
             width: 100%; padding: 16px; border-radius: 18px; border: 1px solid var(--border); 
-            background: #1e293b; color: white; outline: none; font-size: 1rem; transition: 0.3s;
+            background: #1e293b; color: white; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); }
 
         .upload-zone { 
             border: 2px dashed var(--border); border-radius: 20px; padding: 30px; text-align: center; 
-            cursor: pointer; transition: 0.3s; margin-bottom: 20px;
+            cursor: pointer; transition: 0.3s;
         }
-        .upload-zone:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
-        #preview-img { width: 100%; border-radius: 15px; margin-top: 15px; display: none; border: 1px solid var(--border); }
+        #preview-img { width: 100%; border-radius: 15px; margin-top: 15px; display: none; }
 
         .btn-gold { 
             width: 100%; padding: 18px; background: var(--gold); color: #000; border: none; 
-            border-radius: 20px; font-weight: 800; font-size: 1rem; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+            border-radius: 20px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3); }
 
-        .back-link { display: inline-flex; align-items: center; gap: 5px; color: var(--text); opacity: 0.5; text-decoration: none; margin-bottom: 20px; font-size: 0.9rem; }
+        /* --- MY LISTINGS SECTION --- */
+        .listing-item { 
+            display: flex; align-items: center; gap: 15px; background: var(--card); 
+            padding: 12px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 12px;
+        }
+        .listing-thumb { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
+        .listing-info { flex: 1; }
+        .del-icon { color: var(--danger); cursor: pointer; padding: 10px; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 5px; color: var(--text); opacity: 0.5; text-decoration: none; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
     <div class="luxury-header">
-        <a href="index.html" class="back-link"><i data-lucide="arrow-left" size="16"></i> Back to Hub</a>
-        <h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -1px;">SELLER <span style="color:var(--gold)">PORTAL</span></h1>
-        <p style="opacity: 0.5; font-size: 0.9rem;"> Check for Items you may be interested in, you can pay online or pay upon Pick</p>
+        <a href="index.html" class="back-link"><i data-lucide="arrow-left" size="16"></i> Exit Portal</a>
+        <h1 style="font-size: 1.8rem; font-weight: 800;">SELLER <span style="color:var(--gold)">PORTAL</span></h1>
     </div>
 
     <div class="container">
         <div class="glass-card">
+            <h3 style="margin-bottom: 20px; font-size: 1.1rem;">Create Luxury Listing</h3>
+            
             <div class="input-group">
-                <label>Item Media</label>
+                <label>Media (Max 15MB)</label>
                 <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-                    <i data-lucide="image" size="32" style="color: var(--primary)"></i>
-                    <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">Tap to upload listing images </p>
-                    <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(this)" style="display:none">
+                    <i data-lucide="upload-cloud" style="color: var(--primary)"></i>
+                    <p id="upload-text" style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">Select high-res image</p>
+                    <input type="file" id="file-input" hidden accept="image/*" onchange="processLargeImage(this)">
                     <img id="preview-img">
                 </div>
             </div>
 
             <div class="input-group">
-                <label> Listing Name & Description </label>
-                <textarea id="desc" placeholder="e.g. Brand New Iphone 15 - Pristine Condition" rows="3"></textarea>
+                <label>Description</label>
+                <textarea id="desc" placeholder="Details about the item..." rows="2"></textarea>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="input-group">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="input-group">
                 <div>
-                    <label> Price (₦)</label>
-                    <input type="number" id="price" placeholder="180,000">
+                    <label>Price (₦)</label>
+                    <input type="number" id="price" placeholder="0.00">
                 </div>
                 <div>
-                    <label>Mode of Payment</label>
+                    <label>Payment</label>
                     <select id="pod">
-                        <option value="false"> Pay Now Only</option>
-                        <option value="true"> Pay Upon PickUp/Delivery</option>
+                        <option value="false">Online Only</option>
+                        <option value="true">Allow POD</option>
                     </select>
                 </div>
             </div>
 
             <div class="input-group">
-                <label> Authenticate Listing </label>
-                <input type="password" id="auth-pass" placeholder="Enter Your Password">
+                <label>Master Password</label>
+                <input type="password" id="auth-pass" placeholder="Required to list">
             </div>
 
-            <button class="btn-gold" onclick="verifyAndPost()">
-                <i data-lucide="check-circle" size="20"></i> AUTHENTICATE & LIST
+            <button class="btn-gold" onclick="postItem()">
+                <i data-lucide="plus-circle" size="20"></i> LIST ITEM NOW
             </button>
         </div>
+
+        <h2 style="margin-bottom: 20px; font-size: 1.2rem; border-left: 4px solid var(--gold); padding-left: 15px;">My Active Listings</h2>
+        <div id="my-listings-container">
+            </div>
     </div>
 
     <script>
+        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCwoZU08nKIh0EtMbUwiANjDwQOnF6BHw0",
             authDomain: "dolpgrace-103ad.firebaseapp.com",
@@ -122,55 +134,71 @@
         let user = JSON.parse(localStorage.getItem('urban_user'));
         let finalImage = null;
 
-        function previewImage(input) {
+        // Image handling up to 15MB
+        function processLargeImage(input) {
             const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    finalImage = e.target.result;
-                    const img = document.getElementById('preview-img');
-                    img.src = finalImage;
-                    img.style.display = 'block';
-                    document.querySelector('.upload-zone p').innerText = "Image Selected!";
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+
+            if (file.size > 15 * 1024 * 1024) {
+                alert("File exceeds 15MB limit.");
+                input.value = "";
+                return;
             }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                finalImage = e.target.result;
+                const img = document.getElementById('preview-img');
+                img.src = finalImage;
+                img.style.display = 'block';
+                document.getElementById('upload-text').innerText = "Image Loaded Successfully";
+            };
+            reader.readAsDataURL(file);
         }
 
-        async function verifyAndPost() {
+        async function postItem() {
+            const pass = document.getElementById('auth-pass').value;
             const desc = document.getElementById('desc').value;
             const price = document.getElementById('price').value;
-            const pod = document.getElementById('pod').value === 'true';
-            const pass = document.getElementById('auth-pass').value;
 
-            // 1. Check Password
-            if (pass !== "Dolapo") {
-                alert("Incorrect Seller Password. Access Denied.");
-                return;
-            }
+            if (pass !== "Dolapo") return alert("Unauthorized access.");
+            if (!desc || !price || !finalImage) return alert("All fields including photo required.");
 
-            // 2. Validate Fields
-            if (!desc || !price || !finalImage) {
-                alert("Please complete all luxury details and upload a photo.");
-                return;
-            }
-
-            // 3. Post to Firebase
             try {
                 await db.collection("posts").add({
-                    uName: user.name,
-                    uId: user.id,
-                    uPic: user.pic,
-                    content: desc,
-                    price: parseFloat(price),
-                    image: finalImage,
-                    isPOD: pod,
+                    uName: user.name, uId: user.id, uPic: user.pic,
+                    content: desc, price: parseFloat(price),
+                    image: finalImage, isPOD: document.getElementById('pod').value === 'true',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("Item successfully listed on the Global Hub!");
-                window.location.href = "index.html";
-            } catch (err) {
-                alert("Error listing item: " + err.message);
+                alert("Luxury item listed!");
+                location.reload();
+            } catch (e) { alert("Error: " + e.message); }
+        }
+
+        // Load "My Listings" only
+        db.collection("posts").where("uId", "==", user.id).orderBy("timestamp", "desc").onSnapshot(snap => {
+            const cont = document.getElementById('my-listings-container');
+            cont.innerHTML = "";
+            snap.forEach(doc => {
+                const item = doc.data();
+                cont.innerHTML += `
+                    <div class="listing-item">
+                        <img src="${item.image}" class="listing-thumb">
+                        <div class="listing-info">
+                            <b style="font-size: 0.9rem;">${item.content.substring(0, 20)}...</b>
+                            <p style="color: var(--gold); font-size: 0.8rem;">₦${item.price.toLocaleString()}</p>
+                        </div>
+                        <i data-lucide="trash-2" class="del-icon" onclick="deleteItem('${doc.id}')"></i>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        });
+
+        async function deleteItem(id) {
+            if(confirm("Permanently delete this listing?")) {
+                await db.collection("posts").doc(id).delete();
             }
         }
 
