@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG ELITE | Urban Marketplace Pro</title>
+    <title> DG HUB | Urban Marketplace Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -69,17 +69,20 @@
     </div>
 
     <header>
-        <b style="font-size: 1.3rem;">DG <span style="color:var(--primary)">ELITE</span></b>
-        <div style="display:flex; gap:15px;">
+        <b style="font-size: 1.3rem;"> DG <span style="color:var(--primary)"> SELLER </span></b>
+        <div style="display:flex; gap:15px; align-items: center;">
+            <i data-lucide="shopping-bag" onclick="window.location.href='portal.html'" style="cursor:pointer; color: #fbbf24;"></i>
+            
             <i data-lucide="bell" id="notif-icon" onclick="toggleNotifications()" style="cursor:pointer;"></i>
             <i data-lucide="search" onclick="toggleSearch()" style="cursor:pointer;"></i>
         </div>
     </header>
 
+
     <div class="container">
         <div id="search-container" class="search-bar hidden">
             <i data-lucide="search" size="18" style="opacity:0.5"></i>
-            <input type="text" id="search-input" placeholder="Search users or items..." oninput="filterFeed()">
+            <input type="text" id="search-input" placeholder="Search users or available items..." oninput="filterFeed()">
         </div>
 
         <section id="tab-home">
@@ -143,9 +146,6 @@
             <button class="btn-main" onclick="sendMessage()" style="width:50px; margin:0;"><i data-lucide="send" size="18"></i></button>
         </div>
     </div>
-
-    <a style="color: white; background-color: green; border: 2px solid white; border-radius: 10px; width: 100%; height: 40px; href="portal.html"> Buy DG Items </a>
-
     <nav class="bottom-nav">
         <div class="nav-link active" id="n-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
         <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i></div>
