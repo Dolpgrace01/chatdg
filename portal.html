@@ -3,193 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Olb | Master Stream</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@800&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>DG ELITE | Luxury Global Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
         :root {
-            --gold: #C5A059;
-            --bg: #000000;
-            --card: #111111;
-            --border: rgba(255, 255, 255, 0.08);
-            --text-main: #FFFFFF;
-            --text-dim: #888888;
-            --nav-height: 70px;
+            --bg: #020617; --card: #0f172a; --primary: #6366f1;
+            --accent: #10b981; --text: #f8fafc; --border: rgba(255, 255, 255, 0.1);
+            --gold: #fbbf24;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; background: var(--bg); color: var(--text-main); 
-            font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 90px; }
+        .hidden { display: none !important; }
 
-        /* --- APP HEADER --- */
-        header {
-            height: 60px; padding: 0 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
-            position: fixed; top: 0; width: 100%; z-index: 100;
-        }
-        .logo { font-family: 'Bodoni Moda'; font-size: 1.5rem; color: var(--gold); letter-spacing: 2px; }
+        /* --- LUXURY POST CARD --- */
+        .post-card { background: var(--card); border-radius: 30px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; position: relative; transition: 0.3s; }
+        .price-tag { position: absolute; top: 15px; left: 15px; background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; z-index: 10; }
+        .pod-badge { background: rgba(16, 185, 129, 0.2); color: var(--accent); padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; margin-top: 5px; display: inline-block; }
+        
+        /* --- ACTION BUTTONS --- */
+        .btn-buy { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 15px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-buy:active { transform: scale(0.95); }
 
-        /* --- VIEW CONTAINER --- */
-        .view-container {
-            height: calc(100vh - var(--nav-height) - 60px);
-            margin-top: 60px; overflow-y: auto;
-            display: none; padding: 15px;
-            scroll-behavior: smooth;
-        }
-        .view-container.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- TIMELINE (POSTS) --- */
-        .post-card {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 16px; padding: 16px; margin-bottom: 15px;
-        }
-        .post-header { display: flex; gap: 12px; margin-bottom: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; border: 1px solid var(--gold); }
-        .post-user { font-weight: 700; font-size: 0.9rem; }
-        .post-handle { color: var(--text-dim); font-size: 0.75rem; display: block; }
-        .post-content { font-size: 0.95rem; line-height: 1.5; color: #e1e1e1; }
-        .post-media { margin-top: 12px; border-radius: 12px; width: 100%; border: 1px solid var(--border); }
-
-        /* --- CHATS (ACTIVE USERS) --- */
-        .user-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 15px; background: var(--card); border-radius: 12px;
-            margin-bottom: 10px; border: 1px solid transparent; transition: 0.2s;
-        }
-        .user-row:active { border-color: var(--gold); background: #1a1a1a; }
-        .status-badge { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
-
-        /* --- BOTTOM NAVIGATION --- */
-        nav.bottom-dock {
-            position: fixed; bottom: 0; width: 100%; height: var(--nav-height);
-            background: rgba(10, 10, 10, 0.95);
-            border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: 15px; /* Space for home indicator on mobile */
-            z-index: 100;
-        }
-        .nav-btn {
-            display: flex; flex-direction: column; align-items: center;
-            color: var(--text-dim); cursor: pointer; transition: 0.3s;
-            position: relative;
-        }
-        .nav-btn i { font-size: 1.4rem; margin-bottom: 4px; }
-        .nav-btn span { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .nav-btn.active { color: var(--gold); }
-        .nav-btn.active::after {
-            content: ''; position: absolute; top: -12px; width: 20px; height: 2px;
-            background: var(--gold); border-radius: 2px;
-        }
-
-        /* --- ACTION BUTTON (POST) --- */
-        .fab {
-            position: fixed; bottom: 90px; right: 20px;
-            width: 56px; height: 56px; background: var(--gold);
-            border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; color: black; font-size: 1.5rem;
-            box-shadow: 0 8px 20px rgba(197, 160, 89, 0.4);
-            z-index: 90;
-        }
-
-        /* Utils */
-        ::-webkit-scrollbar { width: 0px; }
+        /* --- CHECKOUT MODAL --- */
+        #checkout-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid var(--border); }
+        
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">OLB</div>
-        <i class="fas fa-search" style="color: var(--text-dim)"></i>
+    <header style="padding: 20px; display: flex; justify-content: space-between; align-items: center; background: var(--glass); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+        <b style="font-size: 1.4rem; letter-spacing: -1px;">DG <span style="color:var(--primary)">ELITE</span></b>
+        <i data-lucide="shopping-bag" style="color: var(--gold)"></i>
     </header>
 
-    <div id="home-view" class="view-container">
-        <h2 style="font-family: 'Bodoni Moda'; color: var(--gold);">Welcome, Master</h2>
-        <div style="padding: 40px 20px; text-align: center; background: var(--card); border-radius: 20px;">
-            <i class="fas fa-crown" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
-            <p style="opacity: 0.7;">The Atelier is synchronized. Your bespoke sessions are ready for review.</p>
+    <div class="container" style="max-width: 600px; margin: 0 auto; padding: 15px;">
+        
+        <div style="background: var(--card); padding: 12px 18px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <i data-lucide="search" size="18" style="opacity: 0.5"></i>
+            <input type="text" id="global-search" placeholder="Search luxury items, price, or sellers..." oninput="richSearch()" style="background: transparent; border: none; padding: 0; margin: 0;">
         </div>
-    </div>
 
-    <div id="timeline-view" class="view-container active">
-        <div id="post-feed">
-            <div class="post-card">
-                <div class="post-header">
-                    <div class="avatar"></div>
-                    <div>
-                        <span class="post-user">Master Tailor Segun</span>
-                        <span class="post-handle">@segun_atelier • 2h</span>
-                    </div>
-                </div>
-                <div class="post-content">The New Collection '26 has officially hit the archive. Explore the high-resolution captures now.</div>
-                <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=800" class="post-media" alt="post">
+        <div style="background: var(--card); padding: 20px; border-radius: 30px; border: 1px solid var(--border); margin-bottom: 30px;">
+            <textarea id="item-desc" placeholder="Describe your item..."></textarea>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input type="number" id="item-price" placeholder="Price (₦)">
+                <select id="item-pod">
+                    <option value="false">Online Payment Only</option>
+                    <option value="true">Allow Payment on Delivery</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <label style="color: var(--primary); cursor: pointer; font-weight: 700; font-size: 0.85rem;">
+                    <i data-lucide="camera"></i> Add Media
+                    <input type="file" id="item-img" class="hidden" accept="image/*" onchange="handleImage(this)">
+                </label>
+                <button onclick="listItem()" class="btn-buy" style="width: auto; padding: 10px 30px;">List Item</button>
             </div>
         </div>
+
+        <div id="feed"></div>
     </div>
 
-    <div id="chats-view" class="view-container">
-        <h3 style="margin-bottom: 20px; font-size: 0.9rem; color: var(--text-dim);">ACTIVE NODES</h3>
-        <div class="user-row" onclick="startChat('Vector_402')">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div class="avatar" style="width:35px; height:35px;"></div>
-                <span style="font-weight: 600;">Vector_Link_402</span>
+    <div id="checkout-modal" class="hidden">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 10px;">Checkout</h2>
+            <p id="check-item-name" style="opacity: 0.7;"></p>
+            <h3 id="check-item-price" style="color: var(--gold); margin-bottom: 20px;"></h3>
+            
+            <label style="font-size: 0.8rem; opacity: 0.5;">Delivery Address</label>
+            <input type="text" id="delivery-addr" placeholder="House address, Hostel, Room...">
+            
+            <div id="pod-option-container" class="hidden" style="margin-top: 15px;">
+                <button class="btn-buy" style="background: var(--accent); margin-bottom: 10px;" onclick="finalizeOrder('POD')">Confirm Payment on Delivery</button>
             </div>
-            <div class="status-badge"></div>
-        </div>
-        <div class="user-row">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div class="avatar" style="width:35px; height:35px; border-color: transparent;"></div>
-                <span style="font-weight: 600;">Cyber_Ghost_22</span>
-            </div>
-            <div class="status-badge"></div>
+            <button class="btn-buy" onclick="payWithPaystack()">Pay Now (Securely)</button>
+            <p onclick="closeCheckout()" style="text-align: center; margin-top: 15px; cursor: pointer; opacity: 0.5;">Cancel</p>
         </div>
     </div>
-
-    <div class="fab" onclick="alert('Open Post Creator')">
-        <i class="fas fa-feather-alt"></i>
-    </div>
-
-    <nav class="bottom-dock">
-        <div class="nav-btn" onclick="switchView('home-view', this)">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </div>
-        <div class="nav-btn active" onclick="switchView('timeline-view', this)">
-            <i class="fas fa-stream"></i>
-            <span>Timeline</span>
-        </div>
-        <div class="nav-btn" onclick="switchView('chats-view', this)">
-            <i class="fas fa-comment-dots"></i>
-            <span>Chats</span>
-        </div>
-    </nav>
 
     <script>
-        function switchView(viewId, btn) {
-            // Remove active classes
-            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        // --- INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwoZU08nKIh0EtMbUwiANjDwQOnF6BHw0",
+            authDomain: "dolpgrace-103ad.firebaseapp.com",
+            projectId: "dolpgrace-103ad",
+            storageBucket: "dolpgrace-103ad.firebasestorage.app",
+            messagingSenderId: "512869929238",
+            appId: "1:512869929238:web:a4b00ebcdb5341b24c8037"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-            // Set current active
-            document.getElementById(viewId).classList.add('active');
-            btn.classList.add('active');
+        let user = JSON.parse(localStorage.getItem('urban_user'));
+        let currentImage = null;
+        let activeTransaction = null;
+        let allItems = [];
 
-            // Hide/Show FAB based on view
-            const fab = document.querySelector('.fab');
-            fab.style.display = (viewId === 'timeline-view') ? 'flex' : 'none';
+        // --- CORE FUNCTIONS ---
+        function handleImage(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => currentImage = e.target.result;
+            if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
 
-        // Auto-load student name from localStorage
-        const studentName = localStorage.getItem('currentUser') || "Guest";
-        console.log("Logged as: " + studentName);
+        async function listItem() {
+            const desc = document.getElementById('item-desc').value;
+            const price = document.getElementById('item-price').value;
+            const pod = document.getElementById('item-pod').value === 'true';
+            
+            if(!desc || !price || !currentImage) return alert("Please fill all details and add a photo.");
 
-        function startChat(user) {
-            alert("Initiating secure connection with " + user);
-            // Link to your dedicated chat page here
+            await db.collection("posts").add({
+                uName: user.name, uId: user.id,
+                content: desc, price: parseFloat(price),
+                image: currentImage, isPOD: pod,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            location.reload();
+        }
+
+        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
+            allItems = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+            renderItems(allItems);
+        });
+
+        function renderItems(items) {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = "";
+            items.forEach(i => {
+                feed.innerHTML += `
+                    <div class="post-card">
+                        <div class="price-tag">₦${i.price.toLocaleString()}</div>
+                        <img src="${i.image}" style="width:100%; height:300px; object-fit:cover;">
+                        <div style="padding: 20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div>
+                                    <b>${i.uName}</b>
+                                    <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 5px;">${i.content}</p>
+                                    ${i.isPOD ? `<span class="pod-badge">POD Available</span>` : ''}
+                                </div>
+                            </div>
+                            <button class="btn-buy" style="margin-top: 15px;" onclick="openCheckout('${i.id}', '${i.price}', ${i.isPOD}, '${i.content}')">
+                                <i data-lucide="zap" size="16"></i> BUY NOW
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // --- SEARCH LOGIC ---
+        function richSearch() {
+            const q = document.getElementById('global-search').value.toLowerCase();
+            const filtered = allItems.filter(i => 
+                i.content.toLowerCase().includes(q) || 
+                i.price.toString().includes(q) ||
+                i.uName.toLowerCase().includes(q)
+            );
+            renderItems(filtered);
+        }
+
+        // --- PAYMENT LOGIC ---
+        function openCheckout(id, price, pod, desc) {
+            activeTransaction = { id, price, desc };
+            document.getElementById('check-item-name').innerText = desc.substring(0, 30) + "...";
+            document.getElementById('check-item-price').innerText = "₦" + parseFloat(price).toLocaleString();
+            document.getElementById('pod-option-container').classList.toggle('hidden', !pod);
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
+        function payWithPaystack() {
+            const handler = PaystackPop.setup({
+                key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxx', // Replace with your Public Key
+                email: user.email,
+                amount: activeTransaction.price * 100, // Amount in kobo
+                currency: 'NGN',
+                callback: function(response) {
+                    finalizeOrder('PAID_ONLINE', response.reference);
+                },
+                onClose: function() { alert('Transaction Cancelled'); }
+            });
+            handler.openIframe();
+        }
+
+        async function finalizeOrder(method, ref = 'N/A') {
+            const addr = document.getElementById('delivery-addr').value;
+            if(!addr) return alert("Please enter delivery address");
+
+            await db.collection("orders").add({
+                itemId: activeTransaction.id,
+                buyer: user.name,
+                buyerPhone: user.phone,
+                amount: activeTransaction.price,
+                method: method,
+                address: addr,
+                reference: ref,
+                status: "Pending",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            alert("Order Placed Successfully! Method: " + method);
+            closeCheckout();
         }
     </script>
 </body>
