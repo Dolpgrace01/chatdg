@@ -21,9 +21,6 @@
         body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
         .hidden { display: none !important; }
 
-        /* --- LANDING --- */
-        #landing-page { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; }
-        
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(12px); padding: 18px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
 
@@ -37,86 +34,93 @@
         .liked { color: var(--danger) !important; fill: var(--danger); }
 
         /* --- COMMENTS --- */
-        .comment-box { padding: 0 20px 20px; font-size: 0.85rem; }
+        .comment-box { padding: 0 20px 10px; font-size: 0.85rem; }
         .comment-item { margin-top: 8px; line-height: 1.4; }
         .comment-item b { color: var(--primary); margin-right: 5px; }
-        .view-more { color: var(--primary); cursor: pointer; font-weight: 700; margin-top: 10px; display: block; font-size: 0.75rem; }
-        .comment-input-wrap { display: flex; gap: 10px; padding: 10px 20px; border-top: 1px dotted var(--border); }
-        .comment-input-wrap input { background: transparent; border: none; font-size: 0.85rem; padding: 5px; margin: 0; }
+        .comment-input-wrap { display: flex; gap: 10px; padding: 10px 20px; border-top: 1px dotted var(--border); align-items: center; }
+        .comment-input-wrap input { flex: 1; background: transparent; border: none; font-size: 0.85rem; color: white; outline: none; }
 
-        /* --- CHAT --- */
-        #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; flex-direction: column; }
-        .msg-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 80%; padding: 12px 16px; border-radius: 22px; font-size: 0.9rem; }
-        .sent { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; }
-        .received { align-self: flex-start; background: #334155; border-bottom-left-radius: 4px; }
+        /* --- PROFILE & REVIEWS --- */
+        .stat-badge { background: rgba(99, 102, 241, 0.1); padding: 10px 15px; border-radius: 15px; border: 1px solid var(--border); text-align: center; }
+        .review-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); }
+        .stars { color: var(--gold); display: flex; gap: 2px; }
 
         .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 18px; font-weight: 800; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-link { color: var(--text); opacity: 0.4; transition: 0.3s; cursor: pointer; }
         .nav-link.active { color: var(--primary); opacity: 1; }
-        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; outline: none; }
     </style>
 </head>
 <body>
 
     <div id="landing-page">
         <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 10px;">DG <span style="color:var(--primary)">HUB</span></h1>
-        <p style="opacity: 0.6; margin-bottom: 40px;">Elite Trade & High-End Chat</p>
-        <button class="btn-main" style="width: 250px;" onclick="enterApp()">GET STARTED</button>
+        <button class="btn-main" style="width: 200px;" onclick="enterApp()">ENTER</button>
     </div>
 
     <div id="auth-gate" class="hidden" style="position: fixed; inset: 0; z-index: 8000; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 20px;">
-        <div style="background:var(--card); padding:30px; border-radius:32px; width:100%; max-width:400px; text-align:center;">
-            <h2 id="auth-title">ELITE ACCESS</h2>
-            <div id="reg-fields"><input type="text" id="reg-user" placeholder="Username"><input type="tel" id="reg-phone" placeholder="Phone Number"></div>
-            <div id="log-fields" class="hidden"><input type="text" id="log-user" placeholder="Username"></div>
-            <input type="password" id="auth-pass" placeholder="Password">
+        <div style="background:var(--card); padding:30px; border-radius:32px; width:100%; max-width:400px;">
+            <div id="reg-fields"><input type="text" id="reg-user" placeholder="Username" style="width:100%; padding:12px; margin-bottom:10px;"><input type="tel" id="reg-phone" placeholder="Phone" style="width:100%; padding:12px;"></div>
+            <input type="password" id="auth-pass" placeholder="Password" style="width:100%; padding:12px; margin:10px 0;">
             <button class="btn-main" onclick="handleAuth()">PROCEED</button>
-            <p onclick="toggleAuth()" style="color:var(--primary); font-size:0.8rem; margin-top:15px; cursor:pointer;">Switch Login/Signup</p>
         </div>
     </div>
 
-    <header>
-        <b>DG <span style="color:var(--primary)">HUB</span></b>
-        <div style="display:flex; gap:15px;"><i data-lucide="shopping-bag" style="color:var(--gold)"></i><i data-lucide="bell"></i></div>
-    </header>
+    <header><b>DG HUB</b><i data-lucide="bell"></i></header>
 
     <div class="container">
         <section id="tab-home">
             <div style="background:var(--card); padding:20px; border-radius:28px; border:1px solid var(--border); margin-bottom:20px;">
-                <textarea id="post-text" placeholder="Share your listing..." style="background:transparent; border:none; color:white; width:100%; outline:none;"></textarea>
-                <div id="preview-row" style="display:flex; gap:10px; margin:10px 0; overflow-x:auto;"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="color:var(--primary); cursor:pointer; font-size:0.8rem; font-weight:700;"><i data-lucide="image"></i> Photos
-                        <input type="file" id="post-img-input" class="hidden" accept="image/*" multiple onchange="prePostImages(this)">
-                    </label>
-                    <button class="btn-main" onclick="submitPost()" style="width:auto; padding:10px 30px;">Post</button>
+                <textarea id="post-text" placeholder="Post a luxury item..." style="background:transparent; border:none; color:white; width:100%; outline:none; height:60px;"></textarea>
+                <div id="preview-row" style="display:flex; gap:10px; overflow-x:auto;"></div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <label style="color:var(--primary); cursor:pointer;"><i data-lucide="image"></i><input type="file" class="hidden" multiple onchange="prePostImages(this)"></label>
+                    <button class="btn-main" onclick="submitPost()" style="width:auto; padding:8px 25px;">Post</button>
                 </div>
             </div>
             <div id="feed"></div>
         </section>
 
-        <section id="tab-chat" class="hidden">
-            <h3 style="margin-bottom:15px;">Elite Members</h3>
-            <div id="directory" style="display:flex; gap:12px; overflow-x:auto; padding-bottom:15px;"></div>
-            <h3 style="margin:20px 0 15px;">Conversations</h3>
-            <div id="inbox"></div>
-        </section>
-
         <section id="tab-profile" class="hidden">
-            <div style="text-align:center; padding:40px 0;">
-                <img id="my-pic" style="width:110px; height:110px; border-radius:35px; border:4px solid var(--primary);">
-                <h2 id="my-name" style="margin-top:15px;"></h2>
-                <button class="btn-main" onclick="logout()" style="background:var(--danger); width:150px; margin-top:30px;">LOGOUT</button>
+            <div id="profile-content">
+                <div style="text-align:center; padding:20px 0;">
+                    <img id="p-img" style="width:100px; height:100px; border-radius:30px; border:3px solid var(--primary);">
+                    <h2 id="p-name" style="margin-top:10px;">User</h2>
+                    <div id="p-stars" class="stars" style="justify-content:center; margin:10px 0;"></div>
+                    
+                    <div style="display:flex; justify-content:center; gap:15px; margin-top:20px;">
+                        <div class="stat-badge"><b id="p-post-count">0</b><br><small>Posts</small></div>
+                        <div class="stat-badge"><b id="p-avg-rating">0.0</b><br><small>Rating</small></div>
+                    </div>
+                </div>
+
+                <div id="review-input-zone" class="hidden" style="margin-top:20px; background:var(--card); padding:20px; border-radius:20px; border:1px solid var(--border);">
+                    <h4>Leave a Review</h4>
+                    <select id="rev-rating" style="width:100%; padding:10px; margin:10px 0; border-radius:10px; background:#1e293b; color:white; border:none;">
+                        <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ Good</option>
+                        <option value="3">⭐⭐⭐ Average</option>
+                        <option value="2">⭐⭐ Fair</option>
+                        <option value="1">⭐ Poor</option>
+                    </select>
+                    <textarea id="rev-text" placeholder="Write your feedback..." style="width:100%; background:#1e293b; border:none; color:white; padding:10px; border-radius:10px;"></textarea>
+                    <button class="btn-main" style="margin-top:10px; padding:10px;" onclick="submitReview()">Submit Review</button>
+                </div>
+
+                <h3 style="margin:30px 0 15px;">User Reviews</h3>
+                <div id="reviews-list"></div>
+                
+                <button class="btn-main" onclick="logout()" style="background:var(--danger); margin-top:30px;">SIGN OUT</button>
             </div>
         </section>
+
+        <section id="tab-chat" class="hidden"><div id="directory" style="display:flex; gap:10px; overflow-x:auto;"></div><div id="inbox" style="margin-top:20px;"></div></section>
     </div>
 
     <div id="chat-view" class="hidden">
-        <header><i data-lucide="chevron-left" onclick="toggleChat(false)"></i><div style="flex:1; margin-left:15px;"><b id="c-user-name">User</b></div><div id="c-call-btn" style="color:var(--accent);"><i data-lucide="phone"></i></div></header>
+        <header><i data-lucide="chevron-left" onclick="toggleChat(false)"></i><b id="c-user-name">Chat</b><div></div></header>
         <div class="msg-container" id="c-msg-box"></div>
-        <div style="padding:20px; background:var(--bg);"><div style="background:var(--card); border-radius:20px; padding:5px 15px; display:flex; align-items:center; gap:10px;"><label style="cursor:pointer; opacity:0.6;"><i data-lucide="camera"></i><input type="file" class="hidden" accept="image/*" onchange="sendChatImage(this)"></label><input type="text" id="c-input" placeholder="Message..."><button onclick="sendText()" style="background:var(--primary); border:none; padding:8px; border-radius:12px; color:white;"><i data-lucide="send" size="18"></i></button></div></div>
+        <div style="padding:15px;"><div style="background:var(--card); border-radius:20px; display:flex; align-items:center; padding:5px 15px;"><input type="text" id="c-input" placeholder="Message..." style="flex:1; background:transparent; border:none; color:white; padding:10px;"><i data-lucide="send" onclick="sendText()" style="color:var(--primary);"></i></div></div>
     </div>
 
     <nav class="bottom-nav">
@@ -126,98 +130,53 @@
     </nav>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCwoZU08nKIh0EtMbUwiANjDwQOnF6BHw0",
-            authDomain: "dolpgrace-103ad.firebaseapp.com",
-            projectId: "dolpgrace-103ad",
-            storageBucket: "dolpgrace-103ad.firebasestorage.app",
-            messagingSenderId: "512869929238",
-            appId: "1:512869929238:web:a4b00ebcdb5341b24c8037"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyCwoZU08nKIh0EtMbUwiANjDwQOnF6BHw0", authDomain: "dolpgrace-103ad.firebaseapp.com", projectId: "dolpgrace-103ad", storageBucket: "dolpgrace-103ad.firebasestorage.app", messagingSenderId: "512869929238", appId: "1:512869929238:web:a4b00ebcdb5341b24c8037" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         let user = JSON.parse(localStorage.getItem('urban_user'));
-        let isLogin = false;
         let postImgs = [];
-        let activeCID = null;
-        let expandedPosts = new Set();
+        let viewUserId = null; // To track whose profile we are looking at
 
-        function enterApp() { 
-            document.getElementById('landing-page').classList.add('hidden');
-            if(!user) document.getElementById('auth-gate').classList.remove('hidden');
-        }
-
-        function toggleAuth() {
-            isLogin = !isLogin;
-            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
-            document.getElementById('log-fields').classList.toggle('hidden', !isLogin);
-        }
-
+        // --- AUTH & CORE ---
+        function enterApp() { document.getElementById('landing-page').classList.add('hidden'); if(!user) document.getElementById('auth-gate').classList.remove('hidden'); }
         async function handleAuth() {
+            const name = document.getElementById('reg-user').value;
             const pass = document.getElementById('auth-pass').value;
-            if(isLogin) {
-                const name = document.getElementById('log-user').value;
-                const snap = await db.collection("users").where("name","==",name).where("password","==",pass).get();
-                if(snap.empty) return alert("Fail");
-                user = snap.docs[0].data();
-            } else {
-                const name = document.getElementById('reg-user').value;
-                const phone = document.getElementById('reg-phone').value;
-                user = { name, phone, password: pass, id: "DG"+Math.random().toString(36).substr(2,4), pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
-                await db.collection("users").doc(user.id).set(user);
-            }
+            user = { name, id: "DG"+Math.random().toString(36).substr(2,4), pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`, phone: document.getElementById('reg-phone').value, password: pass };
+            await db.collection("users").doc(user.id).set(user);
             localStorage.setItem('urban_user', JSON.stringify(user));
             location.reload();
         }
 
-        function prePostImages(input) {
-            postImgs = [];
-            const row = document.getElementById('preview-row'); row.innerHTML = "";
-            Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => { postImgs.push(e.target.result); row.innerHTML += `<img src="${e.target.result}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;">`; };
-                reader.readAsDataURL(file);
-            });
-        }
-
+        // --- POSTING & FEED ---
+        function prePostImages(input) { postImgs = []; Array.from(input.files).forEach(f => { const r = new FileReader(); r.onload = (e) => { postImgs.push(e.target.result); }; r.readAsDataURL(f); }); }
         async function submitPost() {
-            const txt = document.getElementById('post-text').value;
-            if(!txt && postImgs.length === 0) return;
-            await db.collection("posts").add({
-                uName: user.name, uPic: user.pic, uId: user.id,
-                content: txt, images: postImgs, likes: [], 
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await db.collection("posts").add({ uName: user.name, uId: user.id, uPic: user.pic, content: document.getElementById('post-text').value, images: postImgs, likes: [], timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             location.reload();
         }
 
         db.collection("posts").orderBy("timestamp","desc").onSnapshot(snap => {
             const f = document.getElementById('feed'); f.innerHTML = "";
             snap.forEach(doc => {
-                const p = doc.data();
-                const pid = doc.id;
-                const isLiked = (p.likes || []).includes(user?.id);
-                
+                const p = doc.data(); const pid = doc.id;
                 f.innerHTML += `
                 <div class="post-card">
-                    <div style="padding:15px; display:flex; gap:10px; align-items:center;">
-                        <img src="${p.uPic}" style="width:30px; height:30px; border-radius:50%;">
-                        <b>${p.uName}</b>
+                    <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                        <div onclick="openProfile('${p.uId}')" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                            <img src="${p.uPic}" style="width:30px; height:30px; border-radius:50%;"><b>${p.uName}</b>
+                        </div>
+                        ${p.uId === user.id ? `<i data-lucide="trash-2" size="18" style="color:var(--danger); cursor:pointer;" onclick="deletePost('${pid}')"></i>` : ''}
                     </div>
                     <div class="media-scroll">${(p.images || []).map(img => `<img src="${img}">`).join('')}</div>
-                    <div style="padding:15px;">${p.content}</div>
-                    
                     <div class="post-actions">
-                        <div class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${pid}')">
-                            <i data-lucide="heart" style="${isLiked ? 'fill:var(--danger)' : ''}"></i> ${(p.likes || []).length}
-                        </div>
+                        <div class="action-btn" onclick="toggleLike('${pid}')"><i data-lucide="heart"></i> ${(p.likes || []).length}</div>
                         <div class="action-btn" onclick="openChat('${p.uId}','${p.uName}')"><i data-lucide="message-circle"></i> Chat</div>
                     </div>
-
                     <div class="comment-box" id="cbox-${pid}"></div>
                     <div class="comment-input-wrap">
-                        <input type="text" id="cin-${pid}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter') addComment('${pid}')">
+                        <input type="text" id="cin-${pid}" placeholder="Comment...">
+                        <i data-lucide="send" size="18" style="color:var(--primary); cursor:pointer;" onclick="addComment('${pid}')"></i>
                     </div>
                 </div>`;
                 renderComments(pid);
@@ -225,97 +184,70 @@
             lucide.createIcons();
         });
 
-        async function toggleLike(pid) {
-            const ref = db.collection("posts").doc(pid);
-            const doc = await ref.get();
-            const likes = doc.data().likes || [];
-            if(likes.includes(user.id)) ref.update({ likes: firebase.firestore.FieldValue.arrayRemove(user.id) });
-            else ref.update({ likes: firebase.firestore.FieldValue.arrayUnion(user.id) });
-        }
+        async function deletePost(pid) { if(confirm("Delete this post?")) await db.collection("posts").doc(pid).delete(); }
 
-        async function addComment(pid) {
-            const inp = document.getElementById('cin-'+pid);
-            if(!inp.value) return;
-            await db.collection("posts").doc(pid).collection("comments").add({
-                uName: user.name, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            inp.value = "";
-        }
+        // --- PROFILE & REVIEWS LOGIC ---
+        async function openProfile(uid) {
+            viewUserId = uid;
+            tab('profile');
+            const target = (await db.collection("users").doc(uid).get()).data();
+            document.getElementById('p-name').innerText = target.name;
+            document.getElementById('p-img').src = target.pic;
+            
+            // Show/Hide Review Input (Don't review yourself)
+            document.getElementById('review-input-zone').classList.toggle('hidden', uid === user.id);
+            
+            // Load Post Count
+            const postSnap = await db.collection("posts").where("uId","==",uid).get();
+            document.getElementById('p-post-count').innerText = postSnap.size;
 
-        function renderComments(pid) {
-            db.collection("posts").doc(pid).collection("comments").orderBy("timestamp","desc").onSnapshot(snap => {
-                const container = document.getElementById('cbox-'+pid);
-                if(!container) return;
-                const all = snap.docs.map(d => d.data());
-                const isExpanded = expandedPosts.has(pid);
-                const visible = isExpanded ? all : all.slice(0, 3);
-                
-                container.innerHTML = visible.map(c => `
-                    <div class="comment-item"><b>${c.uName}</b> ${c.text}</div>
-                `).join('');
-
-                if(all.length > 3 && !isExpanded) {
-                    container.innerHTML += `<span class="view-more" onclick="expandComments('${pid}')">View all ${all.length} comments</span>`;
-                }
-            });
-        }
-
-        function expandComments(pid) { expandedPosts.add(pid); renderComments(pid); }
-
-        async function openChat(tid, tname) {
-            if(tid === user.id) return;
-            activeCID = [user.id, tid].sort().join("_");
-            document.getElementById('c-user-name').innerText = tname;
-            toggleChat(true);
-            db.collection("chats").doc(activeCID).collection("messages").orderBy("timestamp").onSnapshot(snap => {
-                const box = document.getElementById('c-msg-box'); box.innerHTML = "";
+            // Load Reviews & Avg Rating
+            db.collection("users").doc(uid).collection("reviews").onSnapshot(snap => {
+                const rList = document.getElementById('reviews-list'); rList.innerHTML = "";
+                let total = 0;
                 snap.forEach(d => {
-                    const m = d.data();
-                    box.innerHTML += `<div class="bubble ${m.sender === user.id ? 'sent' : 'received'}">${m.text || ''} ${m.img ? `<img src="${m.img}" style="width:100%; border-radius:10px; margin-top:5px;">` : ''}</div>`;
+                    const r = d.data();
+                    total += parseInt(r.rating);
+                    rList.innerHTML += `<div class="review-card"><b>${r.from}</b> <div class="stars">${'⭐'.repeat(r.rating)}</div><p style="margin-top:5px; opacity:0.8;">${r.text}</p></div>`;
                 });
-                box.scrollTop = box.scrollHeight;
+                const avg = snap.size > 0 ? (total / snap.size).toFixed(1) : "0.0";
+                document.getElementById('p-avg-rating').innerText = avg;
+                document.getElementById('p-stars').innerHTML = '⭐'.repeat(Math.round(avg));
             });
         }
 
-        async function sendText() {
-            const val = document.getElementById('c-input').value;
-            if(!val) return;
-            await db.collection("chats").doc(activeCID).collection("messages").add({ text: val, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            document.getElementById('c-input').value = "";
+        async function submitReview() {
+            const rating = document.getElementById('rev-rating').value;
+            const text = document.getElementById('rev-text').value;
+            if(!text) return;
+            await db.collection("users").doc(viewUserId).collection("reviews").add({ from: user.name, rating, text, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('rev-text').value = "";
         }
 
-        async function sendChatImage(input) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                await db.collection("chats").doc(activeCID).collection("messages").add({ img: e.target.result, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            };
-            reader.readAsDataURL(file);
-        }
-
+        // --- HELPERS ---
         function tab(t) {
             ['home','chat','profile'].forEach(id => { document.getElementById('tab-'+id).classList.add('hidden'); document.getElementById('n-'+id).classList.remove('active'); });
             document.getElementById('tab-'+t).classList.remove('hidden'); document.getElementById('n-'+t).classList.add('active');
+            if(t === 'profile' && !viewUserId) openProfile(user.id);
             if(t === 'chat') loadDir();
         }
 
-        async function loadDir() {
-            const snap = await db.collection("users").get();
-            const d = document.getElementById('directory'); d.innerHTML = "";
-            snap.forEach(doc => {
-                const u = doc.data(); if(u.id === user.id) return;
-                d.innerHTML += `<div onclick="openChat('${u.id}','${u.name}')" style="text-align:center;"><img src="${u.pic}" style="width:50px;height:50px;border-radius:15px;border:2px solid var(--primary);"><br><small>${u.name}</small></div>`;
+        async function addComment(pid) {
+            const val = document.getElementById('cin-'+pid).value;
+            if(!val) return;
+            await db.collection("posts").doc(pid).collection("comments").add({ uName: user.name, text: val, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('cin-'+pid).value = "";
+        }
+
+        function renderComments(pid) {
+            db.collection("posts").doc(pid).collection("comments").orderBy("timestamp","desc").limit(3).onSnapshot(snap => {
+                const b = document.getElementById('cbox-'+pid); b.innerHTML = "";
+                snap.forEach(d => { b.innerHTML += `<div class="comment-item"><b>${d.data().uName}</b> ${d.data().text}</div>`; });
             });
         }
 
-        function toggleChat(s) { document.getElementById('chat-view').classList.toggle('hidden', !s); }
         function logout() { localStorage.clear(); location.reload(); }
-
-        if(user) { 
-            enterApp(); 
-            document.getElementById('my-name').innerText = user.name;
-            document.getElementById('my-pic').src = user.pic;
-        }
+        if(user) enterApp();
         lucide.createIcons();
     </script>
 </body>
