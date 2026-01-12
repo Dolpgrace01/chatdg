@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG ELITE | Community Edition</title>
+    <title>DG ELITE | Live Global Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
         :root {
             --bg: #f8fafc; --card: #ffffff; --text: #0f172a;
@@ -34,7 +40,6 @@
 
         /* --- POSTS --- */
         .post-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .post-img { width: 100%; max-height: 400px; object-fit: cover; }
         .interaction-bar { display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
         .action-item { display: flex; align-items: center; gap: 5px; cursor: pointer; transition: 0.2s; }
         .action-item:active { transform: scale(0.9); }
@@ -42,7 +47,7 @@
         /* --- CHAT VIEW --- */
         #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; }
         .msg-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 75%; padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; position: relative; }
+        .bubble { max-width: 75%; padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; }
         .sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .received { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 2px; }
 
@@ -74,7 +79,7 @@
     <div class="container">
         <section id="tab-home">
             <div style="background: var(--card); border-radius: 24px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border);">
-                <textarea id="post-text" placeholder="Share a post..." rows="2" style="border:none; background:transparent; resize:none;"></textarea>
+                <textarea id="post-text" placeholder="Share something with the world..." rows="2" style="border:none; background:transparent; resize:none;"></textarea>
                 <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:10px;">
                     <i data-lucide="image" style="color:var(--primary); cursor:pointer;"></i>
                     <button onclick="addMyPost()" style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:20px; font-weight:700;">Post</button>
@@ -85,7 +90,9 @@
 
         <section id="tab-chat" class="hidden">
             <h2 style="margin-bottom: 20px;">Messages</h2>
-            <div id="inbox-list"></div>
+            <div id="inbox-list" style="text-align: center; opacity: 0.5; padding-top: 50px;">
+                <p>Select a user from a post to start chatting live.</p>
+            </div>
         </section>
 
         <section id="tab-profile" class="hidden">
@@ -107,32 +114,46 @@
         <div class="msg-display" id="msg-container"></div>
         <div style="padding:15px; background:var(--card); display:flex; gap:10px;">
             <input type="text" id="chat-input" placeholder="Type a message..." style="margin:0">
-            <button onclick="sendMsg()" style="background:var(--primary); color:white; border:none; width:45px; border-radius:12px;"><i data-lucide="send" size="18"></i></button>
+            <button onclick="sendLiveMsg()" style="background:var(--primary); color:white; border:none; width:45px; border-radius:12px;"><i data-lucide="send" size="18"></i></button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-link active" onclick="switchTab('home', this)"><i data-lucide="home"></i></div>
-        <div class="nav-link" onclick="switchTab('chat', this)"><i data-lucide="message-circle"></i></div>
-        <div class="nav-link" onclick="switchTab('profile', this)"><i data-lucide="user"></i></div>
+        <div class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
+        <div class="nav-link" id="nav-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i></div>
+        <div class="nav-link" id="nav-profile" onclick="switchTab('profile')"><i data-lucide="user"></i></div>
     </nav>
 
     <script>
-        lucide.createIcons();
-        let currentUser = JSON.parse(localStorage.getItem('dg_user')) || null;
-        
-        // MOCK DATA TO SIMULATE OTHER USERS
-        const mockPosts = [
-            { id: 101, user: "Alex_Tech", dgId: "DG-K9X2-1102", content: "Selling this clean iPhone 15 Pro. DM for price!", price: "950" },
-            { id: 102, user: "Sarah_M", dgId: "DG-P4Q1-8832", content: "Does anyone know if the DG-Elite meetup is still happening?" },
-            { id: 103, user: "CryptoKing", dgId: "DG-Z0X9-4421", content: "Market is looking green today! 🚀", price: "0" }
-        ];
+        // --- 1. FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentUser = JSON.parse(localStorage.getItem('dg_user')) || null;
+        let activeChatId = null;
+
+        // --- 2. AUTHENTICATION ---
         function login() {
             const name = document.getElementById('reg-name').value;
             const phone = document.getElementById('reg-phone').value;
-            if(!name || !phone) return;
-            currentUser = { name, phone, id: "DG-" + Math.random().toString(36).substring(2,6).toUpperCase() + "-" + phone.slice(-4) };
+            if(!name || !phone) return alert("Please fill in your details.");
+            
+            currentUser = { 
+                name, 
+                phone, 
+                id: "DG-" + Math.random().toString(36).substring(2,6).toUpperCase() + "-" + phone.slice(-4) 
+            };
             localStorage.setItem('dg_user', JSON.stringify(currentUser));
             location.reload();
         }
@@ -142,22 +163,31 @@
             location.reload();
         }
 
-        if(currentUser) {
-            document.getElementById('auth-gate').classList.add('hidden');
-            document.getElementById('my-badge').innerText = currentUser.id;
-            document.getElementById('prof-user').innerText = currentUser.name;
-            document.getElementById('prof-id').innerText = currentUser.id;
-            document.getElementById('prof-circle').innerText = currentUser.name[0].toUpperCase();
-            loadFeed();
+        // --- 3. LIVE FEED ENGINE ---
+        function listenToGlobalFeed() {
+            db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                const feed = document.getElementById('global-feed');
+                feed.innerHTML = ""; 
+                snapshot.forEach((doc) => {
+                    const post = doc.data();
+                    feed.innerHTML += createPostHTML(post.userName, post.userId, post.content, post.price);
+                });
+                lucide.createIcons();
+            });
         }
 
-        function loadFeed() {
-            const feed = document.getElementById('global-feed');
-            // Show mock posts + any user posts
-            mockPosts.forEach(post => {
-                feed.innerHTML += createPostHTML(post.user, post.dgId, post.content, post.price);
+        async function addMyPost() {
+            const text = document.getElementById('post-text').value;
+            if(!text) return;
+
+            await db.collection("posts").add({
+                userName: currentUser.name,
+                userId: currentUser.id,
+                content: text,
+                price: 0,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            lucide.createIcons();
+            document.getElementById('post-text').value = '';
         }
 
         function createPostHTML(user, id, content, price) {
@@ -166,53 +196,83 @@
                     <div style="padding:15px; display:flex; align-items:center; gap:10px;">
                         <div style="width:35px; height:35px; background:var(--primary); color:white; border-radius:10px; display:grid; place-items:center; font-weight:800;">${user[0]}</div>
                         <div style="flex:1"><div style="font-weight:700; font-size:0.85rem;">${user}</div><div style="font-size:0.7rem; opacity:0.5">${id}</div></div>
-                        ${price > 0 ? `<div style="background:var(--accent); color:white; padding:4px 10px; border-radius:8px; font-weight:bold; font-size:0.8rem;">$${price}</div>` : ''}
                     </div>
                     <div style="padding:15px; font-size:0.95rem;">${content}</div>
                     <div class="interaction-bar">
-                        <div class="action-item" onclick="this.style.color='var(--danger)'"><i data-lucide="heart" size="18"></i> Like</div>
-                        <div class="action-item" onclick="toggleChat(true, '${id}')"><i data-lucide="message-circle" size="18"></i> Chat</div>
-                        <div class="action-item" onclick="alert('Calling ${id}...')"><i data-lucide="phone" size="18"></i> Call</div>
+                        <div class="action-item"><i data-lucide="heart" size="18"></i> Like</div>
+                        <div class="action-item" onclick="startChat('${id}')"><i data-lucide="message-circle" size="18"></i> Chat</div>
+                        <div class="action-item" onclick="alert('Calling...')"><i data-lucide="phone" size="18"></i> Call</div>
                     </div>
                 </div>`;
         }
 
-        function addMyPost() {
-            const text = document.getElementById('post-text').value;
-            const price = document.getElementById('post-price')?.value || 0;
-            if(!text) return;
-            const html = createPostHTML(currentUser.name, currentUser.id, text, price);
-            document.getElementById('global-feed').insertAdjacentHTML('afterbegin', html);
-            document.getElementById('post-text').value = '';
-            lucide.createIcons();
+        // --- 4. LIVE MESSAGING ENGINE ---
+        function startChat(targetId) {
+            if(targetId === currentUser.id) return alert("You can't chat with yourself!");
+            // Create a unique ID for the conversation between two users
+            activeChatId = [currentUser.id, targetId].sort().join("_");
+            document.getElementById('chat-header-title').innerText = targetId;
+            toggleChat(true);
+            listenToMessages();
         }
 
-        function switchTab(tab, el) {
-            document.getElementById('tab-home').classList.add('hidden');
-            document.getElementById('tab-chat').classList.add('hidden');
-            document.getElementById('tab-profile').classList.add('hidden');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            el.classList.add('active');
+        function listenToMessages() {
+            db.collection("chats").doc(activeChatId).collection("messages")
+              .orderBy("timestamp")
+              .onSnapshot(snap => {
+                  const container = document.getElementById('msg-container');
+                  container.innerHTML = "";
+                  snap.forEach(doc => {
+                      const m = doc.data();
+                      const side = m.senderId === currentUser.id ? 'sent' : 'received';
+                      container.innerHTML += `<div class="bubble ${side}">${m.text}</div>`;
+                  });
+                  container.scrollTop = container.scrollHeight;
+              });
         }
 
-        function toggleChat(show, target = "") {
-            document.getElementById('chat-view').classList.toggle('hidden', !show);
-            if(target) document.getElementById('chat-header-title').innerText = target;
-        }
+        async function sendLiveMsg() {
+            const text = document.getElementById('chat-input').value;
+            if(!text || !activeChatId) return;
 
-        function sendMsg() {
-            const val = document.getElementById('chat-input').value;
-            if(!val) return;
-            document.getElementById('msg-container').innerHTML += `<div class="bubble sent">${val}</div>`;
+            await db.collection("chats").doc(activeChatId).collection("messages").add({
+                text: text,
+                senderId: currentUser.id,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
             document.getElementById('chat-input').value = '';
-            document.getElementById('msg-container').scrollTop = 9999;
+        }
+
+        // --- 5. UI UTILITIES ---
+        function switchTab(tab) {
+            const tabs = ['home', 'chat', 'profile'];
+            tabs.forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).classList.remove('active');
+            });
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.getElementById('nav-' + tab).classList.add('active');
+        }
+
+        function toggleChat(show) {
+            document.getElementById('chat-view').classList.toggle('hidden', !show);
         }
 
         function toggleTheme() {
             const b = document.body;
             b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
+
+        // Initialization
+        if(currentUser) {
+            document.getElementById('auth-gate').classList.add('hidden');
+            document.getElementById('my-badge').innerText = currentUser.id;
+            document.getElementById('prof-user').innerText = currentUser.name;
+            document.getElementById('prof-id').innerText = currentUser.id;
+            document.getElementById('prof-circle').innerText = currentUser.name[0].toUpperCase();
+            listenToGlobalFeed();
+        }
+        lucide.createIcons();
     </script>
 </body>
 </html>
