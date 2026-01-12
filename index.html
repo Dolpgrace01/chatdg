@@ -1,127 +1,282 @@
-<div id="messages-page" class="hidden">
-    <div class="chat-header-main">
-        <h2 style="margin-bottom: 15px;">Messages</h2>
-        <div class="search-bar">
-            <input type="text" placeholder="Search DG-IDs..." id="chat-search">
-        </div>
-    </div>
-    
-    <div id="inbox-list">
-        <div class="chat-thread" onclick="openPrivateChat('DG-ADMIN-0001')">
-            <div class="avatar" style="background: var(--primary);">A</div>
-            <div class="thread-info">
-                <div class="thread-user">DG-Support (Official)</div>
-                <div class="thread-msg">Welcome to DG Elite! How can we help?</div>
-            </div>
-            <div class="thread-time">12:40</div>
-        </div>
-    </div>
-</div>
-
-<div id="private-chat-window" class="hidden">
-    <div class="chat-top-bar">
-        <i data-lucide="chevron-left" onclick="closeChat()"></i>
-        <div id="chat-target-id" style="font-weight: 800;">DG-ID</div>
-        <i data-lucide="phone" onclick="initiateCall()"></i>
-    </div>
-    <div id="chat-messages-display">
-        </div>
-    <div class="chat-input-area">
-        <input type="text" id="msg-input" placeholder="Type a message...">
-        <button onclick="sendMsg()"><i data-lucide="send"></i></button>
-    </div>
-</div>
-
-<style>
-    /* --- NEW CHAT STYLES --- */
-    #messages-page { animation: slideIn 0.3s ease; }
-    
-    .chat-thread {
-        display: flex; align-items: center; gap: 15px;
-        padding: 15px; background: var(--card); border-radius: 18px;
-        margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer;
-    }
-    
-    .avatar { width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center; color: white; font-weight: 800; }
-    
-    .thread-info { flex: 1; }
-    .thread-user { font-weight: 700; font-size: 0.95rem; }
-    .thread-msg { font-size: 0.8rem; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
-    .thread-time { font-size: 0.7rem; opacity: 0.5; }
-
-    /* PRIVATE CHAT WINDOW (FULLSCREEN MOBILE) */
-    #private-chat-window {
-        position: fixed; inset: 0; background: var(--bg); z-index: 2001;
-        display: flex; flex-direction: column;
-    }
-    
-    .chat-top-bar {
-        padding: 15px; background: var(--glass); backdrop-filter: blur(10px);
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid var(--border);
-    }
-
-    #chat-messages-display {
-        flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
-    }
-
-    .msg-bubble {
-        max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem;
-    }
-    .msg-sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .msg-received { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
-
-    .chat-input-area {
-        padding: 15px; background: var(--card); border-top: 1px solid var(--border);
-        display: flex; gap: 10px;
-    }
-    
-    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-</style>
-
-<script>
-    // --- NAVIGATION LOGIC ---
-    function showTab(tabName) {
-        // Hide all major sections
-        document.getElementById('timeline').parentElement.classList.add('hidden');
-        document.getElementById('messages-page').classList.add('hidden');
-        
-        // Remove active class from icons
-        document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
-
-        if(tabName === 'home') {
-            document.getElementById('timeline').parentElement.classList.remove('hidden');
-            document.querySelector('[data-lucide="home"]').classList.add('active');
-        } else if(tabName === 'messages') {
-            document.getElementById('messages-page').classList.remove('hidden');
-            document.querySelector('[data-lucide="message-circle"]').classList.add('active');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DG ELITE | Secure Social Commerce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #f8fafc; --card: #ffffff; --text: #0f172a;
+            --primary: #4f46e5; --accent: #10b981; --border: #e2e8f0;
+            --glass: rgba(255, 255, 255, 0.9); --danger: #ef4444;
         }
-    }
+        [data-theme="dark"] {
+            --bg: #020617; --card: #1e293b; --text: #f8fafc;
+            --primary: #818cf8; --accent: #34d399; --border: #334155;
+            --glass: rgba(15, 23, 42, 0.9);
+        }
 
-    // --- CHAT LOGIC ---
-    function openPrivateChat(id) {
-        document.getElementById('chat-target-id').innerText = id;
-        document.getElementById('private-chat-window').classList.remove('hidden');
-        // Initial mock messages
-        const display = document.getElementById('chat-messages-display');
-        display.innerHTML = `<div class="msg-bubble msg-received">Hi! Is the item still available?</div>`;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s, color 0.2s; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
 
-    function closeChat() {
-        document.getElementById('private-chat-window').classList.add('hidden');
-    }
+        /* --- AUTHENTICATION GATE --- */
+        #auth-gate {
+            position: fixed; inset: 0; background: var(--bg); z-index: 5000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-card {
+            background: var(--card); padding: 35px; border-radius: 30px; border: 1px solid var(--border);
+            width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+        }
 
-    function sendMsg() {
-        const input = document.getElementById('msg-input');
-        if(!input.value) return;
-        
-        const display = document.getElementById('chat-messages-display');
-        display.innerHTML += `<div class="msg-bubble msg-sent">${input.value}</div>`;
-        input.value = '';
-        display.scrollTop = display.scrollHeight;
-    }
+        /* --- UI KIT --- */
+        input, textarea {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 14px;
+            border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none;
+        }
+        .btn-main {
+            width: 100%; padding: 16px; background: var(--primary); color: white;
+            border: none; border-radius: 14px; font-weight: 800; cursor: pointer;
+        }
 
-    // Update Bottom Nav Event Listeners
-    document.querySelector('[data-lucide="home"]').parentElement.onclick = () => showTab('home');
-    document.querySelector('[data-lucide="message-circle"]').parentElement.onclick = () => showTab('messages');
-</script>
+        /* --- HEADER --- */
+        header {
+            position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(15px);
+            padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary); }
+        .dg-badge { font-size: 0.7rem; font-weight: 800; background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; }
+
+        /* --- CONTENT AREAS --- */
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+        .hidden { display: none !important; }
+
+        /* --- FEED STYLES --- */
+        .create-box { background: var(--card); border-radius: 24px; padding: 18px; border: 1px solid var(--border); margin-bottom: 25px; }
+        .post-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; }
+        .post-img { width: 100%; object-fit: cover; max-height: 450px; }
+        .price-tag { background: var(--accent); color: white; padding: 5px 12px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; }
+
+        /* --- MESSAGING STYLES --- */
+        .thread { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 20px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .thread:hover { background: var(--card); }
+        .avatar { width: 50px; height: 50px; border-radius: 16px; background: var(--primary); display: grid; place-items: center; color: white; font-weight: 800; font-size: 1.2rem; }
+
+        #chat-window { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; }
+        .msg-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; }
+        .sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .received { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+
+        /* --- CALLING OVERLAY --- */
+        #call-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 4000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
+        }
+        .call-btn { width: 70px; height: 70px; border-radius: 50%; border: none; display: grid; place-items: center; color: white; cursor: pointer; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass);
+            backdrop-filter: blur(15px); display: flex; justify-content: space-around;
+            padding: 15px; border-top: 1px solid var(--border); z-index: 1000;
+        }
+        .nav-link { color: var(--text); opacity: 0.4; cursor: pointer; }
+        .nav-link.active { color: var(--primary); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-gate">
+        <div class="auth-card">
+            <h1 style="text-align: center; margin-bottom: 10px;">DG <span>ELITE</span></h1>
+            <p style="text-align: center; font-size: 0.8rem; opacity: 0.6; margin-bottom: 20px;">Secure Mobile Commerce Portal</p>
+            <input type="text" id="reg-name" placeholder="Full Name">
+            <input type="email" id="reg-email" placeholder="Gmail Address">
+            <input type="tel" id="reg-phone" placeholder="Phone Number">
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button class="btn-main" onclick="initApp()">Create DG Identity</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">DG <span>ELITE</span></div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i data-lucide="sun" id="theme-icon" onclick="toggleTheme()" style="cursor:pointer"></i>
+            <div class="dg-badge" id="user-display-id">DG-XXXX</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="home-tab">
+            <div class="create-box">
+                <textarea id="post-input" placeholder="What are you selling today?" rows="2"></textarea>
+                <img id="img-preview" style="width:100%; border-radius:15px; margin-bottom:10px; display:none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="cursor: pointer; color: var(--primary);">
+                        <i data-lucide="image"></i>
+                        <input type="file" class="hidden" accept="image/*" onchange="handleImage(event)">
+                    </label>
+                    <input type="number" id="post-price" placeholder="$ Price" style="width: 80px; margin: 0;">
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="addPost()">Post</button>
+                </div>
+            </div>
+            <div id="timeline"></div>
+        </section>
+
+        <section id="msg-tab" class="hidden">
+            <h2 style="margin-bottom: 20px;">Conversations</h2>
+            <div id="inbox">
+                <div class="thread" onclick="openChat('DG-SUPPORT-SYS')">
+                    <div class="avatar" style="background: var(--accent);">S</div>
+                    <div style="flex:1">
+                        <div style="font-weight:700">DG Support</div>
+                        <div style="font-size:0.8rem; opacity:0.6">Encrypted connection active.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="chat-window" class="hidden">
+        <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px;">
+            <i data-lucide="arrow-left" onclick="closeChat()"></i>
+            <div id="chat-title" style="font-weight:800; flex:1">Chat</div>
+            <i data-lucide="phone" onclick="startCall()" style="color:var(--accent)"></i>
+        </div>
+        <div class="msg-display" id="msg-display"></div>
+        <div style="padding: 15px; display:flex; gap:10px; background:var(--card)">
+            <input type="text" id="chat-input" placeholder="Type a message..." style="margin:0">
+            <button class="btn-main" style="width:auto" onclick="sendMessage()"><i data-lucide="send"></i></button>
+        </div>
+    </div>
+
+    <div id="call-overlay" class="hidden">
+        <div class="avatar" style="width:100px; height:100px; font-size:2rem; margin-bottom:20px;">DG</div>
+        <h2 id="call-name">Calling...</h2>
+        <p style="opacity:0.6; margin-bottom:40px;">End-to-end Encrypted</p>
+        <button class="call-btn" style="background:var(--danger)" onclick="endCall()"><i data-lucide="phone-off"></i></button>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-link active" onclick="switchTab('home', this)"><i data-lucide="home"></i></div>
+        <div class="nav-link" onclick="switchTab('msg', this)"><i data-lucide="message-circle"></i></div>
+        <div class="nav-link" onclick="alert('Profile settings coming soon!')"><i data-lucide="user"></i></div>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+        let user = {};
+        let currentImgData = null;
+
+        // 1. AUTH & INITIALIZATION
+        function initApp() {
+            const name = document.getElementById('reg-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            if(!name || !phone) return alert("Fill required info!");
+
+            const id = "DG-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + phone.slice(-4);
+            user = { name, phone, id };
+            
+            document.getElementById('user-display-id').innerText = id;
+            document.getElementById('auth-gate').style.display = 'none';
+            
+            // Welcome Post
+            addPost("System Initialized. Welcome to DG Elite.", 0);
+        }
+
+        // 2. THEME TOGGLE
+        function toggleTheme() {
+            const b = document.body;
+            const isDark = b.getAttribute('data-theme') === 'dark';
+            b.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        // 3. IMAGE HANDLING
+        function handleImage(e) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const preview = document.getElementById('img-preview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+                currentImgData = reader.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        // 4. POSTING LOGIC
+        function addPost(customTxt = null, customPrice = null) {
+            const text = customTxt || document.getElementById('post-input').value;
+            const price = customPrice !== null ? customPrice : document.getElementById('post-price').value;
+            if(!text && !currentImgData) return;
+
+            const postHTML = `
+                <div class="post-card">
+                    <div style="padding:15px; display:flex; align-items:center; gap:10px;">
+                        <div class="avatar" style="width:35px; height:35px; font-size:0.8rem; border-radius:10px;">${user.name[0]}</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700; font-size:0.85rem;">${user.name}</div>
+                            <div style="font-size:0.7rem; opacity:0.5">${user.id}</div>
+                        </div>
+                        ${price > 0 ? `<div class="price-tag">$${price}</div>` : ''}
+                    </div>
+                    ${currentImgData ? `<img src="${currentImgData}" class="post-img">` : ''}
+                    <div style="padding:15px; font-size:0.95rem;">${text}</div>
+                    <div style="padding:12px; display:flex; justify-content:space-around; border-top:1px solid var(--border); opacity:0.7; font-weight:700; font-size:0.8rem;">
+                        <div style="cursor:pointer" onclick="this.style.color='var(--danger)'"><i data-lucide="heart" size="16"></i> Like</div>
+                        <div style="cursor:pointer" onclick="openChat('${user.id}')"><i data-lucide="message-square" size="16"></i> Chat</div>
+                        <div style="cursor:pointer" onclick="startCall('${user.name}')"><i data-lucide="phone" size="16"></i> Call</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('timeline').insertAdjacentHTML('afterbegin', postHTML);
+            lucide.createIcons();
+
+            // Clear inputs
+            document.getElementById('post-input').value = '';
+            document.getElementById('post-price').value = '';
+            document.getElementById('img-preview').style.display = 'none';
+            currentImgData = null;
+        }
+
+        // 5. CHAT & TABS
+        function switchTab(tab, el) {
+            document.getElementById('home-tab').classList.add('hidden');
+            document.getElementById('msg-tab').classList.add('hidden');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(tab + '-tab').classList.remove('hidden');
+            el.classList.add('active');
+        }
+
+        function openChat(id) {
+            document.getElementById('chat-title').innerText = id;
+            document.getElementById('chat-window').classList.remove('hidden');
+        }
+
+        function closeChat() { document.getElementById('chat-window').classList.add('hidden'); }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            document.getElementById('msg-display').innerHTML += `<div class="bubble sent">${input.value}</div>`;
+            input.value = '';
+            const d = document.getElementById('msg-display');
+            d.scrollTop = d.scrollHeight;
+        }
+
+        // 6. CALLS
+        function startCall(target = "User") {
+            document.getElementById('call-name').innerText = "Calling " + target + "...";
+            document.getElementById('call-overlay').classList.remove('hidden');
+        }
+        function endCall() { document.getElementById('call-overlay').classList.add('hidden'); }
+    </script>
+</body>
+</html>
