@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olb | Social & Voice</title>
+    <title>Olb | Streamlined Timeline</title>
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@800&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,195 +13,186 @@
             --border: #2f3336;
             --text-main: #eff3f4;
             --text-dim: #71767b;
-            --glass: rgba(0, 0, 0, 0.7);
         }
 
         body { margin: 0; background: var(--bg); color: var(--text-main); font-family: 'Montserrat', sans-serif; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
-        .container { display: flex; width: 100%; max-width: 1250px; height: 100%; }
-
-        /* Left Navigation */
-        nav.sidebar { width: 275px; padding: 10px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-        .logo { font-family: 'Bodoni Moda'; font-size: 2.2rem; color: var(--gold); padding: 15px; }
-        .nav-item { display: flex; align-items: center; gap: 20px; padding: 12px 20px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; }
-        .nav-item:hover { background: #16181c; }
-
-        /* Center Timeline */
-        main.timeline { flex-grow: 1; max-width: 600px; border-right: 1px solid var(--border); overflow-y: auto; position: relative; }
-        .timeline-header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(12px); padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--border); z-index: 10; }
-
-        /* Post Creation */
-        .post-box { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; background: #222; flex-shrink: 0; overflow: hidden; }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
         
+        /* Sidebar - Now a Slim Nexus */
+        nav.nexus-sidebar { 
+            width: 80px; 
+            padding: 20px 0; 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+        }
+        
+        .logo { font-family: 'Bodoni Moda'; font-size: 1.5rem; color: var(--gold); margin-bottom: 30px; }
+
+        .nexus-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.3);
+        }
+        .nexus-btn:hover { transform: rotate(90deg); background: #e2bc77; }
+
+        /* Hidden Navigation Overlay */
+        #nav-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+        }
+        .overlay-link {
+            font-family: 'Bodoni Moda';
+            font-size: 3rem;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+            letter-spacing: 5px;
+        }
+        .overlay-link:hover { color: var(--gold); transform: scale(1.1); }
+        .close-overlay { position: absolute; top: 40px; right: 40px; color: var(--gold); font-size: 2rem; cursor: pointer; }
+
+        /* Timeline Main Area */
+        main.timeline { flex-grow: 1; max-width: 700px; border-right: 1px solid var(--border); overflow-y: auto; }
+        .timeline-header { position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 20px; font-weight: 700; border-bottom: 1px solid var(--border); z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Post Box */
+        .post-box { padding: 25px; border-bottom: 1px solid var(--border); display: flex; gap: 20px; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #222; flex-shrink: 0; }
         .input-wrap { flex-grow: 1; }
-        textarea { width: 100%; background: transparent; border: none; color: white; font-size: 1.2rem; resize: none; outline: none; font-family: inherit; }
+        textarea { width: 100%; background: transparent; border: none; color: white; font-size: 1.3rem; resize: none; outline: none; font-family: inherit; }
         
-        #media-preview { margin-top: 10px; display: none; border-radius: 15px; overflow: hidden; border: 1px solid var(--border); position: relative; }
-        #media-preview img, #media-preview video { width: 100%; display: block; }
-        .remove-media { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .post-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .icon-btns { color: var(--gold); display: flex; gap: 25px; font-size: 1.2rem; }
+        .post-btn { background: var(--gold); color: black; border: none; padding: 12px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; }
 
-        .post-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-        .icon-btns { color: var(--gold); display: flex; gap: 20px; font-size: 1.1rem; }
-        .icon-btns label { cursor: pointer; transition: 0.2s; }
-        .icon-btns label:hover { opacity: 0.7; }
-        .post-btn { background: var(--gold); color: black; border: none; padding: 10px 24px; border-radius: 25px; font-weight: 700; cursor: pointer; }
-
-        /* Post Display */
-        .tweet { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; }
-        .tweet-content { flex-grow: 1; }
-        .tweet-name { font-weight: 700; font-size: 0.95rem; }
-        .tweet-handle { color: var(--text-dim); font-weight: 400; margin-left: 5px; }
-        .tweet-text { margin-top: 5px; line-height: 1.5; }
-        .tweet-media { margin-top: 12px; border-radius: 15px; border: 1px solid var(--border); overflow: hidden; max-height: 500px; }
-        .tweet-media img, .tweet-media video { width: 100%; object-fit: cover; }
-
-        /* Floating Messenger Area */
-        #msg-window { 
-            position: fixed; bottom: 0; right: 30px; width: 350px; 
-            background: var(--bg); border: 1px solid var(--border); 
-            border-radius: 16px 16px 0 0; display: flex; flex-direction: column; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.6); z-index: 100;
-            transform: translateY(380px); transition: 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        /* Messenger Docked */
+        #msg-dock {
+            position: fixed; bottom: 0; right: 40px; width: 340px;
+            background: #16181c; border: 1px solid var(--border);
+            border-radius: 15px 15px 0 0;
         }
-        #msg-window.open { transform: translateY(0); }
-        .msg-header { 
-            padding: 12px 18px; background: #16181c; border-radius: 16px 16px 0 0; 
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
-        .msg-header-info { display: flex; align-items: center; gap: 10px; font-weight: 700; }
-        .call-btn { color: var(--gold); font-size: 1.1rem; margin-right: 15px; cursor: pointer; }
-
-        .msg-body { height: 320px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .msg-content { height: 0; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+        .msg-content.open { height: 400px; }
+        .msg-body { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; }
-        .bubble.sent { align-self: flex-end; background: var(--gold); color: black; border-bottom-right-radius: 2px; }
-        .bubble.received { align-self: flex-start; background: #2f3336; border-bottom-left-radius: 2px; }
-
-        .msg-input-box { padding: 15px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-        .msg-input-box input { flex-grow: 1; background: #202327; border: none; color: white; padding: 10px 15px; border-radius: 20px; outline: none; }
-        .send-icon-btn { color: var(--gold); font-size: 1.2rem; cursor: pointer; border: none; background: none; }
+        .bubble.sent { align-self: flex-end; background: var(--gold); color: black; }
+        .bubble.received { align-self: flex-start; background: #2f3336; }
+        
+        .msg-input { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .msg-input input { flex-grow: 1; background: #000; border: none; color: white; padding: 12px; border-radius: 20px; outline: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <nav class="sidebar">
-            <div class="logo">OLB</div>
-            <div class="nav-item"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</div>
-            <div class="nav-item"><i class="fas fa-hashtag"></i>&nbsp;&nbsp;Explore</div>
-            <div class="nav-item"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Messages</div>
-            <div class="nav-item"><i class="fas fa-user"></i>&nbsp;&nbsp;Profile</div>
-        </nav>
-
-        <main class="timeline">
-            <div class="timeline-header">Home Timeline</div>
-            
-            <div class="post-box">
-                <div class="avatar"><img src="https://ui-avatars.com/api/?name=Me&background=C5A059&color=000" id="myAvatar"></div>
-                <div class="input-wrap">
-                    <textarea id="postText" rows="1" placeholder="What's on your mind?"></textarea>
-                    
-                    <div id="media-preview">
-                        <div class="remove-media" onclick="clearMedia()"><i class="fas fa-times"></i></div>
-                        <div id="preview-content"></div>
-                    </div>
-
-                    <div class="post-actions">
-                        <div class="icon-btns">
-                            <label><i class="far fa-image"></i><input type="file" id="fileInput" hidden accept="image/*,video/*" onchange="previewMedia(event)"></label>
-                            <label><i class="fas fa-video"></i></label>
-                            <label><i class="far fa-smile"></i></label>
-                        </div>
-                        <button class="post-btn" onclick="submitPost()">Post</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="feed">
-                </div>
-        </main>
+    <div id="nav-overlay">
+        <i class="fas fa-times close-overlay" onclick="toggleNexus()"></i>
+        <a href="portal.html" class="overlay-link">HOME</a>
+        <a href="explore.html" class="overlay-link">EXPLORE</a>
+        <a href="messages.html" class="overlay-link">MESSAGES</a>
+        <a href="profile.html" class="overlay-link">PROFILE</a>
     </div>
 
-    <div id="msg-window">
-        <div class="msg-header" onclick="document.getElementById('msg-window').classList.toggle('open')">
-            <div class="msg-header-info">
-                <div class="avatar" style="width:30px; height:30px;"><img src="https://ui-avatars.com/api/?name=Master+Tailor"></div>
-                <span>Master Tailor</span>
+    <nav class="nexus-sidebar">
+        <div class="logo">OLB</div>
+        <div class="nexus-btn" onclick="toggleNexus()" title="Open Navigation">
+            <i class="fas fa-plus"></i>
+        </div>
+    </nav>
+
+    <main class="timeline">
+        <div class="timeline-header">
+            <span>The Feed</span>
+            <i class="fas fa-sparkles" style="color: var(--gold);"></i>
+        </div>
+        
+        <div class="post-box">
+            <div class="avatar"></div>
+            <div class="input-wrap">
+                <textarea id="postText" rows="1" placeholder="Share your latest creation..."></textarea>
+                <div class="post-actions">
+                    <div class="icon-btns">
+                        <i class="far fa-image"></i>
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <button class="post-btn" onclick="submitPost()">Post</button>
+                </div>
             </div>
+        </div>
+
+        <div id="feed">
+            </div>
+    </main>
+
+    <div id="msg-dock">
+        <div class="msg-header" onclick="toggleMsg()">
+            <span style="font-weight: 700;"><i class="fas fa-circle" style="color: #10b981; font-size: 0.6rem;"></i> Master Tailor</span>
             <div>
-                <i class="fas fa-phone-alt call-btn" onclick="alert('Starting encrypted voice call...')"></i>
-                <i class="fas fa-chevron-up"></i>
+                <i class="fas fa-phone-alt" style="color: var(--gold); margin-right: 15px;"></i>
+                <i class="fas fa-chevron-up" id="msg-icon"></i>
             </div>
         </div>
-        <div class="msg-body" id="msg-body">
-            <div class="bubble received">The fittings are scheduled for tomorrow at 10 AM.</div>
-        </div>
-        <div class="msg-input-box">
-            <input type="text" id="msgInput" placeholder="Start a message..." onkeypress="if(event.key==='Enter') sendDM()">
-            <button class="send-icon-btn" onclick="sendDM()"><i class="fas fa-paper-plane"></i></button>
+        <div class="msg-content" id="msg-content">
+            <div class="msg-body" id="msg-body">
+                <div class="bubble received">Welcome back to the Atelier.</div>
+            </div>
+            <div class="msg-input">
+                <input type="text" id="msgInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendDM()">
+                <button onclick="sendDM()" style="background: none; border: none; color: var(--gold); font-size: 1.2rem; cursor: pointer;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        const user = localStorage.getItem('currentUser') || "Student";
-        let currentMedia = null;
-
-        function previewMedia(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            currentMedia = file;
-            const reader = new FileReader();
-            const previewWrap = document.getElementById('media-preview');
-            const previewContent = document.getElementById('preview-content');
-
-            reader.onload = function(e) {
-                previewWrap.style.display = 'block';
-                if (file.type.startsWith('image/')) {
-                    previewContent.innerHTML = `<img src="${e.target.result}">`;
-                } else {
-                    previewContent.innerHTML = `<video src="${e.target.result}" controls></video>`;
-                }
-            }
-            reader.readAsDataURL(file);
+        function toggleNexus() {
+            const overlay = document.getElementById('nav-overlay');
+            overlay.style.display = (overlay.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        function clearMedia() {
-            currentMedia = null;
-            document.getElementById('media-preview').style.display = 'none';
-            document.getElementById('fileInput').value = '';
+        function toggleMsg() {
+            const content = document.getElementById('msg-content');
+            const icon = document.getElementById('msg-icon');
+            content.classList.toggle('open');
+            icon.classList.toggle('fa-chevron-down');
         }
 
         function submitPost() {
             const text = document.getElementById('postText').value;
+            if(!text.trim()) return;
             const feed = document.getElementById('feed');
-            if (!text && !currentMedia) return;
-
-            let mediaHTML = '';
-            if (currentMedia) {
-                const mediaURL = document.querySelector('#preview-content img, #preview-content video').src;
-                mediaHTML = `<div class="tweet-media">${currentMedia.type.startsWith('image/') ? `<img src="${mediaURL}">` : `<video src="${mediaURL}" controls></video>`}</div>`;
-            }
-
-            const postHTML = `
-                <div class="tweet">
-                    <div class="avatar"><img src="https://ui-avatars.com/api/?name=${user}&background=C5A059&color=000"></div>
-                    <div class="tweet-content">
-                        <div class="tweet-name">${user} <span class="tweet-handle">@${user.toLowerCase()} · now</span></div>
-                        <div class="tweet-text">${text}</div>
-                        ${mediaHTML}
+            const post = `
+                <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px;">
+                    <div class="avatar" style="background: var(--gold)"></div>
+                    <div>
+                        <div style="font-weight: 700;">${localStorage.getItem('currentUser') || 'User'}</div>
+                        <div style="margin-top: 5px;">${text}</div>
                     </div>
-                </div>
-            `;
-            feed.insertAdjacentHTML('afterbegin', postHTML);
+                </div>`;
+            feed.insertAdjacentHTML('afterbegin', post);
             document.getElementById('postText').value = '';
-            clearMedia();
         }
 
         function sendDM() {
             const input = document.getElementById('msgInput');
             const body = document.getElementById('msg-body');
-            if (!input.value.trim()) return;
-
+            if(!input.value.trim()) return;
             body.innerHTML += `<div class="bubble sent">${input.value}</div>`;
             input.value = '';
             body.scrollTop = body.scrollHeight;
