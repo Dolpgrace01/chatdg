@@ -2,200 +2,194 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olb | Streamlined Timeline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Olb | Master Stream</title>
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@800&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --gold: #C5A059;
             --bg: #000000;
-            --border: #2f3336;
-            --text-main: #eff3f4;
-            --text-dim: #71767b;
+            --card: #111111;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #FFFFFF;
+            --text-dim: #888888;
+            --nav-height: 70px;
         }
 
-        body { margin: 0; background: var(--bg); color: var(--text-main); font-family: 'Montserrat', sans-serif; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar - Now a Slim Nexus */
-        nav.nexus-sidebar { 
-            width: 80px; 
-            padding: 20px 0; 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; background: var(--bg); color: var(--text-main); 
+            font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
         }
-        
-        .logo { font-family: 'Bodoni Moda'; font-size: 1.5rem; color: var(--gold); margin-bottom: 30px; }
 
-        .nexus-btn {
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            background: var(--gold);
-            color: black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: 0.3s;
-            box-shadow: 0 0 15px rgba(197, 160, 89, 0.3);
+        /* --- APP HEADER --- */
+        header {
+            height: 60px; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
+            position: fixed; top: 0; width: 100%; z-index: 100;
         }
-        .nexus-btn:hover { transform: rotate(90deg); background: #e2bc77; }
+        .logo { font-family: 'Bodoni Moda'; font-size: 1.5rem; color: var(--gold); letter-spacing: 2px; }
 
-        /* Hidden Navigation Overlay */
-        #nav-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
+        /* --- VIEW CONTAINER --- */
+        .view-container {
+            height: calc(100vh - var(--nav-height) - 60px);
+            margin-top: 60px; overflow-y: auto;
+            display: none; padding: 15px;
+            scroll-behavior: smooth;
         }
-        .overlay-link {
-            font-family: 'Bodoni Moda';
-            font-size: 3rem;
-            color: white;
-            text-decoration: none;
-            transition: 0.3s;
-            letter-spacing: 5px;
+        .view-container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- TIMELINE (POSTS) --- */
+        .post-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 16px; margin-bottom: 15px;
         }
-        .overlay-link:hover { color: var(--gold); transform: scale(1.1); }
-        .close-overlay { position: absolute; top: 40px; right: 40px; color: var(--gold); font-size: 2rem; cursor: pointer; }
+        .post-header { display: flex; gap: 12px; margin-bottom: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; border: 1px solid var(--gold); }
+        .post-user { font-weight: 700; font-size: 0.9rem; }
+        .post-handle { color: var(--text-dim); font-size: 0.75rem; display: block; }
+        .post-content { font-size: 0.95rem; line-height: 1.5; color: #e1e1e1; }
+        .post-media { margin-top: 12px; border-radius: 12px; width: 100%; border: 1px solid var(--border); }
 
-        /* Timeline Main Area */
-        main.timeline { flex-grow: 1; max-width: 700px; border-right: 1px solid var(--border); overflow-y: auto; }
-        .timeline-header { position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 20px; font-weight: 700; border-bottom: 1px solid var(--border); z-index: 10; display: flex; justify-content: space-between; align-items: center; }
-
-        /* Post Box */
-        .post-box { padding: 25px; border-bottom: 1px solid var(--border); display: flex; gap: 20px; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #222; flex-shrink: 0; }
-        .input-wrap { flex-grow: 1; }
-        textarea { width: 100%; background: transparent; border: none; color: white; font-size: 1.3rem; resize: none; outline: none; font-family: inherit; }
-        
-        .post-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-        .icon-btns { color: var(--gold); display: flex; gap: 25px; font-size: 1.2rem; }
-        .post-btn { background: var(--gold); color: black; border: none; padding: 12px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; }
-
-        /* Messenger Docked */
-        #msg-dock {
-            position: fixed; bottom: 0; right: 40px; width: 340px;
-            background: #16181c; border: 1px solid var(--border);
-            border-radius: 15px 15px 0 0;
+        /* --- CHATS (ACTIVE USERS) --- */
+        .user-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px; background: var(--card); border-radius: 12px;
+            margin-bottom: 10px; border: 1px solid transparent; transition: 0.2s;
         }
-        .msg-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .msg-content { height: 0; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
-        .msg-content.open { height: 400px; }
-        .msg-body { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; }
-        .bubble.sent { align-self: flex-end; background: var(--gold); color: black; }
-        .bubble.received { align-self: flex-start; background: #2f3336; }
-        
-        .msg-input { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-        .msg-input input { flex-grow: 1; background: #000; border: none; color: white; padding: 12px; border-radius: 20px; outline: none; }
+        .user-row:active { border-color: var(--gold); background: #1a1a1a; }
+        .status-badge { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
+
+        /* --- BOTTOM NAVIGATION --- */
+        nav.bottom-dock {
+            position: fixed; bottom: 0; width: 100%; height: var(--nav-height);
+            background: rgba(10, 10, 10, 0.95);
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center;
+            padding-bottom: 15px; /* Space for home indicator on mobile */
+            z-index: 100;
+        }
+        .nav-btn {
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dim); cursor: pointer; transition: 0.3s;
+            position: relative;
+        }
+        .nav-btn i { font-size: 1.4rem; margin-bottom: 4px; }
+        .nav-btn span { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-btn.active { color: var(--gold); }
+        .nav-btn.active::after {
+            content: ''; position: absolute; top: -12px; width: 20px; height: 2px;
+            background: var(--gold); border-radius: 2px;
+        }
+
+        /* --- ACTION BUTTON (POST) --- */
+        .fab {
+            position: fixed; bottom: 90px; right: 20px;
+            width: 56px; height: 56px; background: var(--gold);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: black; font-size: 1.5rem;
+            box-shadow: 0 8px 20px rgba(197, 160, 89, 0.4);
+            z-index: 90;
+        }
+
+        /* Utils */
+        ::-webkit-scrollbar { width: 0px; }
     </style>
 </head>
 <body>
 
-    <div id="nav-overlay">
-        <i class="fas fa-times close-overlay" onclick="toggleNexus()"></i>
-        <a href="portal.html" class="overlay-link">HOME</a>
-        <a href="explore.html" class="overlay-link">EXPLORE</a>
-        <a href="messages.html" class="overlay-link">MESSAGES</a>
-        <a href="profile.html" class="overlay-link">PROFILE</a>
+    <header>
+        <div class="logo">OLB</div>
+        <i class="fas fa-search" style="color: var(--text-dim)"></i>
+    </header>
+
+    <div id="home-view" class="view-container">
+        <h2 style="font-family: 'Bodoni Moda'; color: var(--gold);">Welcome, Master</h2>
+        <div style="padding: 40px 20px; text-align: center; background: var(--card); border-radius: 20px;">
+            <i class="fas fa-crown" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
+            <p style="opacity: 0.7;">The Atelier is synchronized. Your bespoke sessions are ready for review.</p>
+        </div>
     </div>
 
-    <nav class="nexus-sidebar">
-        <div class="logo">OLB</div>
-        <div class="nexus-btn" onclick="toggleNexus()" title="Open Navigation">
-            <i class="fas fa-plus"></i>
+    <div id="timeline-view" class="view-container active">
+        <div id="post-feed">
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="avatar"></div>
+                    <div>
+                        <span class="post-user">Master Tailor Segun</span>
+                        <span class="post-handle">@segun_atelier • 2h</span>
+                    </div>
+                </div>
+                <div class="post-content">The New Collection '26 has officially hit the archive. Explore the high-resolution captures now.</div>
+                <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=800" class="post-media" alt="post">
+            </div>
+        </div>
+    </div>
+
+    <div id="chats-view" class="view-container">
+        <h3 style="margin-bottom: 20px; font-size: 0.9rem; color: var(--text-dim);">ACTIVE NODES</h3>
+        <div class="user-row" onclick="startChat('Vector_402')">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="avatar" style="width:35px; height:35px;"></div>
+                <span style="font-weight: 600;">Vector_Link_402</span>
+            </div>
+            <div class="status-badge"></div>
+        </div>
+        <div class="user-row">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="avatar" style="width:35px; height:35px; border-color: transparent;"></div>
+                <span style="font-weight: 600;">Cyber_Ghost_22</span>
+            </div>
+            <div class="status-badge"></div>
+        </div>
+    </div>
+
+    <div class="fab" onclick="alert('Open Post Creator')">
+        <i class="fas fa-feather-alt"></i>
+    </div>
+
+    <nav class="bottom-dock">
+        <div class="nav-btn" onclick="switchView('home-view', this)">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-btn active" onclick="switchView('timeline-view', this)">
+            <i class="fas fa-stream"></i>
+            <span>Timeline</span>
+        </div>
+        <div class="nav-btn" onclick="switchView('chats-view', this)">
+            <i class="fas fa-comment-dots"></i>
+            <span>Chats</span>
         </div>
     </nav>
 
-    <main class="timeline">
-        <div class="timeline-header">
-            <span>The Feed</span>
-            <i class="fas fa-sparkles" style="color: var(--gold);"></i>
-        </div>
-        
-        <div class="post-box">
-            <div class="avatar"></div>
-            <div class="input-wrap">
-                <textarea id="postText" rows="1" placeholder="Share your latest creation..."></textarea>
-                <div class="post-actions">
-                    <div class="icon-btns">
-                        <i class="far fa-image"></i>
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <button class="post-btn" onclick="submitPost()">Post</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="feed">
-            </div>
-    </main>
-
-    <div id="msg-dock">
-        <div class="msg-header" onclick="toggleMsg()">
-            <span style="font-weight: 700;"><i class="fas fa-circle" style="color: #10b981; font-size: 0.6rem;"></i> Master Tailor</span>
-            <div>
-                <i class="fas fa-phone-alt" style="color: var(--gold); margin-right: 15px;"></i>
-                <i class="fas fa-chevron-up" id="msg-icon"></i>
-            </div>
-        </div>
-        <div class="msg-content" id="msg-content">
-            <div class="msg-body" id="msg-body">
-                <div class="bubble received">Welcome back to the Atelier.</div>
-            </div>
-            <div class="msg-input">
-                <input type="text" id="msgInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendDM()">
-                <button onclick="sendDM()" style="background: none; border: none; color: var(--gold); font-size: 1.2rem; cursor: pointer;">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        function toggleNexus() {
-            const overlay = document.getElementById('nav-overlay');
-            overlay.style.display = (overlay.style.display === 'flex') ? 'none' : 'flex';
+        function switchView(viewId, btn) {
+            // Remove active classes
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            // Set current active
+            document.getElementById(viewId).classList.add('active');
+            btn.classList.add('active');
+
+            // Hide/Show FAB based on view
+            const fab = document.querySelector('.fab');
+            fab.style.display = (viewId === 'timeline-view') ? 'flex' : 'none';
         }
 
-        function toggleMsg() {
-            const content = document.getElementById('msg-content');
-            const icon = document.getElementById('msg-icon');
-            content.classList.toggle('open');
-            icon.classList.toggle('fa-chevron-down');
-        }
+        // Auto-load student name from localStorage
+        const studentName = localStorage.getItem('currentUser') || "Guest";
+        console.log("Logged as: " + studentName);
 
-        function submitPost() {
-            const text = document.getElementById('postText').value;
-            if(!text.trim()) return;
-            const feed = document.getElementById('feed');
-            const post = `
-                <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px;">
-                    <div class="avatar" style="background: var(--gold)"></div>
-                    <div>
-                        <div style="font-weight: 700;">${localStorage.getItem('currentUser') || 'User'}</div>
-                        <div style="margin-top: 5px;">${text}</div>
-                    </div>
-                </div>`;
-            feed.insertAdjacentHTML('afterbegin', post);
-            document.getElementById('postText').value = '';
-        }
-
-        function sendDM() {
-            const input = document.getElementById('msgInput');
-            const body = document.getElementById('msg-body');
-            if(!input.value.trim()) return;
-            body.innerHTML += `<div class="bubble sent">${input.value}</div>`;
-            input.value = '';
-            body.scrollTop = body.scrollHeight;
+        function startChat(user) {
+            alert("Initiating secure connection with " + user);
+            // Link to your dedicated chat page here
         }
     </script>
 </body>
