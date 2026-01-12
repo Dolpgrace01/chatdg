@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG HUB | Elite Marketplace & Chat</title>
+    <title>DG HUB | Elite Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -21,121 +21,125 @@
         body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
         .hidden { display: none !important; }
 
-        /* --- LANDING PAGE --- */
-        #landing-page { 
-            position: fixed; inset: 0; background: var(--bg); z-index: 5000; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            text-align: center; padding: 30px;
-        }
-        .hero-title { font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 20px; }
-        .hero-sub { opacity: 0.6; font-size: 1.1rem; margin-bottom: 40px; max-width: 300px; }
-        .btn-entrance { 
-            padding: 20px 60px; background: var(--primary); color: white; border-radius: 20px; 
-            font-weight: 800; font-size: 1.2rem; border: none; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-        }
-
-        /* --- UI ELEMENTS --- */
+        /* --- LANDING --- */
+        #landing-page { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; }
+        
+        /* --- HEADER & NAV --- */
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(12px); padding: 18px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
-
-        .post-card { background: var(--card); border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; position: relative; }
-        .post-img { width: 100%; max-height: 400px; object-fit: cover; }
-        
-        /* --- COMMENTS --- */
-        .comment-section { background: rgba(0,0,0,0.2); padding: 15px; border-top: 1px solid var(--border); }
-        .comment-input-wrap { display: flex; gap: 10px; margin-bottom: 10px; }
-        .comment-input-wrap input { flex: 1; padding: 10px; border-radius: 12px; background: #1e293b; border: 1px solid var(--border); color: white; font-size: 0.85rem; }
-        .comment-bubble { font-size: 0.8rem; margin-bottom: 8px; opacity: 0.9; }
-
-        /* --- DIRECTORY --- */
-        .user-pill { display: flex; align-items: center; gap: 12px; background: var(--card); padding: 15px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 10px; cursor: pointer; }
-
-        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-link { color: var(--text); opacity: 0.4; transition: 0.3s; cursor: pointer; }
         .nav-link.active { color: var(--primary); opacity: 1; }
-        
+
+        /* --- POSTS --- */
+        .post-card { background: var(--card); border-radius: 28px; margin-bottom: 25px; border: 1px solid var(--border); overflow: hidden; }
+        .media-scroll { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; position: relative; }
+        .media-scroll img { flex: 0 0 100%; width: 100%; height: 380px; object-fit: cover; scroll-snap-align: start; }
+        .post-actions { padding: 12px 20px; display: flex; gap: 20px; border-top: 1px solid var(--border); }
+        .action-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; }
+
+        /* --- CHAT HUB --- */
+        #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; flex-direction: column; }
+        .msg-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 80%; padding: 12px 16px; border-radius: 22px; font-size: 0.9rem; position: relative; }
+        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .received { align-self: flex-start; background: #334155; color: white; border-bottom-left-radius: 4px; }
+        .chat-img { width: 100%; border-radius: 12px; margin-top: 5px; }
+
+        /* --- UTILS --- */
+        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 18px; font-weight: 800; cursor: pointer; }
         input, textarea { width: 100%; padding: 14px; margin: 8px 0; border-radius: 14px; border: 1px solid var(--border); background: #1e293b; color: white; outline: none; }
+        #preview-row { display: flex; gap: 10px; overflow-x: auto; margin: 10px 0; }
+        .thumb { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 2px solid var(--primary); }
     </style>
 </head>
 <body>
 
     <div id="landing-page">
-        <div style="margin-bottom: 20px; color: var(--primary);"><i data-lucide="zap" size="60"></i></div>
-        <h1 class="hero-title">DG <span style="color:var(--primary)">HUB</span></h1>
-        <p class="hero-sub">The elite social marketplace. Chat, trade, and connect with the community instantly.</p>
-        <button class="btn-entrance" onclick="enterApp()">LOGIN TO ENTER</button>
+        <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 10px;">DG <span style="color:var(--primary)">HUB</span></h1>
+        <p style="opacity: 0.6; margin-bottom: 40px;">Luxury Marketplace & Private Chat</p>
+        <button class="btn-main" style="width: 250px;" onclick="enterApp()">GET STARTED</button>
     </div>
 
-    <div id="auth-gate" class="hidden" style="position: fixed; inset: 0; z-index: 4000; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 20px;">
+    <div id="auth-gate" class="hidden" style="position: fixed; inset: 0; z-index: 8000; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 20px;">
         <div style="background:var(--card); padding:30px; border-radius:32px; width:100%; max-width:400px; text-align:center;">
-            <h1 id="auth-title">CREATE <span style="color:var(--primary)">ACCOUNT</span></h1>
-            <div id="register-fields">
+            <h2 id="auth-title" style="margin-bottom:20px;">CREATE ACCOUNT</h2>
+            <div id="reg-fields">
                 <input type="text" id="reg-user" placeholder="Username">
-                <input type="email" id="reg-mail" placeholder="Gmail Address">
-                <input type="tel" id="reg-phone" placeholder="Phone Number">
+                <input type="tel" id="reg-phone" placeholder="Phone (for calls)">
             </div>
-            <div id="login-fields" class="hidden"><input type="text" id="log-user" placeholder="Username"></div>
+            <div id="log-fields" class="hidden"><input type="text" id="log-user" placeholder="Username"></div>
             <input type="password" id="auth-pass" placeholder="Password">
-            <button class="btn-main" onclick="handleAuth()">Enter Elite Hub</button>
-            <span style="color:var(--primary); cursor:pointer; font-size:0.8rem; margin-top:15px; display:block;" onclick="toggleAuthMode()">Already a user? Login</span>
+            <button class="btn-main" onclick="handleAuth()">CONTINUE</button>
+            <p onclick="toggleAuth()" style="color:var(--primary); font-size:0.8rem; margin-top:15px; cursor:pointer;">Switch Login/Signup</p>
         </div>
     </div>
 
     <header>
-        <b style="font-size: 1.3rem;"> DG <span style="color:var(--primary)"> HUB </span></b>
-        <div style="display:flex; gap:15px; align-items: center;">
-            <i data-lucide="shopping-bag" onclick="window.location.href='portal.html'" style="cursor:pointer; color: var(--gold);"></i>
-            <i data-lucide="search" onclick="toggleSearch()" style="cursor:pointer;"></i>
+        <b style="font-size: 1.3rem;">DG HUB</b>
+        <div style="display:flex; gap:15px;">
+            <i data-lucide="shopping-bag" onclick="window.location.href='portal.html'" style="color:var(--gold)"></i>
+            <i data-lucide="bell"></i>
         </div>
     </header>
 
     <div class="container">
         <section id="tab-home">
-            <div style="background:var(--card); padding:20px; border-radius:32px; border:1px solid var(--border); margin-bottom:25px;">
-                <textarea id="post-text" placeholder="Share something with the elite..." style="background:transparent; border:none; color:white;"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <label style="color:var(--primary); cursor:pointer; font-size:0.85rem; font-weight:700;">
-                        <i data-lucide="image"></i> Add Media
-                        <input type="file" id="post-img" class="hidden" accept="image/*" onchange="processImage(this)">
+            <div style="background:var(--card); padding:20px; border-radius:28px; border:1px solid var(--border); margin-bottom:20px;">
+                <textarea id="post-text" placeholder="What are you selling today?" style="background:transparent; border:none;"></textarea>
+                <div id="preview-row"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="color:var(--primary); cursor:pointer; font-size:0.8rem; font-weight:700;">
+                        <i data-lucide="image"></i> Add Photos
+                        <input type="file" id="post-img-input" class="hidden" accept="image/*" multiple onchange="prePostImages(this)">
                     </label>
-                    <button class="btn-main" onclick="createPost()" style="width:auto; padding:10px 25px;">Post</button>
+                    <button class="btn-main" onclick="submitPost()" style="width:auto; padding:10px 30px;">Post</button>
                 </div>
             </div>
-            <div id="feed-container"></div>
+            <div id="feed"></div>
         </section>
 
         <section id="tab-chat" class="hidden">
-            <h3 style="margin-bottom:15px; color: var(--gold);">Elite Directory</h3>
-            <div id="directory-list" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:20px;"></div>
-            
-            <h3 style="margin-bottom:15px;">Recent Conversations</h3>
-            <div id="inbox-list"></div>
+            <h3 style="margin-bottom:15px;">Elite Members</h3>
+            <div id="directory" style="display:flex; gap:12px; overflow-x:auto; padding-bottom:15px;"></div>
+            <h3 style="margin:20px 0 15px;">Your Inbox</h3>
+            <div id="inbox"></div>
         </section>
 
         <section id="tab-profile" class="hidden">
-            <div id="profile-content" style="text-align: center;"></div>
+            <div style="text-align:center; padding:40px 0;">
+                <img id="my-pic" style="width:120px; height:120px; border-radius:40px; border:4px solid var(--primary);">
+                <h2 id="my-name" style="margin-top:15px;"></h2>
+                <button class="btn-main" onclick="logout()" style="background:var(--danger); width:150px; margin-top:30px;">LOGOUT</button>
+            </div>
         </section>
     </div>
 
     <div id="chat-view" class="hidden">
-        <header>
+        <header style="padding:15px 20px; border-bottom:1px solid var(--border);">
             <i data-lucide="chevron-left" onclick="toggleChat(false)"></i>
-            <b id="chat-user-title">Chat</b>
-            <div></div>
+            <div style="flex:1; margin-left:15px;">
+                <b id="c-user-name">User</b><br>
+                <small style="color:var(--accent)">● Online</small>
+            </div>
+            <div id="c-call-btn" style="color:var(--accent); padding:10px;"><i data-lucide="phone"></i></div>
         </header>
-        <div class="msg-container" id="msg-box"></div>
-        <div style="padding:15px; background:var(--card); display:flex; gap:10px;">
-            <input type="text" id="chat-input" placeholder="Message...">
-            <button class="btn-main" onclick="sendMessage()" style="width:50px; margin:0;"><i data-lucide="send" size="18"></i></button>
+        <div class="msg-container" id="c-msg-box"></div>
+        <div style="padding:20px; background:var(--bg);">
+            <div style="background:var(--card); border-radius:20px; padding:5px 15px; display:flex; align-items:center; gap:10px;">
+                <label style="cursor:pointer; opacity:0.6;"><i data-lucide="camera"></i>
+                    <input type="file" class="hidden" accept="image/*" onchange="sendChatImage(this)">
+                </label>
+                <input type="text" id="c-input" placeholder="Message..." style="border:none; background:transparent;">
+                <button onclick="sendText()" style="background:var(--primary); border:none; padding:8px; border-radius:12px; color:white;"><i data-lucide="send" size="18"></i></button>
+            </div>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-link active" id="n-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
-        <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="users"></i></div>
-        <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i></div>
+        <div class="nav-link active" id="n-home" onclick="tab('home')"><i data-lucide="home"></i></div>
+        <div class="nav-link" id="n-chat" onclick="tab('chat')"><i data-lucide="message-square"></i></div>
+        <div class="nav-link" id="n-profile" onclick="tab('profile')"><i data-lucide="user"></i></div>
     </nav>
 
     <script>
@@ -151,152 +155,157 @@
         const db = firebase.firestore();
 
         let user = JSON.parse(localStorage.getItem('urban_user'));
-        let isLoginMode = false;
-        let postBase64 = null;
-        let activeChatId = null;
+        let isLogin = false;
+        let postImgs = [];
+        let activeCID = null;
 
-        // --- LANDING & AUTH ---
-        function enterApp() {
+        function enterApp() { 
             document.getElementById('landing-page').classList.add('hidden');
             if(!user) document.getElementById('auth-gate').classList.remove('hidden');
         }
 
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('register-fields').classList.toggle('hidden', isLoginMode);
-            document.getElementById('login-fields').classList.toggle('hidden', !isLoginMode);
-            document.getElementById('auth-title').innerText = isLoginMode ? "WELCOME BACK" : "CREATE ACCOUNT";
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
+            document.getElementById('log-fields').classList.toggle('hidden', !isLogin);
+            document.getElementById('auth-title').innerText = isLogin ? "WELCOME BACK" : "CREATE ACCOUNT";
         }
 
         async function handleAuth() {
             const pass = document.getElementById('auth-pass').value;
-            if(isLoginMode) {
+            if(isLogin) {
                 const name = document.getElementById('log-user').value;
-                const snap = await db.collection("users").where("name", "==", name).where("password", "==", pass).get();
-                if(snap.empty) return alert("Wrong user/pass");
+                const snap = await db.collection("users").where("name","==",name).where("password","==",pass).get();
+                if(snap.empty) return alert("Fail");
                 user = snap.docs[0].data();
             } else {
                 const name = document.getElementById('reg-user').value;
-                const mail = document.getElementById('reg-mail').value;
                 const phone = document.getElementById('reg-phone').value;
-                user = { name, email: mail, phone, password: pass, id: "DG-"+Date.now().toString().slice(-4), pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
+                user = { name, phone, password: pass, id: "DG"+Math.random().toString(36).substr(2,4), pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
                 await db.collection("users").doc(user.id).set(user);
             }
             localStorage.setItem('urban_user', JSON.stringify(user));
             location.reload();
         }
 
-        // --- POSTS & COMMENTS ---
-        async function createPost() {
-            const txt = document.getElementById('post-text').value;
-            if(!txt && !postBase64) return;
-            await db.collection("posts").add({
-                uName: user.name, uId: user.id, uPic: user.pic,
-                content: txt, image: postBase64, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        function prePostImages(input) {
+            postImgs = [];
+            const row = document.getElementById('preview-row'); row.innerHTML = "";
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    postImgs.push(e.target.result);
+                    row.innerHTML += `<img src="${e.target.result}" class="thumb">`;
+                };
+                reader.readAsDataURL(file);
             });
-            document.getElementById('post-text').value = ""; postBase64 = null;
         }
 
-        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
-            const cont = document.getElementById('feed-container'); cont.innerHTML = "";
+        async function submitPost() {
+            const txt = document.getElementById('post-text').value;
+            if(!txt && postImgs.length === 0) return;
+            await db.collection("posts").add({
+                uName: user.name, uPic: user.pic, uId: user.id,
+                content: txt, images: postImgs, likes: [], 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            location.reload();
+        }
+
+        db.collection("posts").orderBy("timestamp","desc").onSnapshot(snap => {
+            const f = document.getElementById('feed'); f.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                const pid = doc.id;
-                cont.innerHTML += `
+                const isLiked = (p.likes || []).includes(user?.id);
+                f.innerHTML += `
                 <div class="post-card">
-                    <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                        <img src="${p.uPic}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;">
+                    <div style="padding:15px; display:flex; gap:10px; align-items:center;">
+                        <img src="${p.uPic}" style="width:30px; height:30px; border-radius:50%;">
                         <b>${p.uName}</b>
                     </div>
-                    ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
+                    <div class="media-scroll">
+                        ${(p.images || []).map(img => `<img src="${img}">`).join('')}
+                    </div>
                     <div style="padding:15px;">${p.content}</div>
-                    
-                    <div class="comment-section">
-                        <div id="comments-${pid}"></div>
-                        <div class="comment-input-wrap">
-                            <input type="text" id="in-${pid}" placeholder="Add a comment...">
-                            <button onclick="postComment('${pid}')" style="background:none; border:none; color:var(--primary); font-weight:700;">Post</button>
-                        </div>
+                    <div class="post-actions">
+                        <div class="action-btn ${isLiked ? 'color:var(--danger)' : ''}" onclick="like('${doc.id}')"><i data-lucide="heart"></i> ${(p.likes || []).length}</div>
+                        <div class="action-btn" onclick="openChat('${p.uId}','${p.uName}')"><i data-lucide="message-circle"></i> Chat</div>
                     </div>
                 </div>`;
-                loadComments(pid);
             });
             lucide.createIcons();
         });
 
-        async function postComment(pid) {
-            const inp = document.getElementById('in-'+pid);
-            if(!inp.value) return;
-            await db.collection("posts").doc(pid).collection("comments").add({
-                uName: user.name, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            inp.value = "";
-        }
-
-        function loadComments(pid) {
-            db.collection("posts").doc(pid).collection("comments").orderBy("timestamp").onSnapshot(snap => {
-                const cBox = document.getElementById('comments-'+pid);
-                cBox.innerHTML = "";
-                snap.forEach(d => {
-                    const c = d.data();
-                    cBox.innerHTML += `<div class="comment-bubble"><b>${c.uName}</b> ${c.text}</div>`;
-                });
-            });
-        }
-
-        // --- DIRECTORY & CHAT ---
-        async function loadDirectory() {
-            const snap = await db.collection("users").get();
-            const list = document.getElementById('directory-list');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const u = doc.data();
-                if(u.id === user.id) return;
-                list.innerHTML += `
-                    <div onclick="openChat('${u.id}', '${u.name}')" style="text-align:center; flex-shrink:0;">
-                        <img src="${u.pic}" style="width:50px;height:50px;border-radius:15px;border:2px solid var(--primary);">
-                        <p style="font-size:0.7rem; margin-top:5px;">${u.name}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function openChat(tid, tname) {
-            activeChatId = [user.id, tid].sort().join("_");
-            document.getElementById('chat-user-title').innerText = tname;
+        async function openChat(tid, tname) {
+            if(tid === user.id) return;
+            const target = (await db.collection("users").doc(tid).get()).data();
+            activeCID = [user.id, tid].sort().join("_");
+            document.getElementById('c-user-name').innerText = tname;
+            document.getElementById('c-call-btn').onclick = () => window.location.href = `tel:${target.phone}`;
             toggleChat(true);
-            db.collection("chats").doc(activeChatId).collection("messages").orderBy("timestamp").onSnapshot(snap => {
-                const box = document.getElementById('msg-box'); box.innerHTML = "";
-                snap.forEach(d => { const m = d.data(); box.innerHTML += `<div class="bubble ${m.sender === user.id ? 'sent' : 'received'}">${m.text}</div>`; });
+            
+            db.collection("chats").doc(activeCID).collection("messages").orderBy("timestamp").onSnapshot(snap => {
+                const box = document.getElementById('c-msg-box'); box.innerHTML = "";
+                snap.forEach(d => {
+                    const m = d.data();
+                    box.innerHTML += `<div class="bubble ${m.sender === user.id ? 'sent' : 'received'}">
+                        ${m.text ? m.text : ''}
+                        ${m.img ? `<img src="${m.img}" class="chat-img">` : ''}
+                    </div>`;
+                });
                 box.scrollTop = box.scrollHeight;
             });
         }
 
-        async function sendMessage() {
-            const i = document.getElementById('chat-input'); if(!i.value) return;
-            await db.collection("chats").doc(activeChatId).collection("messages").add({
-                text: i.value, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        async function sendText() {
+            const val = document.getElementById('c-input').value;
+            if(!val) return;
+            await db.collection("chats").doc(activeCID).collection("messages").add({
+                text: val, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            i.value = "";
+            document.getElementById('c-input').value = "";
         }
 
-        function switchTab(t) {
+        async function sendChatImage(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                await db.collection("chats").doc(activeCID).collection("messages").add({
+                    img: e.target.result, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function like(pid) {
+            const ref = db.collection("posts").doc(pid);
+            const doc = await ref.get();
+            if(doc.data().likes.includes(user.id)) ref.update({ likes: firebase.firestore.FieldValue.arrayRemove(user.id) });
+            else ref.update({ likes: firebase.firestore.FieldValue.arrayUnion(user.id) });
+        }
+
+        async function loadDir() {
+            const snap = await db.collection("users").get();
+            const d = document.getElementById('directory'); d.innerHTML = "";
+            snap.forEach(doc => {
+                const u = doc.data(); if(u.id === user.id) return;
+                d.innerHTML += `<div onclick="openChat('${u.id}','${u.name}')" style="text-align:center;"><img src="${u.pic}" style="width:50px; height:50px; border-radius:15px; border:2px solid var(--primary);"><br><small>${u.name}</small></div>`;
+            });
+        }
+
+        function tab(t) {
             ['home','chat','profile'].forEach(id => { document.getElementById('tab-'+id).classList.add('hidden'); document.getElementById('n-'+id).classList.remove('active'); });
             document.getElementById('tab-'+t).classList.remove('hidden'); document.getElementById('n-'+t).classList.add('active');
-            if(t === 'chat') loadDirectory();
-        }
-
-        function processImage(input) {
-            const reader = new FileReader();
-            reader.onload = (e) => postBase64 = e.target.result;
-            reader.readAsDataURL(input.files[0]);
+            if(t === 'chat') loadDir();
         }
 
         function toggleChat(s) { document.getElementById('chat-view').classList.toggle('hidden', !s); }
-        
-        if(user) {
-            document.getElementById('landing-page').classList.add('hidden');
-            document.getElementById('auth-gate').classList.add('hidden');
+        function logout() { localStorage.clear(); location.reload(); }
+
+        if(user) { 
+            enterApp(); 
+            document.getElementById('my-name').innerText = user.name;
+            document.getElementById('my-pic').src = user.pic;
         }
         lucide.createIcons();
     </script>
