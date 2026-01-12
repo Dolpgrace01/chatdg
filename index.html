@@ -228,6 +228,7 @@
                                 <img src="${p.uPic}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
                                 <b>${p.uName}</b>
                             </div>
+                            
                             ${p.uId === user?.id ? `<i data-lucide="trash-2" size="18" style="color:var(--danger);" onclick="if(confirm('Delete?')) db.collection('posts').doc('${pid}').delete()"></i>` : ''}
                         </div>
                         <div class="media-scroll">${(p.images || []).map(img => `<img src="${img}">`).join('')}</div>
