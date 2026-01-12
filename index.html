@@ -1,37 +1,165 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Olb Portal | Authentication</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@800&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLB Portal | Secure Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,800;1,800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #C5A059; --bg: #0A0A0A; --card: #141414; --text: #F9F9F7; }
-        body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .auth-card { background: var(--card); padding: 40px; border: 1px solid rgba(197, 160, 89, 0.2); width: 100%; max-width: 400px; text-align: center; }
-        .logo { font-family: 'Bodoni Moda'; font-size: 2.5rem; margin-bottom: 30px; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: white; outline: none; }
-        .btn-primary { width: 100%; padding: 15px; background: var(--gold); border: none; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
-        .btn-google { width: 100%; padding: 15px; background: white; color: black; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        :root { 
+            --gold: #C5A059; 
+            --gold-dim: rgba(197, 160, 89, 0.15);
+            --bg: #080808; 
+            --card: #111111; 
+            --text: #F9F9F7; 
+            --input-bg: #000000;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Montserrat', sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0;
+            background-image: radial-gradient(circle at 2px 2px, rgba(197, 160, 89, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        .auth-card { 
+            background: var(--card); 
+            padding: 50px 40px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            width: 100%; 
+            max-width: 420px; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* Gold accent corner */
+        .auth-card::after {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 40px; height: 40px;
+            border-top: 2px solid var(--gold); border-right: 2px solid var(--gold);
+        }
+
+        .logo { 
+            font-family: 'Bodoni Moda'; 
+            font-size: 3rem; 
+            letter-spacing: 8px;
+            margin-bottom: 10px; 
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        h3 { font-weight: 300; letter-spacing: 3px; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 40px; opacity: 0.8; }
+
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i { position: absolute; left: 15px; top: 17px; color: var(--gold); font-size: 0.9rem; opacity: 0.6; }
+
+        input { 
+            width: 100%; padding: 16px 16px 16px 45px; 
+            background: var(--input-bg); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: white; 
+            outline: none; 
+            font-family: 'Montserrat';
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus { border-color: var(--gold); background: rgba(197, 160, 89, 0.02); }
+
+        .btn-primary { 
+            width: 100%; padding: 18px; 
+            background: var(--gold); 
+            border: none; 
+            color: black;
+            font-weight: 700; 
+            letter-spacing: 2px;
+            cursor: pointer; 
+            margin-top: 10px;
+            transition: 0.4s;
+        }
+
+        .btn-primary:hover { background: #e2bc77; transform: translateY(-2px); }
+
+        .divider { margin: 30px 0; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; opacity: 0.3; text-transform: uppercase; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: white; opacity: 0.1; }
+
+        .btn-google { 
+            width: 100%; padding: 15px; 
+            background: transparent; 
+            color: var(--text); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; gap: 12px; 
+            font-size: 0.85rem;
+        }
+
+        .btn-google:hover { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
+
     <div class="auth-card">
         <div class="logo">OLB</div>
-        <h3>Client Portal</h3>
-        <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 30px;">Access your bespoke conversations.</p>
+        <h3>Atelier Access</h3>
         
-        <form action="portal.html">
-            <input type="text" placeholder="Username" required>
-            <input type="email" placeholder="Gmail Address" required>
-            <input type="password" placeholder="Password" required>
+        <form id="loginForm">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="Gmail Address" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Secure Password" required>
+            </div>
+            
             <button type="submit" class="btn-primary">ENTER ATELIER</button>
         </form>
 
-        <div style="margin: 20px 0; font-size: 0.7rem; opacity: 0.4;">OR</div>
+        <div class="divider">Identity verification</div>
         
-        <button class="btn-google" onclick="window.location.href='portal.html'">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18"> Continue with Google
+        <button class="btn-google" onclick="handleGoogleLogin()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="16"> 
+            Continue with Google
         </button>
     </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+
+            // --- IDENTITY REGISTRATION LOGIC ---
+            // This stores the user in the device memory so the Chat page can read it.
+            localStorage.setItem('currentUser', username);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('sessionStart', new Date().getTime());
+
+            // Redirect to the portal
+            window.location.href = 'portal.html'; 
+        });
+
+        function handleGoogleLogin() {
+            // Simulated Google Auth - capturing a generic identity
+            localStorage.setItem('currentUser', 'Guest_Client_' + Math.floor(Math.random()*999));
+            window.location.href = 'portal.html';
+        }
+    </script>
 </body>
 </html>
