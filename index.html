@@ -3,267 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG ELITE | Live Global Hub</title>
+    <title>DG ELITE | Private Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         :root {
             --bg: #f8fafc; --card: #ffffff; --text: #0f172a;
             --primary: #4f46e5; --accent: #10b981; --border: #e2e8f0;
-            --glass: rgba(255, 255, 255, 0.9); --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.9);
         }
         [data-theme="dark"] {
             --bg: #020617; --card: #1e293b; --text: #f8fafc;
             --primary: #818cf8; --accent: #34d399; --border: #334155;
-            --glass: rgba(15, 23, 42, 0.9);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
-
-        /* --- AUTH --- */
-        #auth-gate { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--card); padding: 35px; border-radius: 30px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        input, textarea { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; }
-        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; }
-
-        /* --- UI --- */
-        header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(15px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
-        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
         .hidden { display: none !important; }
 
-        .post-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; }
-        .interaction-bar { display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
-        .action-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        /* --- POST STYLES --- */
+        .post-card { background: var(--card); border-radius: 24px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
+        .post-img { width: 100%; max-height: 350px; object-fit: cover; border-bottom: 1px solid var(--border); }
+        
+        /* --- INBOX STYLES --- */
+        .chat-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--card); border-radius: 18px; margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer; }
+        .chat-avatar { width: 50px; height: 50px; border-radius: 15px; background: var(--primary); color: white; display: grid; place-items: center; font-weight: 800; }
 
-        #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; }
+        /* --- CHAT MODAL --- */
+        #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 3000; display: flex; flex-direction: column; }
         .msg-display { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; }
+        .bubble { max-width: 75%; padding: 12px; border-radius: 15px; font-size: 0.9rem; }
         .sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .received { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 2px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border); z-index: 1000; }
-        .nav-link { color: var(--text); opacity: 0.4; cursor: pointer; }
-        .nav-link.active { color: var(--primary); opacity: 1; }
+        .btn-post { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border); }
+        .nav-link { color: var(--text); opacity: 0.4; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { opacity: 1; color: var(--primary); }
     </style>
 </head>
 <body data-theme="dark">
 
     <div id="auth-gate">
-        <div class="auth-card">
-            <h1 style="margin-bottom: 10px;">DG <span style="color:var(--primary)">ELITE</span></h1>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 20px;">Secure Global Access</p>
-            <input type="text" id="reg-name" placeholder="Username">
-            <input type="tel" id="reg-phone" placeholder="Phone Number">
-            <button class="btn-main" onclick="login()">Initialize Identity</button>
+        <div class="auth-card" style="position:fixed; inset:0; background:var(--bg); display:grid; place-items:center; z-index:9000; padding:20px;">
+            <div style="width:100%; max-width:350px; text-align:center;">
+                <h1 style="margin-bottom:20px;">DG ELITE</h1>
+                <input type="text" id="reg-name" placeholder="Name">
+                <input type="tel" id="reg-phone" placeholder="Phone">
+                <button class="btn-post" style="width:100%; padding:15px; margin-top:10px;" onclick="login()">Enter Hub</button>
+            </div>
         </div>
     </div>
 
-    <header>
-        <div style="font-weight: 900; font-size: 1.2rem;">DG ELITE</div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <i data-lucide="moon" onclick="toggleTheme()" style="cursor:pointer"></i>
-            <div id="my-badge" style="font-size: 0.7rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-weight: 800;">ID</div>
-        </div>
+    <header style="padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:var(--bg); z-index:100;">
+        <b style="font-size:1.2rem;">DG ELITE</b>
+        <div id="online-indicator" style="font-size:0.7rem; color:var(--accent); font-weight:800;">● LIVE</div>
     </header>
 
-    <div class="container">
+    <div class="container" style="max-width:600px; margin:0 auto; padding:15px;">
+        
         <section id="tab-home">
-            <div style="background: var(--card); border-radius: 24px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border);">
-                <textarea id="post-text" placeholder="Post a deal or update..." rows="2" style="border:none; background:transparent; resize:none;"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:10px;">
-                    <i data-lucide="image" style="color:var(--primary); cursor:pointer;"></i>
-                    <button onclick="addMyPost()" style="background:var(--primary); color:white; border:none; padding:8px 25px; border-radius:20px; font-weight:700;">Post</button>
+            <div style="background:var(--card); padding:15px; border-radius:24px; border:1px solid var(--border); margin-bottom:20px;">
+                <textarea id="post-text" placeholder="Share a deal or photo..." rows="2" style="width:100%; border:none; background:transparent; color:var(--text); resize:none; outline:none;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <label style="cursor:pointer; color:var(--primary);">
+                        <i data-lucide="image"></i>
+                        <input type="file" id="post-image-input" class="hidden" accept="image/*" onchange="previewImg(this)">
+                    </label>
+                    <div id="img-indicator" style="font-size:0.7rem; color:var(--accent);"></div>
+                    <button class="btn-post" id="post-btn" onclick="uploadPost()">Post</button>
                 </div>
             </div>
             <div id="global-feed"></div>
         </section>
 
         <section id="tab-chat" class="hidden">
-            <h2 style="margin-bottom: 20px;">Messages</h2>
-            <div id="inbox-list" style="text-align: center; opacity: 0.4; padding-top: 50px;">
-                <i data-lucide="message-square" size="48" style="margin-bottom: 10px;"></i>
-                <p>Click "Chat" on any post to start a live conversation.</p>
-            </div>
+            <h2 style="margin-bottom:20px;">Private Messages</h2>
+            <div id="inbox-list">
+                </div>
         </section>
 
         <section id="tab-profile" class="hidden">
-            <div style="text-align:center; padding: 30px 20px;">
-                <div id="prof-circle" style="width:90px; height:90px; border-radius:30px; background:var(--primary); color:white; font-size:2.5rem; font-weight:800; display:grid; place-items:center; margin:0 auto 15px;">?</div>
-                <h2 id="prof-user">User</h2>
-                <p id="prof-id" style="color:var(--primary); font-size: 0.9rem; font-weight: 700;">DG-ID</p>
-                <button onclick="logout()" style="margin-top:30px; background:var(--danger); color:white; border:none; width: 100%; padding:15px; border-radius:15px; font-weight:700;">Logout & Clear Session</button>
+            <div style="text-align:center; padding:20px;">
+                <div id="p-avatar" style="width:80px; height:80px; background:var(--primary); margin:0 auto 10px; border-radius:20px; display:grid; place-items:center; font-size:2rem; font-weight:800; color:white;">?</div>
+                <h2 id="p-name">Username</h2>
+                <p id="p-id" style="opacity:0.5; font-size:0.8rem;"></p>
+                <button class="btn-post" onclick="logout()" style="background:var(--danger); margin-top:20px;">Logout</button>
             </div>
         </section>
     </div>
 
     <div id="chat-view" class="hidden">
-        <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:15px; background:var(--glass); backdrop-filter:blur(15px)">
-            <i data-lucide="arrow-left" onclick="toggleChat(false)" style="cursor:pointer"></i>
-            <div id="chat-header-title" style="font-weight:800; flex:1">User</div>
-            <i data-lucide="phone" style="color:var(--accent); cursor:pointer" onclick="alert('Calling via encrypted line...')"></i>
+        <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:15px;">
+            <i data-lucide="arrow-left" onclick="toggleChat(false)"></i>
+            <b id="chat-title">User</b>
         </div>
         <div class="msg-display" id="msg-container"></div>
-        <div style="padding:15px; background:var(--card); border-top:1px solid var(--border); display:flex; gap:10px;">
-            <input type="text" id="chat-input" placeholder="Secure message..." style="margin:0">
-            <button onclick="sendLiveMsg()" style="background:var(--primary); color:white; border:none; width:50px; border-radius:14px; cursor:pointer;"><i data-lucide="send" size="20"></i></button>
+        <div style="padding:15px; display:flex; gap:10px;">
+            <input type="text" id="chat-input" placeholder="Message..." style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:var(--text);">
+            <button class="btn-post" onclick="sendMsg()"><i data-lucide="send"></i></button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
-        <div class="nav-link" id="nav-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i></div>
-        <div class="nav-link" id="nav-profile" onclick="switchTab('profile')"><i data-lucide="user"></i></div>
+        <div class="nav-link active" id="n-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
+        <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="mail"></i></div>
+        <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i></div>
     </nav>
 
     <script>
-        // --- FIREBASE INITIALIZATION ---
+        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyCwoZU08nKIh0EtMbUwiANjDwQOnF6BHw0",
             authDomain: "dolpgrace-103ad.firebaseapp.com",
             projectId: "dolpgrace-103ad",
             storageBucket: "dolpgrace-103ad.firebasestorage.app",
             messagingSenderId: "512869929238",
-            appId: "1:512869929238:web:a4b00ebcdb5341b24c8037",
-            measurementId: "G-K9FDB001SF"
+            appId: "1:512869929238:web:a4b00ebcdb5341b24c8037"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
+        const storage = firebase.storage();
 
-        let currentUser = JSON.parse(localStorage.getItem('dg_user')) || null;
+        let user = JSON.parse(localStorage.getItem('dg_user'));
         let activeChatId = null;
+        let selectedFile = null;
 
-        // --- AUTH LOGIC ---
+        // AUTH
         function login() {
             const name = document.getElementById('reg-name').value;
             const phone = document.getElementById('reg-phone').value;
-            if(!name || !phone) return alert("Credentials required.");
-            
-            currentUser = { 
-                name, 
-                phone, 
-                id: "DG-" + Math.random().toString(36).substring(2,6).toUpperCase() + "-" + phone.slice(-4) 
-            };
-            localStorage.setItem('dg_user', JSON.stringify(currentUser));
+            if(!name || !phone) return;
+            user = { name, id: "DG-" + phone.slice(-4), avatar: name[0] };
+            localStorage.setItem('dg_user', JSON.stringify(user));
             location.reload();
         }
+        function logout() { localStorage.removeItem('dg_user'); location.reload(); }
 
-        function logout() {
-            localStorage.removeItem('dg_user');
-            location.reload();
+        // FEED & IMAGE UPLOAD
+        function previewImg(input) {
+            selectedFile = input.files[0];
+            document.getElementById('img-indicator').innerText = "Image Ready!";
         }
 
-        // --- LIVE FEED ---
-        function listenToGlobalFeed() {
-            db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-                const feed = document.getElementById('global-feed');
-                feed.innerHTML = ""; 
-                snapshot.forEach((doc) => {
-                    const post = doc.data();
-                    feed.innerHTML += createPostHTML(post.userName, post.userId, post.content);
-                });
-                lucide.createIcons();
-            });
-        }
-
-        async function addMyPost() {
+        async function uploadPost() {
             const text = document.getElementById('post-text').value;
-            if(!text) return;
+            if(!text && !selectedFile) return;
+            
+            const btn = document.getElementById('post-btn');
+            btn.innerText = "...";
+            let imgUrl = null;
+
+            if(selectedFile) {
+                const ref = storage.ref(`posts/${Date.now()}`);
+                await ref.put(selectedFile);
+                imgUrl = await ref.getDownloadURL();
+            }
+
             await db.collection("posts").add({
-                userName: currentUser.name,
-                userId: currentUser.id,
-                content: text,
+                userName: user.name,
+                userId: user.id,
+                text: text,
+                image: imgUrl,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            document.getElementById('post-text').value = '';
+
+            document.getElementById('post-text').value = "";
+            document.getElementById('img-indicator').innerText = "";
+            selectedFile = null;
+            btn.innerText = "Post";
         }
 
-        function createPostHTML(user, id, content) {
-            return `
+        // LIVE FEED LISTENER
+        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
+            const feed = document.getElementById('global-feed');
+            feed.innerHTML = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                feed.innerHTML += `
                 <div class="post-card">
-                    <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                        <div style="width:35px; height:35px; background:var(--primary); color:white; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:0.8rem;">${user[0].toUpperCase()}</div>
-                        <div style="flex:1"><div style="font-weight:700; font-size:0.85rem;">${user}</div><div style="font-size:0.7rem; opacity:0.5">${id}</div></div>
-                    </div>
-                    <div style="padding:0 15px 15px 15px; font-size:0.95rem; line-height:1.4;">${content}</div>
-                    <div class="interaction-bar">
-                        <div class="action-item"><i data-lucide="heart" size="18"></i> Like</div>
-                        <div class="action-item" onclick="startChat('${id}')"><i data-lucide="message-circle" size="18"></i> Chat</div>
-                        <div class="action-item" onclick="alert('Connecting...')"><i data-lucide="phone" size="18"></i> Call</div>
+                    <div style="padding:15px; font-weight:800; font-size:0.8rem;">${p.userName} <span style="opacity:0.5; font-weight:400;">${p.userId}</span></div>
+                    ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
+                    <div style="padding:15px;">${p.text}</div>
+                    <div style="padding:10px 15px; border-top:1px solid var(--border); display:flex; gap:20px;">
+                        <i data-lucide="message-circle" onclick="openPrivateChat('${p.userId}', '${p.userName}')"></i>
+                        <i data-lucide="heart" onclick="this.style.fill='red';this.style.color='red'"></i>
                     </div>
                 </div>`;
-        }
+            });
+            lucide.createIcons();
+        });
 
-        // --- LIVE CHAT ---
-        function startChat(targetId) {
-            if(targetId === currentUser.id) return alert("Self-chatting disabled.");
-            activeChatId = [currentUser.id, targetId].sort().join("_");
-            document.getElementById('chat-header-title').innerText = targetId;
+        // PRIVATE CHAT LOGIC
+        function openPrivateChat(targetId, targetName) {
+            if(targetId === user.id) return;
+            activeChatId = [user.id, targetId].sort().join("_");
+            document.getElementById('chat-title').innerText = targetName;
             toggleChat(true);
-            listenToMessages();
+            loadMessages();
         }
 
-        function listenToMessages() {
-            db.collection("chats").doc(activeChatId).collection("messages")
-              .orderBy("timestamp")
-              .onSnapshot(snap => {
-                  const container = document.getElementById('msg-container');
-                  container.innerHTML = "";
-                  snap.forEach(doc => {
-                      const m = doc.data();
-                      const side = m.senderId === currentUser.id ? 'sent' : 'received';
-                      container.innerHTML += `<div class="bubble ${side}">${m.text}</div>`;
-                  });
-                  container.scrollTop = container.scrollHeight;
-              });
-        }
-
-        async function sendLiveMsg() {
-            const text = document.getElementById('chat-input').value;
-            if(!text || !activeChatId) return;
+        async function sendMsg() {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            
             await db.collection("chats").doc(activeChatId).collection("messages").add({
-                text: text,
-                senderId: currentUser.id,
+                text: input.value,
+                sender: user.id,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            document.getElementById('chat-input').value = '';
+            
+            // Add to inbox list tracking
+            await db.collection("inboxes").doc(user.id).collection("active").doc(activeChatId).set({
+                with: activeChatId.replace(user.id, "").replace("_", ""),
+                lastMsg: input.value,
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            input.value = "";
         }
 
-        // --- NAVIGATION & UI ---
+        function loadMessages() {
+            db.collection("chats").doc(activeChatId).collection("messages").orderBy("timestamp").onSnapshot(snap => {
+                const container = document.getElementById('msg-container');
+                container.innerHTML = "";
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    const side = m.sender === user.id ? 'sent' : 'received';
+                    container.innerHTML += `<div class="bubble ${side}">${m.text}</div>`;
+                });
+                container.scrollTop = container.scrollHeight;
+            });
+        }
+
+        // INBOX LISTENER
+        function loadInbox() {
+            db.collection("inboxes").doc(user.id).collection("active").orderBy("time", "desc").onSnapshot(snap => {
+                const list = document.getElementById('inbox-list');
+                list.innerHTML = "";
+                snap.forEach(doc => {
+                    const i = doc.data();
+                    list.innerHTML += `
+                    <div class="chat-item" onclick="openPrivateChat('${i.with}', 'User ${i.with}')">
+                        <div class="chat-avatar">${i.with[0]}</div>
+                        <div>
+                            <b>${i.with}</b><br>
+                            <small style="opacity:0.6">${i.lastMsg.substring(0,20)}...</small>
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+
+        // UI HELPERS
         function switchTab(tab) {
             ['home', 'chat', 'profile'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
-                document.getElementById('nav-' + t).classList.remove('active');
+                document.getElementById('n-' + t).classList.remove('active');
             });
             document.getElementById('tab-' + tab).classList.remove('hidden');
-            document.getElementById('nav-' + tab).classList.add('active');
+            document.getElementById('n-' + tab).classList.add('active');
+            if(tab === 'chat') loadInbox();
         }
 
-        function toggleChat(show) {
-            document.getElementById('chat-view').classList.toggle('hidden', !show);
-        }
+        function toggleChat(show) { document.getElementById('chat-view').classList.toggle('hidden', !show); }
 
-        function toggleTheme() {
-            const b = document.body;
-            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-            lucide.createIcons();
-        }
-
-        if(currentUser) {
+        if(user) {
             document.getElementById('auth-gate').classList.add('hidden');
-            document.getElementById('my-badge').innerText = currentUser.id;
-            document.getElementById('prof-user').innerText = currentUser.name;
-            document.getElementById('prof-id').innerText = currentUser.id;
-            document.getElementById('prof-circle').innerText = currentUser.name[0].toUpperCase();
-            listenToGlobalFeed();
+            document.getElementById('p-name').innerText = user.name;
+            document.getElementById('p-id').innerText = user.id;
+            document.getElementById('p-avatar').innerText = user.avatar;
         }
         lucide.createIcons();
     </script>
