@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> DG HUB | Urban Marketplace Pro</title>
+    <title>DG HUB | Elite Marketplace & Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -14,48 +14,63 @@
         :root {
             --bg: #020617; --card: #0f172a; --primary: #6366f1;
             --accent: #10b981; --text: #f8fafc; --border: rgba(255, 255, 255, 0.1);
-            --glass: rgba(15, 23, 42, 0.8); --danger: #ef4444;
+            --glass: rgba(15, 23, 42, 0.8); --danger: #ef4444; --gold: #fbbf24;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
+        .hidden { display: none !important; }
+
+        /* --- LANDING PAGE --- */
+        #landing-page { 
+            position: fixed; inset: 0; background: var(--bg); z-index: 5000; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 30px;
+        }
+        .hero-title { font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 20px; }
+        .hero-sub { opacity: 0.6; font-size: 1.1rem; margin-bottom: 40px; max-width: 300px; }
+        .btn-entrance { 
+            padding: 20px 60px; background: var(--primary); color: white; border-radius: 20px; 
+            font-weight: 800; font-size: 1.2rem; border: none; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
 
         /* --- UI ELEMENTS --- */
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(12px); padding: 18px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
 
-        .search-bar { background: var(--card); border: 1px solid var(--border); padding: 10px 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 20px; }
-        .search-bar input { background: transparent; border: none; color: white; margin: 0; padding: 5px; width: 100%; outline: none; }
-
         .post-card { background: var(--card); border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; position: relative; }
-        .post-img { width: 100%; max-height: 450px; object-fit: cover; }
-        .del-btn { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.2); color: var(--danger); padding: 8px; border-radius: 12px; cursor: pointer; }
+        .post-img { width: 100%; max-height: 400px; object-fit: cover; }
         
-        /* --- CHAT/DM --- */
-        #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; }
-        .msg-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; }
-        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .received { align-self: flex-start; background: #334155; color: white; border-bottom-left-radius: 4px; }
+        /* --- COMMENTS --- */
+        .comment-section { background: rgba(0,0,0,0.2); padding: 15px; border-top: 1px solid var(--border); }
+        .comment-input-wrap { display: flex; gap: 10px; margin-bottom: 10px; }
+        .comment-input-wrap input { flex: 1; padding: 10px; border-radius: 12px; background: #1e293b; border: 1px solid var(--border); color: white; font-size: 0.85rem; }
+        .comment-bubble { font-size: 0.8rem; margin-bottom: 8px; opacity: 0.9; }
 
-        /* --- PROFILE STATS --- */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .stat-box { background: var(--card); padding: 15px; border-radius: 20px; border: 1px solid var(--border); }
-        .review-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; margin-top: 10px; font-size: 0.85rem; text-align: left; }
+        /* --- DIRECTORY --- */
+        .user-pill { display: flex; align-items: center; gap: 12px; background: var(--card); padding: 15px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 10px; cursor: pointer; }
 
-        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-link { color: var(--text); opacity: 0.4; transition: 0.3s; cursor: pointer; }
         .nav-link.active { color: var(--primary); opacity: 1; }
-        .hidden { display: none !important; }
+        
         input, textarea { width: 100%; padding: 14px; margin: 8px 0; border-radius: 14px; border: 1px solid var(--border); background: #1e293b; color: white; outline: none; }
     </style>
 </head>
 <body>
 
-    <div id="auth-gate">
-        <div class="auth-card" style="background:var(--card); padding:30px; border-radius:32px; width:90%; max-width:400px; text-align:center;">
-            <h1 id="auth-title">SELL <span style="color:var(--primary)">ANYTHING</span></h1>
+    <div id="landing-page">
+        <div style="margin-bottom: 20px; color: var(--primary);"><i data-lucide="zap" size="60"></i></div>
+        <h1 class="hero-title">DG <span style="color:var(--primary)">HUB</span></h1>
+        <p class="hero-sub">The elite social marketplace. Chat, trade, and connect with the community instantly.</p>
+        <button class="btn-entrance" onclick="enterApp()">LOGIN TO ENTER</button>
+    </div>
+
+    <div id="auth-gate" class="hidden" style="position: fixed; inset: 0; z-index: 4000; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background:var(--card); padding:30px; border-radius:32px; width:100%; max-width:400px; text-align:center;">
+            <h1 id="auth-title">CREATE <span style="color:var(--primary)">ACCOUNT</span></h1>
             <div id="register-fields">
                 <input type="text" id="reg-user" placeholder="Username">
                 <input type="email" id="reg-mail" placeholder="Gmail Address">
@@ -69,29 +84,21 @@
     </div>
 
     <header>
-        <b style="font-size: 1.3rem;"> DG <span style="color:var(--primary)"> SELLER </span></b>
+        <b style="font-size: 1.3rem;"> DG <span style="color:var(--primary)"> HUB </span></b>
         <div style="display:flex; gap:15px; align-items: center;">
-            <i data-lucide="shopping-bag" onclick="window.location.href='portal.html'" style="cursor:pointer; color: #fbbf24;"></i>
-            
-            <i data-lucide="bell" id="notif-icon" onclick="toggleNotifications()" style="cursor:pointer;"></i>
+            <i data-lucide="shopping-bag" onclick="window.location.href='portal.html'" style="cursor:pointer; color: var(--gold);"></i>
             <i data-lucide="search" onclick="toggleSearch()" style="cursor:pointer;"></i>
         </div>
     </header>
 
-
     <div class="container">
-        <div id="search-container" class="search-bar hidden">
-            <i data-lucide="search" size="18" style="opacity:0.5"></i>
-            <input type="text" id="search-input" placeholder="Search users or available items..." oninput="filterFeed()">
-        </div>
-
         <section id="tab-home">
             <div style="background:var(--card); padding:20px; border-radius:32px; border:1px solid var(--border); margin-bottom:25px;">
-                <textarea id="post-text" placeholder="Selling something?" style="background:transparent; border:none; color:white;"></textarea>
+                <textarea id="post-text" placeholder="Share something with the elite..." style="background:transparent; border:none; color:white;"></textarea>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <label style="color:var(--primary); cursor:pointer; font-size:0.85rem; font-weight:700;">
-                        <i data-lucide="image"></i> Photo
-                        <input type="file" id="post-img" class="hidden" accept="image/*" onchange="processImage(this, 'post')">
+                        <i data-lucide="image"></i> Add Media
+                        <input type="file" id="post-img" class="hidden" accept="image/*" onchange="processImage(this)">
                     </label>
                     <button class="btn-main" onclick="createPost()" style="width:auto; padding:10px 25px;">Post</button>
                 </div>
@@ -100,45 +107,23 @@
         </section>
 
         <section id="tab-chat" class="hidden">
-            <h2 style="margin-bottom:20px;">Direct Messages</h2>
+            <h3 style="margin-bottom:15px; color: var(--gold);">Elite Directory</h3>
+            <div id="directory-list" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom:20px;"></div>
+            
+            <h3 style="margin-bottom:15px;">Recent Conversations</h3>
             <div id="inbox-list"></div>
         </section>
 
         <section id="tab-profile" class="hidden">
-            <div style="text-align:center;">
-                <div class="profile-pic-container" style="margin: 0 auto;">
-                    <img id="prof-img" src="" style="width:110px;height:110px;border-radius:35px;border:4px solid var(--primary);object-fit:cover;">
-                </div>
-                <h2 id="prof-name" style="margin-top:10px;">Username</h2>
-                <p id="prof-id" style="color:var(--primary); font-size:0.8rem; font-weight:800;"></p>
-                
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <h3 id="post-count">0</h3>
-                        <small style="opacity:0.5">Posts</small>
-                    </div>
-                    <div class="stat-box">
-                        <h3>4.9</h3>
-                        <small style="opacity:0.5">Rating</small>
-                    </div>
-                </div>
-
-                <div style="text-align:left; margin-top:20px;">
-                    <b style="font-size:0.9rem;">Recent Reviews</b>
-                    <div class="review-card">"Fast delivery and exactly as described! ⭐️⭐️⭐️⭐️⭐️"</div>
-                    <div class="review-card">"Trustworthy seller, highly recommended."</div>
-                </div>
-
-                <button class="btn-main" onclick="logout()" style="background:var(--danger); margin-top:30px;">Sign Out</button>
-            </div>
+            <div id="profile-content" style="text-align: center;"></div>
         </section>
     </div>
 
     <div id="chat-view" class="hidden">
         <header>
             <i data-lucide="chevron-left" onclick="toggleChat(false)"></i>
-            <b id="chat-user-title">User</b>
-            <i data-lucide="phone" id="call-btn" style="color:var(--accent); cursor:pointer;"></i>
+            <b id="chat-user-title">Chat</b>
+            <div></div>
         </header>
         <div class="msg-container" id="msg-box"></div>
         <div style="padding:15px; background:var(--card); display:flex; gap:10px;">
@@ -146,14 +131,14 @@
             <button class="btn-main" onclick="sendMessage()" style="width:50px; margin:0;"><i data-lucide="send" size="18"></i></button>
         </div>
     </div>
+
     <nav class="bottom-nav">
         <div class="nav-link active" id="n-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
-        <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i></div>
+        <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="users"></i></div>
         <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i></div>
     </nav>
 
     <script>
-        // CONFIG REMAINS SAME AS YOUR PROVIDED CODE
         const firebaseConfig = {
             apiKey: "AIzaSyCwoZU08nKIh0EtMbUwiANjDwQOnF6BHw0",
             authDomain: "dolpgrace-103ad.firebaseapp.com",
@@ -168,84 +153,117 @@
         let user = JSON.parse(localStorage.getItem('urban_user'));
         let isLoginMode = false;
         let postBase64 = null;
-        let allPosts = [];
+        let activeChatId = null;
 
-        // --- NEW FUNCTIONS ---
-
-        function toggleNotifications() {
-            const isEnabled = localStorage.getItem('dg_notif') === 'true';
-            localStorage.setItem('dg_notif', !isEnabled);
-            document.getElementById('notif-icon').style.color = !isEnabled ? 'var(--primary)' : 'white';
-            alert(!isEnabled ? "Notifications Turned ON" : "Notifications Turned OFF");
+        // --- LANDING & AUTH ---
+        function enterApp() {
+            document.getElementById('landing-page').classList.add('hidden');
+            if(!user) document.getElementById('auth-gate').classList.remove('hidden');
         }
 
-        function toggleSearch() {
-            document.getElementById('search-container').classList.toggle('hidden');
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('register-fields').classList.toggle('hidden', isLoginMode);
+            document.getElementById('login-fields').classList.toggle('hidden', !isLoginMode);
+            document.getElementById('auth-title').innerText = isLoginMode ? "WELCOME BACK" : "CREATE ACCOUNT";
         }
 
-        function filterFeed() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = allPosts.filter(p => 
-                p.uName.toLowerCase().includes(query) || 
-                p.content.toLowerCase().includes(query)
-            );
-            renderFeed(filtered);
-        }
-
-        async function deletePost(postId) {
-            if(confirm("Delete this post permanently?")) {
-                await db.collection("posts").doc(postId).delete();
+        async function handleAuth() {
+            const pass = document.getElementById('auth-pass').value;
+            if(isLoginMode) {
+                const name = document.getElementById('log-user').value;
+                const snap = await db.collection("users").where("name", "==", name).where("password", "==", pass).get();
+                if(snap.empty) return alert("Wrong user/pass");
+                user = snap.docs[0].data();
+            } else {
+                const name = document.getElementById('reg-user').value;
+                const mail = document.getElementById('reg-mail').value;
+                const phone = document.getElementById('reg-phone').value;
+                user = { name, email: mail, phone, password: pass, id: "DG-"+Date.now().toString().slice(-4), pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
+                await db.collection("users").doc(user.id).set(user);
             }
+            localStorage.setItem('urban_user', JSON.stringify(user));
+            location.reload();
         }
 
-        // --- UPDATED CORE LOGIC ---
-
+        // --- POSTS & COMMENTS ---
         async function createPost() {
-            const text = document.getElementById('post-text').value;
-            if(!text && !postBase64) return;
-            await db.collection("posts").add({ 
-                uName: user.name, uId: user.id, uPic: user.pic, 
-                content: text, image: postBase64, 
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            const txt = document.getElementById('post-text').value;
+            if(!txt && !postBase64) return;
+            await db.collection("posts").add({
+                uName: user.name, uId: user.id, uPic: user.pic,
+                content: txt, image: postBase64, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            document.getElementById('post-text').value = "";
-            postBase64 = null;
+            document.getElementById('post-text').value = ""; postBase64 = null;
         }
 
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
-            allPosts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderFeed(allPosts);
-            updatePostCount();
-        });
-
-        function renderFeed(posts) {
-            const cont = document.getElementById('feed-container');
-            cont.innerHTML = "";
-            posts.forEach(p => {
-                const isOwner = p.uId === user?.id;
+            const cont = document.getElementById('feed-container'); cont.innerHTML = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                const pid = doc.id;
                 cont.innerHTML += `
                 <div class="post-card">
-                    ${isOwner ? `<div class="del-btn" onclick="deletePost('${p.id}')"><i data-lucide="trash-2" size="16"></i></div>` : ''}
                     <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                        <img src="${p.uPic}" style="width:35px;height:35px;border-radius:10px;object-fit:cover;">
-                        <div><b>${p.uName}</b> <small style="opacity:0.5">${p.uId}</small></div>
+                        <img src="${p.uPic}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;">
+                        <b>${p.uName}</b>
                     </div>
                     ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
                     <div style="padding:15px;">${p.content}</div>
-                    <div style="padding:15px; border-top:1px solid var(--border); color:var(--primary); font-weight:800; cursor:pointer;" onclick="openChat('${p.uId}','${p.uName}','${p.uPhone || ""}')">MESSAGE SELLER</div>
+                    
+                    <div class="comment-section">
+                        <div id="comments-${pid}"></div>
+                        <div class="comment-input-wrap">
+                            <input type="text" id="in-${pid}" placeholder="Add a comment...">
+                            <button onclick="postComment('${pid}')" style="background:none; border:none; color:var(--primary); font-weight:700;">Post</button>
+                        </div>
+                    </div>
                 </div>`;
+                loadComments(pid);
             });
             lucide.createIcons();
+        });
+
+        async function postComment(pid) {
+            const inp = document.getElementById('in-'+pid);
+            if(!inp.value) return;
+            await db.collection("posts").doc(pid).collection("comments").add({
+                uName: user.name, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            inp.value = "";
         }
 
-        function openChat(tid, tname, tphone) {
-            if(tid === user.id) return;
+        function loadComments(pid) {
+            db.collection("posts").doc(pid).collection("comments").orderBy("timestamp").onSnapshot(snap => {
+                const cBox = document.getElementById('comments-'+pid);
+                cBox.innerHTML = "";
+                snap.forEach(d => {
+                    const c = d.data();
+                    cBox.innerHTML += `<div class="comment-bubble"><b>${c.uName}</b> ${c.text}</div>`;
+                });
+            });
+        }
+
+        // --- DIRECTORY & CHAT ---
+        async function loadDirectory() {
+            const snap = await db.collection("users").get();
+            const list = document.getElementById('directory-list');
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const u = doc.data();
+                if(u.id === user.id) return;
+                list.innerHTML += `
+                    <div onclick="openChat('${u.id}', '${u.name}')" style="text-align:center; flex-shrink:0;">
+                        <img src="${u.pic}" style="width:50px;height:50px;border-radius:15px;border:2px solid var(--primary);">
+                        <p style="font-size:0.7rem; margin-top:5px;">${u.name}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function openChat(tid, tname) {
             activeChatId = [user.id, tid].sort().join("_");
             document.getElementById('chat-user-title').innerText = tname;
-            document.getElementById('call-btn').onclick = () => {
-                if(tphone) window.location.href = "tel:" + tphone;
-                else alert("Seller hasn't provided a phone number.");
-            };
             toggleChat(true);
             db.collection("chats").doc(activeChatId).collection("messages").orderBy("timestamp").onSnapshot(snap => {
                 const box = document.getElementById('msg-box'); box.innerHTML = "";
@@ -254,76 +272,31 @@
             });
         }
 
-        function updatePostCount() {
-            if(!user) return;
-            const count = allPosts.filter(p => p.uId === user.id).length;
-            document.getElementById('post-count').innerText = count;
-        }
-
-        // REMAINS FROM ORIGINAL: toggleAuthMode, handleAuth, processImage, sendMessage, switchTab, logout
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('register-fields').classList.toggle('hidden', isLoginMode);
-            document.getElementById('login-fields').classList.toggle('hidden', !isLoginMode);
-            document.getElementById('auth-title').innerHTML = isLoginMode ? 'WELCOME <span style="color:var(--primary)">BACK</span>' : 'SELL <span style="color:var(--primary)">ANYTHING</span>';
-        }
-
-        async function handleAuth() {
-            const pass = document.getElementById('auth-pass').value;
-            if(!pass) return alert("Password required");
-            if(isLoginMode) {
-                const username = document.getElementById('log-user').value;
-                const snap = await db.collection("users").where("name", "==", username).where("password", "==", pass).get();
-                if(snap.empty) return alert("Invalid credentials");
-                user = snap.docs[0].data();
-            } else {
-                const name = document.getElementById('reg-user').value;
-                const mail = document.getElementById('reg-mail').value;
-                const phone = document.getElementById('reg-phone').value;
-                if(!name || !mail || !phone) return alert("Fill all fields");
-                user = { name, email: mail, phone, password: pass, id: "DG-"+Math.random().toString(36).substr(2,4).toUpperCase(), pic: `https://api.dicebear.com/7.x/initials/svg?seed=${name}` };
-                await db.collection("users").doc(user.id).set(user);
-            }
-            localStorage.setItem('urban_user', JSON.stringify(user));
-            location.reload();
-        }
-
-        function processImage(input, target) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                if(target === 'post') postBase64 = reader.result;
-                if(target === 'profile') {
-                    user.pic = reader.result;
-                    await db.collection("users").doc(user.id).update({ pic: reader.result });
-                    localStorage.setItem('urban_user', JSON.stringify(user));
-                    document.getElementById('prof-img').src = reader.result;
-                }
-            };
-            if(file) reader.readAsDataURL(file);
-        }
-
         async function sendMessage() {
             const i = document.getElementById('chat-input'); if(!i.value) return;
-            await db.collection("chats").doc(activeChatId).collection("messages").add({ text: i.value, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection("chats").doc(activeChatId).collection("messages").add({
+                text: i.value, sender: user.id, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
             i.value = "";
         }
 
         function switchTab(t) {
             ['home','chat','profile'].forEach(id => { document.getElementById('tab-'+id).classList.add('hidden'); document.getElementById('n-'+id).classList.remove('active'); });
             document.getElementById('tab-'+t).classList.remove('hidden'); document.getElementById('n-'+t).classList.add('active');
+            if(t === 'chat') loadDirectory();
+        }
+
+        function processImage(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => postBase64 = e.target.result;
+            reader.readAsDataURL(input.files[0]);
         }
 
         function toggleChat(s) { document.getElementById('chat-view').classList.toggle('hidden', !s); }
-        function logout() { localStorage.removeItem('urban_user'); location.reload(); }
-
+        
         if(user) {
+            document.getElementById('landing-page').classList.add('hidden');
             document.getElementById('auth-gate').classList.add('hidden');
-            document.getElementById('prof-name').innerText = user.name;
-            document.getElementById('prof-id').innerText = user.id;
-            document.getElementById('prof-phone').innerText = user.phone;
-            document.getElementById('prof-img').src = user.pic;
-            if(localStorage.getItem('dg_notif') === 'true') document.getElementById('notif-icon').style.color = 'var(--primary)';
         }
         lucide.createIcons();
     </script>
