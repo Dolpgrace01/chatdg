@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG ELITE | Mobile Social Commerce</title>
+    <title>DG ELITE | Secure Social Commerce</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -23,7 +23,7 @@
 
         /* --- AUTHENTICATION --- */
         #auth-gate { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--card); padding: 35px; border-radius: 30px; border: 1px solid var(--border); width: 100%; max-width: 400px; }
+        .auth-card { background: var(--card); padding: 35px; border-radius: 30px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
 
         /* --- HEADER --- */
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(15px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
@@ -48,7 +48,7 @@
         /* --- COMMENTS --- */
         .comment-box { background: var(--bg); padding: 10px 15px; border-top: 1px solid var(--border); }
         .comment-list { max-height: 150px; overflow-y: auto; margin-bottom: 10px; font-size: 0.8rem; }
-        .comment-entry { margin-bottom: 4px; }
+        .comment-entry { margin-bottom: 4px; padding: 5px; background: var(--card); border-radius: 8px; }
         .comment-entry b { color: var(--primary); }
 
         /* --- CHAT --- */
@@ -68,10 +68,13 @@
 
     <div id="auth-gate">
         <div class="auth-card">
-            <h2 style="text-align: center; margin-bottom: 20px;">DG-ELITE Access</h2>
+            <h2 style="text-align: center; margin-bottom: 10px;">DG-ELITE</h2>
+            <p style="text-align: center; font-size: 0.8rem; opacity: 0.6; margin-bottom: 25px;">Secure Identity Verification</p>
             <input type="text" id="reg-name" placeholder="Full Name">
+            <input type="email" id="reg-email" placeholder="Gmail Address">
             <input type="tel" id="reg-phone" placeholder="Phone Number">
-            <button class="btn-main" onclick="startSession()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold;">Initialize DG-ID</button>
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button onclick="startSession()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:800; margin-top:10px; cursor:pointer;">Initialize Portal</button>
         </div>
     </div>
 
@@ -79,68 +82,68 @@
         <div class="logo">DG <span>ELITE</span></div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <i data-lucide="moon" onclick="toggleTheme()" style="cursor:pointer"></i>
-            <div id="top-id-badge" class="dg-badge">DG-XXXX</div>
+            <div id="top-id-badge" class="dg-badge">DG-LOADING</div>
         </div>
     </header>
 
     <div class="container">
         <section id="tab-home">
-            <div style="background: var(--card); border-radius: 24px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border);">
-                <textarea id="post-text" placeholder="Post an item or update..." rows="2" style="width:100%; border:none; background:transparent; color:var(--text); outline:none; resize:none;"></textarea>
-                <img id="post-preview" style="width:100%; border-radius:15px; display:none; margin:10px 0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:10px;">
-                    <label style="cursor:pointer; color:var(--primary)"><i data-lucide="image"></i><input type="file" hidden accept="image/*" onchange="previewImg(event)"></label>
-                    <input type="number" id="post-price" placeholder="$" style="width:60px; padding:5px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
-                    <button onclick="publishPost()" style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:20px; font-weight:700;">Post</button>
+            <div style="background: var(--card); border-radius: 24px; padding: 18px; margin-bottom: 20px; border: 1px solid var(--border);">
+                <textarea id="post-text" placeholder="What are you selling today?" rows="2" style="width:100%; border:none; background:transparent; color:var(--text); outline:none; font-size:1.1rem; resize:none;"></textarea>
+                <img id="post-preview" style="width:100%; border-radius:15px; display:none; margin:10px 0; border: 1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:12px;">
+                    <label style="cursor:pointer; color:var(--primary); display:flex; align-items:center; gap:5px; font-weight:600;"><i data-lucide="image" size="20"></i> Photo<input type="file" hidden accept="image/*" onchange="previewImg(event)"></label>
+                    <input type="number" id="post-price" placeholder="$" style="width:70px; padding:8px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+                    <button onclick="publishPost()" style="background:var(--primary); color:white; border:none; padding:10px 25px; border-radius:20px; font-weight:800;">Post</button>
                 </div>
             </div>
             <div id="feed"></div>
         </section>
 
         <section id="tab-chat" class="hidden">
-            <h2 style="margin-bottom:20px">Messages</h2>
+            <h2 style="margin: 10px 0 20px;">Conversations</h2>
             <div id="chat-threads">
-                <div style="padding:20px; text-align:center; opacity:0.5">No active conversations.</div>
+                <div style="padding:40px; text-align:center; opacity:0.4;"><i data-lucide="message-square" size="48" style="margin-bottom:10px"></i><br>Encrypted Inbox is Empty</div>
             </div>
         </section>
 
         <section id="tab-profile" class="hidden">
-            <div style="text-align:center; padding:20px 0;">
-                <div id="prof-avatar" style="width:80px; height:80px; border-radius:25px; background:var(--primary); color:white; font-size:2rem; font-weight:800; display:grid; place-items:center; margin:0 auto 10px;">?</div>
-                <h2 id="prof-name">User Name</h2>
-                <p id="prof-id" style="font-weight:700; color:var(--primary); font-size:0.8rem;">DG-ID</p>
+            <div style="text-align:center; padding:30px 0;">
+                <div id="prof-avatar" style="width:100px; height:100px; border-radius:30px; background:var(--primary); color:white; font-size:2.5rem; font-weight:800; display:grid; place-items:center; margin:0 auto 15px; box-shadow: 0 10px 20px -5px var(--primary);">?</div>
+                <h2 id="prof-name">Loading...</h2>
+                <p id="prof-id" style="font-weight:700; color:var(--primary); font-size:0.9rem;">DG-ID</p>
             </div>
             <div class="profile-stat-box">
-                <div class="stat-card"><span class="stat-num" id="stat-posts">0</span><span style="font-size:0.7rem; opacity:0.6">Posts</span></div>
-                <div class="stat-card"><span class="stat-num" id="stat-sold">0</span><span style="font-size:0.7rem; opacity:0.6">Sold</span></div>
-                <div class="stat-card"><span class="stat-num">5.0</span><span style="font-size:0.7rem; opacity:0.6">Rating</span></div>
+                <div class="stat-card"><span class="stat-num" id="stat-posts">0</span><span style="font-size:0.75rem; font-weight:600; opacity:0.6">Posts</span></div>
+                <div class="stat-card"><span class="stat-num" id="stat-sold">0</span><span style="font-size:0.75rem; font-weight:600; opacity:0.6">Items Sold</span></div>
+                <div class="stat-card"><span class="stat-num">5.0</span><span style="font-size:0.75rem; font-weight:600; opacity:0.6">Rating</span></div>
             </div>
-            <div style="background:var(--card); padding:15px; border-radius:20px; border:1px solid var(--border);">
-                <h4 style="margin-bottom:10px">Account Settings</h4>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem;"><span>Visibility</span><span style="color:var(--accent)">Public</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem;"><span>Encrypted Calls</span><span style="color:var(--accent)">Active</span></div>
-                <button onclick="location.reload()" style="width:100%; padding:10px; border:none; background:var(--danger); color:white; border-radius:10px; font-weight:bold; margin-top:10px;">Logout</button>
+            <div style="background:var(--card); padding:20px; border-radius:24px; border: 1px solid var(--border);">
+                <h4 style="margin-bottom:15px; display:flex; align-items:center; gap:8px;"><i data-lucide="settings" size="18"></i> Profile Settings</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.95rem;"><span>Privacy Mode</span><span style="color:var(--accent); font-weight:700;">Enabled</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.95rem;"><span>Encrypted Calls</span><span style="color:var(--accent); font-weight:700;">Verified</span></div>
+                <button onclick="logout()" style="width:100%; padding:14px; border:none; background:var(--danger); color:white; border-radius:15px; font-weight:800; margin-top:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="log-out" size="18"></i> Sign Out & Back to Login</button>
             </div>
         </section>
     </div>
 
     <div id="chat-view" class="hidden">
-        <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:15px; background:var(--glass); backdrop-filter:blur(10px)">
-            <i data-lucide="arrow-left" onclick="toggleChat(false)"></i>
-            <div style="flex:1; font-weight:800;" id="chat-target">User ID</div>
-            <i data-lucide="phone" onclick="makeCall()" style="color:var(--accent)"></i>
+        <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:15px; background:var(--glass); backdrop-filter:blur(15px)">
+            <i data-lucide="arrow-left" onclick="toggleChat(false)" style="cursor:pointer"></i>
+            <div style="flex:1; font-weight:800; font-size:1.1rem;" id="chat-target">Recipient</div>
+            <i data-lucide="phone" onclick="makeCall()" style="color:var(--accent); cursor:pointer"></i>
         </div>
         <div class="msg-display" id="msg-container"></div>
-        <div style="padding:15px; background:var(--card); display:flex; gap:10px;">
+        <div style="padding:15px; background:var(--card); border-top:1px solid var(--border); display:flex; gap:10px;">
             <input type="text" id="msg-input" placeholder="Type a message..." style="margin:0; flex:1">
-            <button onclick="sendPrivateMsg()" style="background:var(--primary); border:none; color:white; width:45px; height:45px; border-radius:12px;"><i data-lucide="send" size="18"></i></button>
+            <button onclick="sendPrivateMsg()" style="background:var(--primary); border:none; color:white; width:48px; height:48px; border-radius:15px; cursor:pointer;"><i data-lucide="send" size="20"></i></button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-link active" onclick="switchTab('home', this)"><i data-lucide="home"></i></div>
-        <div class="nav-link" onclick="switchTab('chat', this)"><i data-lucide="message-circle"></i></div>
-        <div class="nav-link" onclick="switchTab('profile', this)"><i data-lucide="user"></i></div>
+        <div class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i></div>
+        <div class="nav-link" id="nav-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i></div>
+        <div class="nav-link" id="nav-profile" onclick="switchTab('profile')"><i data-lucide="user"></i></div>
     </nav>
 
     <script>
@@ -148,11 +151,11 @@
         let userState = JSON.parse(localStorage.getItem('dg_user')) || null;
         let currentImg = null;
 
-        // --- SESSION MANAGEMENT ---
+        // --- AUTH LOGIC ---
         function startSession() {
             const name = document.getElementById('reg-name').value;
             const phone = document.getElementById('reg-phone').value;
-            if(!name || !phone) return alert("Required fields missing.");
+            if(!name || !phone) return alert("All fields are required for security.");
 
             userState = {
                 name: name,
@@ -166,36 +169,53 @@
             document.getElementById('auth-gate').classList.add('hidden');
         }
 
+        function logout() {
+            localStorage.removeItem('dg_user');
+            userState = null;
+            document.getElementById('auth-gate').classList.remove('hidden');
+            // Reset fields
+            document.getElementById('reg-name').value = '';
+            document.getElementById('reg-phone').value = '';
+            document.getElementById('reg-email').value = '';
+            document.getElementById('reg-pass').value = '';
+            switchTab('home'); // Reset view to home
+        }
+
         if(userState) {
             document.getElementById('auth-gate').classList.add('hidden');
             updateUI();
         }
 
         function updateUI() {
+            if(!userState) return;
             document.getElementById('top-id-badge').innerText = userState.id;
             document.getElementById('prof-name').innerText = userState.name;
             document.getElementById('prof-id').innerText = userState.id;
-            document.getElementById('prof-avatar').innerText = userState.name[0];
+            document.getElementById('prof-avatar').innerText = userState.name[0].toUpperCase();
             document.getElementById('stat-posts').innerText = userState.postCount;
             document.getElementById('stat-sold').innerText = userState.soldCount;
         }
 
-        // --- NAVIGATION ---
-        function switchTab(tab, el) {
+        // --- TAB NAVIGATION ---
+        function switchTab(tab) {
             document.getElementById('tab-home').classList.add('hidden');
             document.getElementById('tab-chat').classList.add('hidden');
             document.getElementById('tab-profile').classList.add('hidden');
+            
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
             document.getElementById('tab-' + tab).classList.remove('hidden');
-            el.classList.add('active');
+            document.getElementById('nav-' + tab).classList.add('active');
+            window.scrollTo(0,0);
         }
 
-        // --- POSTING ---
+        // --- POSTING ENGINE ---
         function previewImg(e) {
             const reader = new FileReader();
             reader.onload = () => {
-                document.getElementById('post-preview').src = reader.result;
-                document.getElementById('post-preview').style.display = 'block';
+                const p = document.getElementById('post-preview');
+                p.src = reader.result;
+                p.style.display = 'block';
                 currentImg = reader.result;
             }
             reader.readAsDataURL(e.target.files[0]);
@@ -209,22 +229,22 @@
             const pid = Date.now();
             const postHTML = `
                 <div class="post-card" id="post-${pid}">
-                    <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                        <div style="width:35px; height:35px; background:var(--primary); color:white; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:0.8rem;">${userState.name[0]}</div>
-                        <div style="flex:1"><div style="font-weight:700; font-size:0.85rem;">${userState.name}</div><div style="font-size:0.7rem; opacity:0.5">${userState.id}</div></div>
+                    <div style="padding:15px; display:flex; align-items:center; gap:12px;">
+                        <div style="width:40px; height:40px; background:var(--primary); color:white; border-radius:12px; display:grid; place-items:center; font-weight:800; font-size:1rem;">${userState.name[0].toUpperCase()}</div>
+                        <div style="flex:1"><div style="font-weight:700; font-size:0.95rem;">${userState.name}</div><div style="font-size:0.7rem; opacity:0.5">${userState.id}</div></div>
                         ${price > 0 ? `<div class="price-tag">$${price}</div>` : ''}
                     </div>
                     ${currentImg ? `<img src="${currentImg}" class="post-img">` : ''}
-                    <div style="padding:15px; font-size:0.9rem;">${txt}</div>
+                    <div style="padding:15px; font-size:1rem; line-height:1.5;">${txt}</div>
                     <div class="interaction-bar">
                         <div class="action-item" onclick="this.style.color='var(--danger)'"><i data-lucide="heart" size="18"></i> Like</div>
                         <div class="action-item" onclick="toggleChat(true, '${userState.id}')"><i data-lucide="message-square" size="18"></i> Chat</div>
                         <div class="action-item" onclick="makeCall()"><i data-lucide="phone" size="18"></i> Call</div>
-                        <div class="action-item" onclick="alert('Link copied to clipboard!')"><i data-lucide="share-2" size="18"></i> Share</div>
+                        <div class="action-item" onclick="alert('Post Link Copied!')"><i data-lucide="share-2" size="18"></i> Share</div>
                     </div>
                     <div class="comment-box">
                         <div class="comment-list" id="clist-${pid}"></div>
-                        <input type="text" placeholder="Comment..." style="width:100%; border:none; background:transparent; font-size:0.8rem; color:var(--text); outline:none;" onkeypress="addComment(event, ${pid})">
+                        <input type="text" placeholder="Write a comment..." style="width:100%; border:none; background:transparent; font-size:0.85rem; color:var(--text); outline:none;" onkeypress="addComment(event, ${pid})">
                     </div>
                 </div>
             `;
@@ -234,7 +254,7 @@
             updateUI();
             lucide.createIcons();
             
-            // Reset
+            // Clear inputs
             document.getElementById('post-text').value = '';
             document.getElementById('post-price').value = '';
             document.getElementById('post-preview').style.display = 'none';
@@ -244,13 +264,13 @@
         function addComment(e, pid) {
             if(e.key === 'Enter' && e.target.value) {
                 const clist = document.getElementById('clist-' + pid);
-                clist.innerHTML += `<div class="comment-entry"><b>${userState.id.split('-')[1]}:</b> ${e.target.value}</div>`;
+                clist.innerHTML += `<div class="comment-entry"><b>${userState.name.split(' ')[0]}:</b> ${e.target.value}</div>`;
                 e.target.value = '';
                 clist.scrollTop = clist.scrollHeight;
             }
         }
 
-        // --- CHAT & CALLING ---
+        // --- MESSAGING & UTILS ---
         function toggleChat(show, target = "") {
             document.getElementById('chat-view').className = show ? "" : "hidden";
             if(target) document.getElementById('chat-target').innerText = target;
@@ -261,11 +281,12 @@
             if(!val) return;
             document.getElementById('msg-container').innerHTML += `<div class="bubble sent">${val}</div>`;
             document.getElementById('msg-input').value = '';
-            document.getElementById('msg-container').scrollTop = document.getElementById('msg-container').scrollHeight;
+            const c = document.getElementById('msg-container');
+            c.scrollTop = c.scrollHeight;
         }
 
         function makeCall() {
-            alert("Connecting to DG-Elite Encrypted Voice Line...\nTarget: " + document.getElementById('chat-target').innerText);
+            alert("🔒 Secure Channel Established\nConnecting to: " + document.getElementById('chat-target').innerText);
         }
 
         function toggleTheme() {
