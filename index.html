@@ -1,240 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DG-Elite | Premium Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --primary: #6366f1; /* Indigo */
-            --accent: #10b981; /* Emerald */
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #0f172a;
-            --border: #e2e8f0;
-            --glass: rgba(255, 255, 255, 0.8);
-        }
-
-        [data-theme="dark"] {
-            --bg: #020617;
-            --card: #1e293b;
-            --text: #f1f5f9;
-            --border: #334155;
-            --glass: rgba(15, 23, 42, 0.8);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, color 0.3s; }
-
-        body { background: var(--bg); color: var(--text); }
-
-        /* --- LOGIN OVERLAY --- */
-        #auth-overlay {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .auth-card {
-            background: var(--card); padding: 2rem; border-radius: 24px;
-            width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.2);
-            border: 1px solid var(--border);
-        }
-
-        .auth-input {
-            width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid var(--border); background: var(--bg); color: var(--text);
-        }
-
-        .auth-btn {
-            width: 100%; padding: 14px; background: var(--primary); color: white;
-            border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px;
-        }
-
-        /* --- DASHBOARD --- */
-        nav {
-            position: sticky; top: 0; z-index: 100; padding: 1rem 5%;
-            background: var(--glass); backdrop-filter: blur(12px);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .main-container {
-            max-width: 1200px; margin: 0 auto; display: grid;
-            grid-template-columns: 250px 1fr; gap: 30px; padding: 2rem;
-        }
-
-        .post-card {
-            background: var(--card); border-radius: 20px; padding: 20px;
-            border: 1px solid var(--border); margin-bottom: 25px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-
-        .user-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .user-id { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
-
-        .price-chip {
-            background: var(--accent); color: white; padding: 4px 12px;
-            border-radius: 8px; font-weight: bold; font-size: 0.8rem;
-        }
-
-        .post-image { width: 100%; border-radius: 15px; margin: 15px 0; display: block; }
-
-        /* --- INTERACTION BAR --- */
-        .interaction-bar {
-            display: flex; gap: 20px; border-top: 1px solid var(--border);
-            padding-top: 15px; margin-top: 10px;
-        }
-
-        .btn-action {
-            display: flex; align-items: center; gap: 6px; cursor: pointer;
-            font-size: 0.85rem; font-weight: 600; opacity: 0.8;
-        }
-        .btn-action:hover { opacity: 1; color: var(--primary); }
-        .liked { color: #ef4444; opacity: 1; }
-
-        /* --- COMMENTS AREA --- */
-        .comments-section {
-            background: var(--bg); border-radius: 12px; padding: 10px; margin-top: 15px;
-        }
-        .comment-input {
-            width: 100%; background: transparent; border: none; 
-            padding: 8px; color: var(--text); outline: none;
-        }
-
-        .theme-toggle { cursor: pointer; padding: 8px; border-radius: 50%; background: var(--border); }
-
-        .hidden { display: none !important; }
-    </style>
-</head>
-<body data-theme="light">
-
-    <div id="auth-overlay">
-        <div class="auth-card">
-            <h2 style="margin-bottom: 20px;">Join DG-Elite</h2>
-            <input type="text" id="reg-user" class="auth-input" placeholder="Username">
-            <input type="email" id="reg-email" class="auth-input" placeholder="Gmail Address">
-            <input type="tel" id="reg-phone" class="auth-input" placeholder="Phone Number (for calling)">
-            <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
-            <button class="auth-btn" onclick="handleAuth()">Create Unique DG-ID</button>
+<div id="messages-page" class="hidden">
+    <div class="chat-header-main">
+        <h2 style="margin-bottom: 15px;">Messages</h2>
+        <div class="search-bar">
+            <input type="text" placeholder="Search DG-IDs..." id="chat-search">
         </div>
     </div>
-
-    <nav>
-        <div style="font-size: 1.5rem; font-weight: 900;">DG <span style="color: var(--primary);">ELITE</span></div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div id="nav-dg-id" class="user-id"></div>
-            <div class="theme-toggle" onclick="toggleTheme()"><i data-lucide="moon"></i></div>
-        </div>
-    </nav>
-
-    <div class="main-container">
-        <aside>
-            <div class="post-card" style="position: sticky; top: 100px;">
-                <h4 style="margin-bottom: 15px;">Sell Something</h4>
-                <textarea id="postContent" class="auth-input" placeholder="What's for sale?" rows="3"></textarea>
-                <input type="number" id="postPrice" class="auth-input" placeholder="Price ($)">
-                <button class="auth-btn" onclick="publishPost()">Post Now</button>
+    
+    <div id="inbox-list">
+        <div class="chat-thread" onclick="openPrivateChat('DG-ADMIN-0001')">
+            <div class="avatar" style="background: var(--primary);">A</div>
+            <div class="thread-info">
+                <div class="thread-user">DG-Support (Official)</div>
+                <div class="thread-msg">Welcome to DG Elite! How can we help?</div>
             </div>
-        </aside>
-
-        <main id="app-feed">
-            </main>
+            <div class="thread-time">12:40</div>
+        </div>
     </div>
+</div>
 
-    <script>
-        lucide.createIcons();
+<div id="private-chat-window" class="hidden">
+    <div class="chat-top-bar">
+        <i data-lucide="chevron-left" onclick="closeChat()"></i>
+        <div id="chat-target-id" style="font-weight: 800;">DG-ID</div>
+        <i data-lucide="phone" onclick="initiateCall()"></i>
+    </div>
+    <div id="chat-messages-display">
+        </div>
+    <div class="chat-input-area">
+        <input type="text" id="msg-input" placeholder="Type a message...">
+        <button onclick="sendMsg()"><i data-lucide="send"></i></button>
+    </div>
+</div>
 
-        let currentUser = null;
+<style>
+    /* --- NEW CHAT STYLES --- */
+    #messages-page { animation: slideIn 0.3s ease; }
+    
+    .chat-thread {
+        display: flex; align-items: center; gap: 15px;
+        padding: 15px; background: var(--card); border-radius: 18px;
+        margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer;
+    }
+    
+    .avatar { width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center; color: white; font-weight: 800; }
+    
+    .thread-info { flex: 1; }
+    .thread-user { font-weight: 700; font-size: 0.95rem; }
+    .thread-msg { font-size: 0.8rem; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+    .thread-time { font-size: 0.7rem; opacity: 0.5; }
 
-        // 1. AUTHENTICATION LOGIC
-        function handleAuth() {
-            const user = document.getElementById('reg-user').value;
-            const phone = document.getElementById('reg-phone').value;
-            
-            if(!user || !phone) return alert("Fill required fields");
+    /* PRIVATE CHAT WINDOW (FULLSCREEN MOBILE) */
+    #private-chat-window {
+        position: fixed; inset: 0; background: var(--bg); z-index: 2001;
+        display: flex; flex-direction: column;
+    }
+    
+    .chat-top-bar {
+        padding: 15px; background: var(--glass); backdrop-filter: blur(10px);
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--border);
+    }
 
-            const dgId = "DG-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + phone.slice(-4);
-            
-            currentUser = {
-                username: user,
-                phone: phone,
-                dgId: dgId
-            };
+    #chat-messages-display {
+        flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+    }
 
-            document.getElementById('nav-dg-id').innerText = dgId;
-            document.getElementById('auth-overlay').classList.add('hidden');
-            
-            // Initial Welcome Post
-            publishPost("Welcome to my new portal! Connect with me via the call button.", 0);
+    .msg-bubble {
+        max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem;
+    }
+    .msg-sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .msg-received { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+
+    .chat-input-area {
+        padding: 15px; background: var(--card); border-top: 1px solid var(--border);
+        display: flex; gap: 10px;
+    }
+    
+    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function showTab(tabName) {
+        // Hide all major sections
+        document.getElementById('timeline').parentElement.classList.add('hidden');
+        document.getElementById('messages-page').classList.add('hidden');
+        
+        // Remove active class from icons
+        document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
+
+        if(tabName === 'home') {
+            document.getElementById('timeline').parentElement.classList.remove('hidden');
+            document.querySelector('[data-lucide="home"]').classList.add('active');
+        } else if(tabName === 'messages') {
+            document.getElementById('messages-page').classList.remove('hidden');
+            document.querySelector('[data-lucide="message-circle"]').classList.add('active');
         }
+    }
 
-        // 2. THEME TOGGLE
-        function toggleTheme() {
-            const body = document.body;
-            const isDark = body.getAttribute('data-theme') === 'dark';
-            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            document.querySelector('.theme-toggle').innerHTML = isDark ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
-            lucide.createIcons();
-        }
+    // --- CHAT LOGIC ---
+    function openPrivateChat(id) {
+        document.getElementById('chat-target-id').innerText = id;
+        document.getElementById('private-chat-window').classList.remove('hidden');
+        // Initial mock messages
+        const display = document.getElementById('chat-messages-display');
+        display.innerHTML = `<div class="msg-bubble msg-received">Hi! Is the item still available?</div>`;
+    }
 
-        // 3. POSTING & INTERACTION
-        function publishPost(customText = null, customPrice = null) {
-            const text = customText || document.getElementById('postContent').value;
-            const price = customPrice !== null ? customPrice : document.getElementById('postPrice').value;
-            const feed = document.getElementById('app-feed');
+    function closeChat() {
+        document.getElementById('private-chat-window').classList.add('hidden');
+    }
 
-            if(!text) return;
+    function sendMsg() {
+        const input = document.getElementById('msg-input');
+        if(!input.value) return;
+        
+        const display = document.getElementById('chat-messages-display');
+        display.innerHTML += `<div class="msg-bubble msg-sent">${input.value}</div>`;
+        input.value = '';
+        display.scrollTop = display.scrollHeight;
+    }
 
-            const postId = Date.now();
-            const html = `
-                <div class="post-card" id="post-${postId}">
-                    <div class="user-meta">
-                        <div style="width:40px; height:40px; border-radius:12px; background:var(--primary); display:grid; place-items:center; color:white; font-weight:bold;">${currentUser.username[0].toUpperCase()}</div>
-                        <div>
-                            <div style="font-weight:700;">${currentUser.username}</div>
-                            <div class="user-id">${currentUser.dgId}</div>
-                        </div>
-                        <div style="margin-left:auto">${price > 0 ? `<span class="price-chip">$${price}</span>` : ''}</div>
-                    </div>
-                    <p>${text}</p>
-                    <div class="interaction-bar">
-                        <div class="btn-action" onclick="this.classList.toggle('liked')"><i data-lucide="heart" size="18"></i> Like</div>
-                        <div class="btn-action" onclick="initiateCall('${currentUser.phone}')"><i data-lucide="phone" size="18"></i> Call</div>
-                        <div class="btn-action" onclick="focusComment(${postId})"><i data-lucide="message-circle" size="18"></i> Chat</div>
-                    </div>
-                    <div class="comments-section">
-                        <div id="comments-list-${postId}"></div>
-                        <input type="text" class="comment-input" placeholder="Write a comment..." onkeypress="addComment(event, ${postId})">
-                    </div>
-                </div>
-            `;
-
-            feed.insertAdjacentHTML('afterbegin', html);
-            lucide.createIcons();
-            
-            // Clear inputs
-            if(!customText) {
-                document.getElementById('postContent').value = '';
-                document.getElementById('postPrice').value = '';
-            }
-        }
-
-        function addComment(e, postId) {
-            if(e.key === 'Enter' && e.target.value) {
-                const list = document.getElementById(`comments-list-${postId}`);
-                list.innerHTML += `<div style="font-size:0.8rem; margin:5px 0;"><strong>${currentUser.dgId}:</strong> ${e.target.value}</div>`;
-                e.target.value = '';
-            }
-        }
-
-        function initiateCall(num) {
-            alert(`System: Connecting to encrypted DG-Line...\nDialing: ${num}`);
-        }
-
-        function focusComment(id) {
-            document.querySelector(`#post-${id} .comment-input`).focus();
-        }
-    </script>
-</body>
-</html>
+    // Update Bottom Nav Event Listeners
+    document.querySelector('[data-lucide="home"]').parentElement.onclick = () => showTab('home');
+    document.querySelector('[data-lucide="message-circle"]').parentElement.onclick = () => showTab('messages');
+</script>
