@@ -9,10 +9,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     
     <style>
         :root {
-            --bg: #01120b; --card: #064e3b20; --primary: #10b981; --gold: #fbbf24;
+            --bg: #01120b; --card: #064e3b30; --primary: #10b981; --gold: #fbbf24;
             --text: #f8fafc; --text-muted: #94a3b8; --border: rgba(251, 191, 36, 0.2);
             --glass: rgba(1, 18, 11, 0.95);
         }
@@ -28,101 +29,105 @@
         .price-tag { background: var(--gold); color: #000; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.85rem; }
         
         .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 700; cursor: pointer; }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 12px; padding: 8px 15px; font-size: 0.8rem; cursor: pointer; }
         .form-input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; outline: none; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); display: flex; justify-content: space-around; padding: 15px 10px 30px; border-top: 1px solid var(--border); z-index: 1000; }
-        .nav-link { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.3s; }
-        .nav-link.active { color: var(--gold); transform: translateY(-3px); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 5px 30px; border-top: 1px solid var(--border); z-index: 1000; }
+        .nav-link { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
+        .nav-link.active { color: var(--gold); }
 
-        .img-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin: 10px 0; }
-        .badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 5px; font-size: 10px; text-transform: uppercase; }
+        .img-grid { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; }
+        .status-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; background: var(--primary); color: white; }
     </style>
 </head>
 <body>
 
-    <div id="landing-page" class="auth-screen" style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-        <i data-lucide="shield-check" color="#fbbf24" size="60"></i>
-        <h1 style="margin:20px 0; font-family:'Cinzel';">ELITE <span style="color:var(--gold)">ACCESS</span></h1>
-        <input type="password" id="node-pin" class="form-input" placeholder="Enter Node PIN" style="width:200px; text-align:center;">
-        <button class="btn-main" style="width:200px;" onclick="checkPin()">Unlock</button>
+    <div id="landing-page" style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <i data-lucide="crown" color="#fbbf24" size="50"></i>
+        <h1 style="margin:20px 0; font-family:'Cinzel';">ELITE <span style="color:var(--gold)">NODE</span></h1>
+        <input type="password" id="node-pin" class="form-input" placeholder="Enter PIN" style="width:180px; text-align:center;">
+        <button class="btn-main" style="width:180px;" onclick="checkPin()">Access</button>
     </div>
 
     <div id="auth-gate" class="hidden" style="height:100vh; display:flex; align-items:center; justify-content:center;">
-        <div class="emerald-card" style="width:90%; max-width:400px; background:rgba(255,255,255,0.02); padding:30px; border-radius:30px; border:1px solid var(--border);">
-            <h2 style="margin-bottom:20px; color:var(--gold)">Create Identity</h2>
-            <input type="text" id="reg-user" class="form-input" placeholder="Full Name">
+        <div class="container" style="text-align:center;">
+            <h2 style="margin-bottom:25px; color:var(--gold)">Create Elite Identity</h2>
+            <input type="text" id="reg-user" class="form-input" placeholder="Username">
             <input type="text" id="reg-matric" class="form-input" placeholder="Matric Number">
-            <button class="btn-main" onclick="handleAuth()">Join Hub</button>
+            <button class="btn-main" onclick="handleAuth()">Register</button>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
         <header>
-            <div style="font-weight:800; letter-spacing:1px; color:var(--gold);">DG <span style="color:var(--text)">HUB</span></div>
+            <div style="font-weight:800; color:var(--gold);">SELLR <span style="color:var(--text)">ELITE</span></div>
             <img id="head-user-img" onclick="switchTab('profile')" src="" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold); object-fit:cover;">
         </header>
 
         <div class="container">
-            <section id="tab-home">
+            <section id="tab-market">
                 <div style="background:var(--card); padding:20px; border-radius:24px; border:1px solid var(--border); margin-bottom:25px;">
-                    <textarea id="p-desc" placeholder="What's for sale?..." style="width:100%; background:transparent; border:none; color:white; outline:none; height:60px; resize:none; font-size:1rem;"></textarea>
-                    <input type="number" id="p-price" placeholder="Price ₦" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:12px; border-radius:12px; color:white; margin-bottom:15px; border: 1px solid var(--border);">
-                    <div id="preview-row" style="display:flex; gap:8px; margin-bottom:12px; overflow-x:auto;"></div>
+                    <h3 style="color:var(--gold); margin-bottom:15px; font-size:1rem;">Post to Market</h3>
+                    <input type="text" id="m-name" class="form-input" placeholder="What are you selling?">
+                    <input type="number" id="m-price" class="form-input" placeholder="Price ₦">
+                    <div id="market-preview" class="img-grid"></div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <label style="cursor:pointer; color:var(--gold); font-size:0.9rem; font-weight:600; display:flex; align-items:center; gap:5px;">
-                            <i data-lucide="image-plus" size="18"></i> Add Media
-                            <input type="file" id="file-input" class="hidden" accept="image/*" multiple onchange="handleFiles(this)">
+                        <label style="cursor:pointer; color:var(--gold); font-size:0.85rem; display:flex; align-items:center; gap:5px;">
+                            <i data-lucide="camera" size="18"></i> Add Photos (6)
+                            <input type="file" id="market-file" class="hidden" accept="image/*" multiple onchange="handleMarketFiles(this)">
                         </label>
-                        <button class="btn-main" onclick="submitPost()" style="width:auto; padding:10px 25px; border-radius:10px;">Post</button>
+                        <button class="btn-main" onclick="submitMarket()" style="width:auto; padding:8px 20px;">List Item</button>
                     </div>
                 </div>
-                <div id="feed"></div>
+                <div id="market-feed"></div>
+            </section>
+
+            <section id="tab-home" class="hidden">
+                <div style="background:var(--card); padding:15px; border-radius:20px; margin-bottom:20px;">
+                    <textarea id="post-text" placeholder="Share an update..." style="width:100%; background:transparent; border:none; color:white; outline:none; height:50px; resize:none;"></textarea>
+                    <button class="btn-main" onclick="submitTimelinePost()" style="width:auto; float:right; padding:5px 15px;">Post</button>
+                    <div style="clear:both;"></div>
+                </div>
+                <div id="timeline-feed"></div>
             </section>
 
             <section id="tab-chat" class="hidden">
-                <h3 style="margin-bottom:20px; color:var(--gold)">Messages</h3>
+                <h3 style="margin-bottom:20px; color:var(--gold)">Elite Messages</h3>
                 <div id="directory"></div>
             </section>
 
             <section id="tab-profile" class="hidden">
-                <div style="text-align:center; padding:30px 0;">
+                <div style="text-align:center; padding:30px 0; background:var(--card); border-radius:30px; border:1px solid var(--border);">
                     <img id="profile-img" src="" style="width:100px; height:100px; border-radius:30px; border:2px solid var(--gold); margin-bottom:15px;">
                     <h2 id="profile-name">---</h2>
                     <p id="profile-matric" style="color:var(--text-muted); margin-bottom:20px;">---</p>
-                    <button class="btn-main" style="background:var(--danger); width:auto; padding:10px 30px;" onclick="logout()">Disconnect</button>
+                    <button class="btn-main" style="background:var(--primary); width:80%;" onclick="logout()">Logout Session</button>
                 </div>
             </section>
         </div>
 
         <nav class="bottom-nav">
-            <div class="nav-link active" id="n-home" onclick="switchTab('home')"><i data-lucide="layout-grid"></i><small>Timeline</small></div>
-            <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-square"></i><small>Chats</small></div>
-            <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user-circle"></i><small>Profile</small></div>
+            <div class="nav-link active" id="n-market" onclick="switchTab('market')"><i data-lucide="shopping-bag"></i><small>SellR</small></div>
+            <div class="nav-link" id="n-home" onclick="switchTab('home')"><i data-lucide="layers"></i><small>Feed</small></div>
+            <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i><small>Chat</small></div>
+            <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i><small>Profile</small></div>
         </nav>
     </div>
 
     <script>
-        // Your existing Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7ui6tasM3GgtetrLiqSO3qMbuzOvcdMU",
-            authDomain: "dgmarketplace-6ae42.firebaseapp.com",
-            projectId: "dgmarketplace-6ae42",
-            storageBucket: "dgmarketplace-6ae42.firebasestorage.app",
-            messagingSenderId: "650691092405",
-            appId: "1:650691092405:web:e174e43bf5b93d7f13c3fc"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyC7ui6tasM3GgtetrLiqSO3qMbuzOvcdMU", authDomain: "dgmarketplace-6ae42.firebaseapp.com", projectId: "dgmarketplace-6ae42", storageBucket: "dgmarketplace-6ae42.firebasestorage.app", messagingSenderId: "650691092405", appId: "1:650691092405:web:e174e43bf5b93d7f13c3fc" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         let user = JSON.parse(localStorage.getItem('urban_user'));
-        let postImgs = [];
+        let marketImgs = [];
 
         window.onload = () => {
             if(user) {
                 document.getElementById('landing-page').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 setupUserUI();
-                renderFeed();
+                renderMarket();
+                renderTimeline();
                 renderDirectory();
             }
             lucide.createIcons();
@@ -132,22 +137,14 @@
             if(document.getElementById('node-pin').value === "1231") {
                 document.getElementById('landing-page').classList.add('hidden');
                 document.getElementById('auth-gate').classList.remove('hidden');
-            } else { alert("Wrong Node PIN"); }
+            } else { alert("Wrong PIN"); }
         }
 
         async function handleAuth() {
             const name = document.getElementById('reg-user').value;
             const matric = document.getElementById('reg-matric').value;
             if(!name || !matric) return alert("Fill all fields");
-            
-            user = { 
-                name, 
-                matric, 
-                id: "U"+Date.now(), 
-                pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` 
-            };
-            
-            // Save to Firestore so others can see you in Chat
+            user = { name, matric, id: "U"+Date.now(), pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
             await db.collection("users").doc(user.id).set(user);
             localStorage.setItem('urban_user', JSON.stringify(user));
             location.reload();
@@ -157,7 +154,7 @@
             document.getElementById('head-user-img').src = user.pic;
             document.getElementById('profile-img').src = user.pic;
             document.getElementById('profile-name').innerText = user.name;
-            document.getElementById('profile-matric').innerText = "Matric: " + user.matric;
+            document.getElementById('profile-matric').innerText = user.matric;
         }
 
         function switchTab(t) {
@@ -167,86 +164,118 @@
             document.getElementById('n-' + t).classList.add('active');
         }
 
-        function handleFiles(input) {
-            postImgs = [];
-            const row = document.getElementById('preview-row');
+        // --- MARKET LOGIC ---
+        function handleMarketFiles(input) {
+            marketImgs = [];
+            const row = document.getElementById('market-preview');
             row.innerHTML = "";
-            Array.from(input.files).forEach(file => {
+            Array.from(input.files).slice(0,6).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    postImgs.push(e.target.result);
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style = "width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid var(--gold)";
-                    row.appendChild(img);
+                    marketImgs.push(e.target.result);
+                    row.innerHTML += `<img src="${e.target.result}" style="width:70px; height:70px; border-radius:10px; object-fit:cover; border:1px solid var(--gold)">`;
                 };
                 reader.readAsDataURL(file);
             });
         }
 
-        async function submitPost() {
-            const desc = document.getElementById('p-desc').value.trim();
-            const price = document.getElementById('p-price').value;
-            if(!desc || !price || postImgs.length === 0) return alert("Complete the listing details");
+        async function submitMarket() {
+            const name = document.getElementById('m-name').value;
+            const price = document.getElementById('m-price').value;
+            if(!name || !price || marketImgs.length === 0) return alert("Details missing");
 
-            await db.collection("posts").add({
-                uId: user.id, uName: user.name, uPic: user.pic,
-                text: desc, price: price, images: postImgs,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            await db.collection("marketplace").add({
+                sellerId: user.id, sellerName: user.name,
+                itemName: name, price: price, images: marketImgs,
+                status: "available", timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
-            document.getElementById('p-desc').value = "";
-            document.getElementById('p-price').value = "";
-            document.getElementById('preview-row').innerHTML = "";
-            postImgs = [];
-            alert("Elite Item Listed!");
+            alert("Item Listed!");
+            location.reload();
         }
 
-        function renderFeed() {
-            db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
-                const f = document.getElementById('feed');
-                f.innerHTML = "";
+        function renderMarket() {
+            db.collection("marketplace").orderBy("timestamp", "desc").onSnapshot(snap => {
+                const f = document.getElementById('market-feed'); f.innerHTML = "";
                 snap.forEach(doc => {
-                    const p = doc.data();
+                    const m = doc.data();
+                    const isBuyer = m.buyerId === user.id;
                     f.innerHTML += `
                         <div class="post-card">
-                            <div style="padding:15px; display:flex; align-items:center; gap:10px;">
-                                <img src="${p.uPic}" style="width:30px; height:30px; border-radius:8px;">
-                                <b>${p.uName}</b>
-                                <span class="price-tag" style="margin-left:auto;">₦${p.price}</span>
+                            <div style="padding:15px; display:flex; justify-content:space-between;">
+                                <b>${m.itemName}</b><span class="price-tag">₦${m.price}</span>
                             </div>
-                            <img src="${p.images[0]}" style="width:100%; height:300px; object-fit:cover;">
-                            <div style="padding:15px;">${p.text}</div>
+                            <img src="${m.images[0]}" style="width:100%; height:250px; object-fit:cover;">
+                            <div style="padding:15px;">
+                                <small style="color:var(--text-muted)">Seller: ${m.sellerName}</small>
+                                <div style="margin-top:10px; display:flex; gap:10px;">
+                                    ${m.status === 'available' ? `<button class="btn-outline" onclick="payItem('${doc.id}', ${m.price})">SECURE ITEM</button>` : `<span class="status-badge">${m.status}</span>`}
+                                    ${m.status === 'escrow' && isBuyer ? `<button class="btn-outline" onclick="releaseItem('${doc.id}')">CONFIRM & RELEASE</button>` : ''}
+                                </div>
+                            </div>
                         </div>`;
                 });
             });
+        }
+
+        // --- TIMELINE LOGIC ---
+        async function submitTimelinePost() {
+            const text = document.getElementById('post-text').value;
+            if(!text) return;
+            await db.collection("timeline").add({
+                uName: user.name, uPic: user.pic, text, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('post-text').value = "";
+        }
+
+        function renderTimeline() {
+            db.collection("timeline").orderBy("timestamp", "desc").onSnapshot(snap => {
+                const f = document.getElementById('timeline-feed'); f.innerHTML = "";
+                snap.forEach(doc => {
+                    const t = doc.data();
+                    f.innerHTML += `
+                        <div class="post-card" style="padding:15px;">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <img src="${t.uPic}" style="width:30px; height:30px; border-radius:50%"><b>${t.uName}</b>
+                            </div>
+                            <p>${t.text}</p>
+                        </div>`;
+                });
+            });
+        }
+
+        function payItem(id, amt) {
+            let handler = PaystackPop.setup({
+                key: 'pk_test_YOUR_KEY', // Replace with your Public Key
+                email: user.name + "@dg.com",
+                amount: amt * 100,
+                callback: (res) => {
+                    db.collection("marketplace").doc(id).update({ status: "escrow", buyerId: user.id });
+                    alert("Paid to Escrow!");
+                }
+            });
+            handler.openIframe();
+        }
+
+        async function releaseItem(id) {
+            if(confirm("Item received? Money will go to seller.")) {
+                await db.collection("marketplace").doc(id).update({ status: "completed" });
+            }
         }
 
         function renderDirectory() {
-            db.collection("users").limit(10).onSnapshot(snap => {
-                const dir = document.getElementById('directory');
-                dir.innerHTML = "";
+            db.collection("users").onSnapshot(snap => {
+                const d = document.getElementById('directory'); d.innerHTML = "";
                 snap.forEach(doc => {
-                    const u = doc.data();
-                    if(u.id === user.id) return;
-                    dir.innerHTML += `
-                        <div class="post-card" style="padding:15px; display:flex; align-items:center; gap:15px; margin-bottom:10px;" onclick="alert('Starting chat with ${u.name}')">
-                            <img src="${u.pic}" style="width:45px; height:45px; border-radius:15px; border:1px solid var(--gold);">
-                            <div style="flex:1">
-                                <b>${u.name}</b><br>
-                                <small style="color:var(--text-muted)">${u.matric}</small>
-                            </div>
-                            <i data-lucide="chevron-right" size="18" color="var(--gold)"></i>
-                        </div>`;
+                    const u = doc.data(); if(u.id === user.id) return;
+                    d.innerHTML += `<div class="post-card" style="padding:15px; display:flex; align-items:center; gap:15px;">
+                        <img src="${u.pic}" style="width:40px; border-radius:12px;">
+                        <div><b>${u.name}</b><br><small>${u.matric}</small></div>
+                    </div>`;
                 });
-                lucide.createIcons();
             });
         }
 
-        function logout() {
-            localStorage.clear();
-            location.reload();
-        }
+        function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
