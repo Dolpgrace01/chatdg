@@ -345,18 +345,57 @@ async function publishTimeline() {
         function closeComments() { document.getElementById('comment-drawer').classList.remove('open'); }
         function logout() { localStorage.clear(); location.reload(); }
         
-        function renderDirectory() {
-            db.collection("users").onSnapshot(snap => {
-                const d = document.getElementById('directory'); d.innerHTML = "";
-                snap.forEach(doc => {
-                    const u = doc.data(); if(u.id === currentUser.id) return;
-                    d.innerHTML += `<div class="elite-card" style="display:flex; align-items:center; gap:15px;" onclick="startChat('${u.id}', '${u.name}')">
-                        <img src="${u.pic}" style="width:40px; border-radius:10px; border:1px solid var(--gold)">
-                        <div><b>${u.name}</b><br><small style="color:var(--text-muted)">Verified Elite</small></div>
+        // --- PRO REAL-TIME CHAT ENGINE ---
+let activeChatPartner = null;
+
+function startChat(id, name) {
+    haptic();
+    activeChatPartner = id;
+    
+    // Create a unique Room ID (Alphabetical to ensure both users join the same room)
+    const chatRoomId = [currentUser.id, id].sort().join('_');
+    
+    // Open a sliding UI (We'll use a drawer similar to comments)
+    document.getElementById('comment-drawer').classList.add('open');
+    document.getElementById('comment-list').innerHTML = `<div style="text-align:center; color:var(--gold)">Secure Channel with ${name}</div>`;
+    
+    // Listen for messages in this specific room
+    db.collection("chats").doc(chatRoomId).collection("messages")
+        .orderBy("timestamp", "asc")
+        .onSnapshot(snap => {
+            const list = document.getElementById('comment-list');
+            list.innerHTML = ""; // Clear for fresh load
+            snap.forEach(doc => {
+                const m = doc.data();
+                const isMe = m.senderId === currentUser.id;
+                list.innerHTML += `
+                    <div style="display:flex; justify-content:${isMe ? 'flex-end' : 'flex-start'}; margin-bottom:10px;">
+                        <div style="background:${isMe ? var(--primary) : 'rgba(255,255,255,0.1)'}; 
+                                    padding:10px; border-radius:12px; max-width:70%; font-size:0.9rem;">
+                            ${m.text}
+                        </div>
                     </div>`;
-                });
             });
-        }
+            list.scrollTop = list.scrollHeight; // Auto-scroll to bottom
+        });
+}
+
+async function postComment() { // This now acts as the 'Send Message' button
+    const text = document.getElementById('c-input').value;
+    if(!text || !activeChatPartner) return;
+    
+    const chatRoomId = [currentUser.id, activeChatPartner].sort().join('_');
+    
+    await db.collection("chats").doc(chatRoomId).collection("messages").add({
+        senderId: currentUser.id,
+        text: text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    document.getElementById('c-input').value = "";
+    haptic();
+}
+
     </script>
 </body>
 </html>
