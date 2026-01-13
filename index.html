@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
     
     <style>
         :root {
@@ -26,33 +25,26 @@
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(16px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         
         .gate-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-        
-        .search-container { margin-bottom: 20px; position: relative; }
-        .search-input { width: 100%; padding: 14px 14px 14px 45px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; color: white; outline: none; }
-        .search-icon { position: absolute; left: 15px; top: 13px; color: var(--text-muted); }
-
         .elite-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; padding: 15px; position: relative; }
         .price-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; }
         
         .btn-elite { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; }
         .form-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; outline: none; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 5px 30px; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-link { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
         .nav-link.active { color: var(--gold); }
 
-        #comment-drawer { position: fixed; bottom: -100%; left: 0; right: 0; height: 70vh; background: var(--glass); border-top: 2px solid var(--gold); z-index: 2000; transition: 0.4s ease; border-radius: 30px 30px 0 0; display: flex; flex-direction: column; }
+        #comment-drawer { position: fixed; bottom: -100%; left: 0; right: 0; height: 80vh; background: var(--glass); border-top: 2px solid var(--gold); z-index: 2000; transition: 0.4s ease; border-radius: 30px 30px 0 0; display: flex; flex-direction: column; }
         #comment-drawer.open { bottom: 0; }
         .drawer-handle { width: 40px; height: 5px; background: var(--border); border-radius: 10px; margin: 15px auto; }
         
-        .interaction-bar { display: flex; gap: 20px; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .interaction-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
-        /* Chat Bubbles */
-        .msg-bubble { padding: 10px 14px; border-radius: 15px; max-width: 80%; margin-bottom: 8px; font-size: 0.9rem; line-height: 1.4; }
-        .msg-sent { background: var(--primary); color: white; align-self: flex-end; }
-        .msg-rcvd { background: rgba(255,255,255,0.1); color: white; align-self: flex-start; }
+        /* CHAT BUBBLE LAYOUT */
+        #comment-list { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; position: relative; }
+        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .received { align-self: flex-start; background: rgba(255,255,255,0.1); color: white; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .msg-time { font-size: 0.65rem; opacity: 0.7; margin-top: 4px; display: block; text-align: right; }
     </style>
 </head>
 <body>
@@ -79,10 +71,6 @@
 
         <div class="container">
             <section id="tab-market">
-                <div class="search-container">
-                    <i data-lucide="search" class="search-icon" size="20"></i>
-                    <input type="text" id="m-search" class="search-input" placeholder="Search Marketplace..." oninput="searchItems()">
-                </div>
                 <div class="elite-card">
                     <input type="text" id="m-title" class="form-input" placeholder="Item Name">
                     <input type="number" id="m-price" class="form-input" placeholder="Price ₦">
@@ -107,7 +95,7 @@
             </section>
 
             <section id="tab-chat" class="hidden">
-                <h3 style="color:var(--gold); margin-bottom:15px;">Elite Directory</h3>
+                <h3 style="color:var(--gold); margin-bottom:15px;">Secure Directory</h3>
                 <div id="directory"></div>
             </section>
 
@@ -122,7 +110,7 @@
         </div>
 
         <nav class="bottom-nav">
-            <div class="nav-link active" id="n-market" onclick="switchTab('market')"><i data-lucide="shopping-bag"></i><small>SellR</small></div>
+            <div class="nav-link active" id="n-market" onclick="switchTab('market')"><i data-lucide="shopping-bag"></i><small>Market</small></div>
             <div class="nav-link" id="n-feed" onclick="switchTab('feed')"><i data-lucide="layout"></i><small>Feed</small></div>
             <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-square"></i><small>Chat</small></div>
             <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i><small>Me</small></div>
@@ -130,11 +118,11 @@
     </div>
 
     <div id="comment-drawer">
-        <div class="drawer-handle" onclick="closeComments()"></div>
-        <div id="drawer-title" style="text-align:center; font-size:0.8rem; color:var(--gold); margin-bottom:10px;"></div>
-        <div id="comment-list" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column;"></div>
-        <div id="drawer-input-area" style="padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.4);">
-            <input type="text" id="c-input" class="form-input" placeholder="Type here..." style="margin-bottom:0">
+        <div class="drawer-handle" onclick="closeDrawer()"></div>
+        <div id="drawer-title" style="text-align:center; font-weight:700; color:var(--gold); margin-bottom:5px;"></div>
+        <div id="comment-list"></div>
+        <div style="padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.4); padding-bottom: 35px;">
+            <input type="text" id="c-input" class="form-input" placeholder="Type a message..." style="margin-bottom:0">
             <button id="drawer-send-btn" class="btn-elite" style="width:auto; padding:0 20px;"><i data-lucide="send" size="18"></i></button>
         </div>
     </div>
@@ -154,13 +142,13 @@
             if(document.getElementById('node-pin').value === "1231") {
                 document.getElementById('pin-screen').classList.add('hidden');
                 document.getElementById('auth-screen').classList.remove('hidden');
-            } else { alert("Invalid Access Code"); }
+            } else { alert("Wrong Access PIN"); }
         }
 
         async function handleRegistration() {
             const name = document.getElementById('reg-name').value;
             const matric = document.getElementById('reg-matric').value;
-            if(!name || !matric) return alert("Fill all fields");
+            if(!name || !matric) return;
             currentUser = { id: "U"+Date.now(), name, matric, pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
             await db.collection("users").doc(currentUser.id).set(currentUser);
             localStorage.setItem('urban_user', JSON.stringify(currentUser));
@@ -171,10 +159,10 @@
             document.getElementById('pin-screen').classList.add('hidden');
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('top-avatar').innerHTML = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
             document.getElementById('p-img').src = currentUser.pic;
             document.getElementById('p-name').innerText = currentUser.name;
-            document.getElementById('p-matric').innerText = "ID: " + currentUser.matric;
+            document.getElementById('p-matric').innerText = "Elite ID: " + currentUser.matric;
+            document.getElementById('top-avatar').innerHTML = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
             renderMarket(); renderTimeline(); renderDirectory();
         }
 
@@ -183,7 +171,7 @@
             marketImgs = []; const area = document.getElementById('m-previews'); area.innerHTML = "";
             Array.from(input.files).slice(0,6).forEach(file => {
                 const r = new FileReader();
-                r.onload = e => { marketImgs.push(e.target.result); area.innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:10px;">`; };
+                r.onload = e => { marketImgs.push(e.target.result); area.innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:10px; border:1px solid var(--gold);">`; };
                 r.readAsDataURL(file);
             });
         }
@@ -191,7 +179,7 @@
         async function publishMarket() {
             const title = document.getElementById('m-title').value;
             const price = document.getElementById('m-price').value;
-            if(!title || !price || marketImgs.length === 0) return alert("Details missing");
+            if(!title || !price || marketImgs.length === 0) return alert("Fill all market details");
             await db.collection("marketplace").add({ uId: currentUser.id, uName: currentUser.name, title, price, images: marketImgs, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             location.reload();
         }
@@ -204,18 +192,59 @@
                     f.innerHTML += `<div class="elite-card" style="padding:0">
                         <img src="${d.images[0]}" style="width:100%; height:200px; object-fit:cover;">
                         <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                            <div><b>${d.title}</b><br><small>${d.uName}</small></div>
+                            <div><b>${d.title}</b><br><small style="color:var(--text-muted)">Seller: ${d.uName}</small></div>
                             <span class="price-badge">₦${d.price}</span>
                         </div>
-                        <div style="padding:0 15px 15px; display:flex; gap:10px;">
-                            <button class="btn-elite" onclick="startChat('${d.uId}', '${d.uName}')">Contact Seller</button>
+                        <div style="padding:0 15px 15px;">
+                            <button class="btn-elite" onclick="startChat('${d.uId}', '${d.uName}')">
+                                <i data-lucide="message-circle" size="18"></i> Contact Seller
+                            </button>
                         </div>
                     </div>`;
                 });
+                lucide.createIcons();
             });
         }
 
-        // --- TIMELINE ---
+        // --- CHAT SYSTEM ---
+        function startChat(partnerId, partnerName) {
+            if(partnerId === currentUser.id) return;
+            haptic();
+            activeChatPartner = partnerId;
+            const roomId = [currentUser.id, partnerId].sort().join('_');
+            
+            document.getElementById('drawer-title').innerText = partnerName;
+            document.getElementById('comment-drawer').classList.add('open');
+            document.getElementById('drawer-send-btn').onclick = sendMessage;
+            
+            if(chatListener) chatListener();
+            chatListener = db.collection("chats").doc(roomId).collection("messages").orderBy("timestamp", "asc").onSnapshot(snap => {
+                const list = document.getElementById('comment-list'); list.innerHTML = "";
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    const isMe = m.senderId === currentUser.id;
+                    list.innerHTML += `
+                        <div class="bubble ${isMe ? 'sent' : 'received'}">
+                            ${m.text}
+                            <span class="msg-time">${new Date(m.timestamp?.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>`;
+                });
+                list.scrollTop = list.scrollHeight;
+            });
+        }
+
+        async function sendMessage() {
+            const text = document.getElementById('c-input').value;
+            if(!text || !activeChatPartner) return;
+            const roomId = [currentUser.id, activeChatPartner].sort().join('_');
+            await db.collection("chats").doc(roomId).collection("messages").add({
+                senderId: currentUser.id, text, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('c-input').value = "";
+            haptic();
+        }
+
+        // --- FEED & COMMENTS ---
         async function publishTimeline() {
             const text = document.getElementById('t-text').value;
             if(!text) return;
@@ -233,8 +262,10 @@
                             <img src="${t.uPic}" style="width:30px; border-radius:50%"><b>${t.uName}</b>
                         </div>
                         <p>${t.text}</p>
-                        <div class="interaction-bar">
-                            <button class="interaction-btn" onclick="openComments('${doc.id}')"><i data-lucide="message-square" size="18"></i> Comment</button>
+                        <div class="interaction-bar" style="margin-top:10px;">
+                            <button class="nav-link" onclick="openComments('${doc.id}')" style="flex-direction:row; gap:5px;">
+                                <i data-lucide="message-square" size="18"></i> Comment
+                            </button>
                         </div>
                     </div>`;
                 });
@@ -242,41 +273,6 @@
             });
         }
 
-        // --- CHAT ENGINE ---
-        function startChat(partnerId, partnerName) {
-            if(partnerId === currentUser.id) return;
-            haptic();
-            activeChatPartner = partnerId;
-            const roomId = [currentUser.id, partnerId].sort().join('_');
-            
-            document.getElementById('drawer-title').innerText = "Chat with " + partnerName;
-            document.getElementById('comment-drawer').classList.add('open');
-            document.getElementById('drawer-send-btn').onclick = sendMessage;
-            
-            if(chatListener) chatListener();
-            chatListener = db.collection("chats").doc(roomId).collection("messages").orderBy("timestamp", "asc").onSnapshot(snap => {
-                const list = document.getElementById('comment-list'); list.innerHTML = "";
-                snap.forEach(doc => {
-                    const m = doc.data();
-                    const side = m.senderId === currentUser.id ? 'msg-sent' : 'msg-rcvd';
-                    list.innerHTML += `<div class="msg-bubble ${side}">${m.text}</div>`;
-                });
-                list.scrollTop = list.scrollHeight;
-            });
-        }
-
-        async function sendMessage() {
-            const text = document.getElementById('c-input').value;
-            if(!text || !activeChatPartner) return;
-            const roomId = [currentUser.id, activeChatPartner].sort().join('_');
-            await db.collection("chats").doc(roomId).collection("messages").add({
-                senderId: currentUser.id, text, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            document.getElementById('c-input').value = "";
-            haptic();
-        }
-
-        // --- COMMENTS ---
         function openComments(id) {
             activePostId = id;
             document.getElementById('drawer-title').innerText = "Comments";
@@ -287,7 +283,10 @@
                 const list = document.getElementById('comment-list'); list.innerHTML = "";
                 snap.forEach(c => {
                     const data = c.data();
-                    list.innerHTML += `<div style="margin-bottom:10px;"><small style="color:var(--gold)">${data.uName}</small><p>${data.text}</p></div>`;
+                    const isMe = data.uName === currentUser.name;
+                    list.innerHTML += `<div class="bubble ${isMe ? 'sent' : 'received'}">
+                        <small style="color:var(--gold); font-weight:700;">${data.uName}</small><br>${data.text}
+                    </div>`;
                 });
             });
         }
@@ -301,14 +300,15 @@
             document.getElementById('c-input').value = "";
         }
 
+        // --- UTILS ---
         function renderDirectory() {
             db.collection("users").onSnapshot(snap => {
                 const d = document.getElementById('directory'); d.innerHTML = "";
                 snap.forEach(doc => {
                     const u = doc.data(); if(u.id === currentUser.id) return;
-                    d.innerHTML += `<div class="elite-card" onclick="startChat('${u.id}', '${u.name}')" style="display:flex; align-items:center; gap:15px;">
-                        <img src="${u.pic}" style="width:40px; border-radius:10px;">
-                        <div><b>${u.name}</b><br><small>Elite Member</small></div>
+                    d.innerHTML += `<div class="elite-card" onclick="startChat('${u.id}', '${u.name}')" style="display:flex; align-items:center; gap:15px; padding:12px;">
+                        <img src="${u.pic}" style="width:45px; border-radius:12px; border:1px solid var(--gold)">
+                        <div><b>${u.name}</b><br><small style="color:var(--text-muted)">Elite Member</small></div>
                     </div>`;
                 });
             });
@@ -322,7 +322,7 @@
             document.getElementById('n-'+t).classList.add('active');
         }
 
-        function closeComments() { document.getElementById('comment-drawer').classList.remove('open'); if(chatListener) chatListener(); }
+        function closeDrawer() { document.getElementById('comment-drawer').classList.remove('open'); if(chatListener) chatListener(); }
         function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
