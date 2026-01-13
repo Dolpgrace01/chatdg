@@ -194,17 +194,52 @@
             });
         }
 
-        async function publishMarket() {
-            const title = document.getElementById('m-title').value;
-            const price = document.getElementById('m-price').value;
-            if(!title || !price || marketImgs.length === 0) return alert("Details missing");
-            haptic();
-            await db.collection("marketplace").add({
-                uId: currentUser.id, uName: currentUser.name, title, price, images: marketImgs,
-                status: "available", timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            location.reload();
-        }
+// --- FIXED MARKET LOGIC ---
+async function publishMarket() {
+    const title = document.getElementById('m-title').value;
+    const price = document.getElementById('m-price').value;
+    
+    // Only checks Market fields, ignores Timeline
+    if(!title || !price || marketImgs.length === 0) {
+        return alert("Please add a Name, Price, and at least one Photo.");
+    }
+    
+    haptic(); // Success vibration
+    await db.collection("marketplace").add({
+        uId: currentUser.id, 
+        uName: currentUser.name, 
+        title, 
+        price, 
+        images: marketImgs,
+        status: "available", 
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    // Clear only market fields after success
+    document.getElementById('m-title').value = "";
+    document.getElementById('m-price').value = "";
+    document.getElementById('m-previews').innerHTML = "";
+    alert("Item Listed Successfully!");
+}
+
+// --- FIXED TIMELINE LOGIC ---
+async function publishTimeline() {
+    const text = document.getElementById('t-text').value;
+    
+    // Only checks Timeline field, ignores Market
+    if(!text) return alert("Write something first!");
+
+    haptic();
+    await db.collection("timeline").add({
+        uId: currentUser.id, 
+        uName: currentUser.name, 
+        uPic: currentUser.pic,
+        text, 
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('t-text').value = "";
+}
+
 
         function renderMarket() {
             db.collection("marketplace").orderBy("timestamp", "desc").onSnapshot(snap => {
@@ -243,18 +278,6 @@
                 }
             });
             handler.openIframe();
-        }
-
-        // --- SOCIAL FEED ---
-        async function publishTimeline() {
-            const text = document.getElementById('t-text').value;
-            if(!text) return;
-            haptic();
-            await db.collection("timeline").add({
-                uId: currentUser.id, uName: currentUser.name, uPic: currentUser.pic,
-                text, likes: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            document.getElementById('t-text').value = "";
         }
 
         function renderTimeline() {
