@@ -40,8 +40,10 @@
         .sent { align-self: flex-end; background: var(--gold); color: black; border-bottom-right-radius: 4px; }
         .received { align-self: flex-start; background: #1a2e26; color: white; border-bottom-left-radius: 4px; }
 
-        #drawer { position: fixed; bottom: -100%; left: 0; right: 0; height: 85vh; background: #01120b; border-top: 2px solid var(--gold); z-index: 2000; transition: 0.4s cubic-bezier(0, 0, 0.2, 1); border-radius: 35px 35px 0 0; display: flex; flex-direction: column; }
+        #drawer { position: fixed; bottom: -100%; left: 0; right: 0; height: 90vh; background: #01120b; border-top: 2px solid var(--gold); z-index: 2000; transition: 0.4s cubic-bezier(0, 0, 0.2, 1); border-radius: 35px 35px 0 0; display: flex; flex-direction: column; }
         #drawer.open { bottom: 0; }
+        
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--card); position: absolute; bottom: 2px; right: 2px; }
     </style>
 </head>
 <body>
@@ -107,14 +109,18 @@
         <nav class="bottom-nav">
             <div class="nav-link active" id="n-market" onclick="switchTab('market')"><i data-lucide="shopping-bag"></i><small>Store</small></div>
             <div class="nav-link" id="n-feed" onclick="switchTab('feed')"><i data-lucide="rss"></i><small>Feed</small></div>
-            <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-circle"></i><small>Chat</small></div>
+            <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-square"></i><small>Chat</small></div>
             <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i><small>Profile</small></div>
         </nav>
     </div>
 
     <div id="drawer">
-        <div style="width:50px; height:5px; background:var(--border); border-radius:10px; margin:15px auto;" onclick="closeDrawer()"></div>
-        <div id="drawer-title" style="text-align:center; font-weight:800; color:var(--gold); font-size: 0.9rem; margin-bottom:15px;"></div>
+        <div style="padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid var(--border);">
+            <button onclick="closeDrawer()" style="background:none; border:none; color:var(--gold); display:flex; align-items:center; cursor:pointer;">
+                <i data-lucide="chevron-left"></i> <span>Back</span>
+            </button>
+            <div id="drawer-title" style="flex:1; text-align:center; font-weight:700; color:var(--gold); font-size: 0.8rem; margin-right: 40px;">PRIVATE LINE</div>
+        </div>
         <div id="drawer-content" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column;"></div>
         <div style="padding: 20px 20px 45px; display: flex; gap: 10px; background: #000;">
             <input type="text" id="d-input" class="form-input" placeholder="Type a message..." style="margin-bottom:0">
@@ -137,12 +143,18 @@
                 if(!currentUser) {
                     const name = prompt("Elite Member Name?");
                     const id = prompt("Matric / ID Number?");
-                    currentUser = { id: "U"+Date.now(), name, matric: id, pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
+                    currentUser = { id: "U"+Date.now(), name, matric: id, pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`, lastSeen: Date.now() };
                     localStorage.setItem('urban_user', JSON.stringify(currentUser));
                     db.collection("users").doc(currentUser.id).set(currentUser);
                 }
                 showApp();
             } else { alert("ACCESS DENIED"); }
+        }
+
+        async function updateActivity() {
+            if(currentUser) {
+                await db.collection("users").doc(currentUser.id).update({ lastSeen: Date.now() });
+            }
         }
 
         function showApp() {
@@ -152,7 +164,10 @@
             document.getElementById('p-name').innerText = currentUser.name.toUpperCase();
             document.getElementById('p-matric').innerText = "ID NO: " + currentUser.matric;
             document.getElementById('top-avatar').innerHTML = `<img src="${currentUser.pic}" style="width:38px; height:38px; border-radius:12px; border:1px solid var(--gold); object-fit:cover;">`;
-            renderMarket(); renderFeed(); renderDirectory();
+            updateActivity();
+            renderMarket(); 
+            renderFeed(); 
+            renderDirectory();
         }
 
         function previewImages(input) {
@@ -225,23 +240,42 @@
             });
         }
 
+        function formatLastSeen(ts) {
+            if(!ts) return "Offline";
+            const diff = (Date.now() - ts) / 1000;
+            if(diff < 60) return "Active Now";
+            if(diff < 3600) return Math.floor(diff/60) + "m ago";
+            return "Away";
+        }
+
         function renderDirectory() {
-            db.collection("users").limit(20).onSnapshot(snap => {
+            db.collection("users").orderBy("lastSeen", "desc").onSnapshot(snap => {
                 const d = document.getElementById('directory'); d.innerHTML = "";
                 snap.forEach(doc => {
                     const u = doc.data(); if(u.id === currentUser.id) return;
-                    d.innerHTML += `<div class="elite-card" onclick="startChat('${u.id}', '${u.name}')" style="display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
-                        <img src="${u.pic}" style="width:45px; border-radius:15px; border:1px solid var(--gold)">
-                        <div><b style="font-size:0.85rem;">${u.name}</b><br><small style="color:var(--text-muted)">Online</small></div>
+                    const isActive = (Date.now() - u.lastSeen) < 60000;
+                    d.innerHTML += `
+                    <div class="elite-card" onclick="startChat('${u.id}', '${u.name}')" style="display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
+                        <div style="position:relative">
+                            <img src="${u.pic}" style="width:45px; border-radius:15px; border:1px solid var(--gold)">
+                            <div class="status-dot" style="background:${isActive?'#10b981':'#555'}"></div>
+                        </div>
+                        <div style="flex:1">
+                            <b style="font-size:0.85rem;">${u.name}</b><br>
+                            <small style="color:var(--text-muted)">${formatLastSeen(u.lastSeen)}</small>
+                        </div>
+                        <i data-lucide="chevron-right" size="18" color="#d4af37"></i>
                     </div>`;
                 });
+                lucide.createIcons();
             });
         }
 
         function startChat(pId, pName) {
+            updateActivity();
             activeChatId = pId;
             const roomId = [currentUser.id, pId].sort().join('_');
-            document.getElementById('drawer-title').innerText = "CHAT WITH: " + pName.toUpperCase();
+            document.getElementById('drawer-title').innerText = pName.toUpperCase();
             document.getElementById('drawer').classList.add('open');
             document.getElementById('drawer-send-btn').onclick = sendMessage;
             
@@ -263,9 +297,11 @@
                 senderId: currentUser.id, text: t, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('d-input').value = "";
+            updateActivity();
         }
 
         function switchTab(t) {
+            updateActivity();
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             document.getElementById('tab-'+t).classList.remove('hidden');
