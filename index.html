@@ -25,10 +25,8 @@
 
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(16px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         
-        /* PIN & Auth Gates */
         .gate-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
         
-        /* Search & Cards */
         .search-container { margin-bottom: 20px; position: relative; }
         .search-input { width: 100%; padding: 14px 14px 14px 45px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; color: white; outline: none; }
         .search-icon { position: absolute; left: 15px; top: 13px; color: var(--text-muted); }
@@ -44,13 +42,17 @@
         .nav-link { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
         .nav-link.active { color: var(--gold); }
 
-        /* Comment Drawer */
         #comment-drawer { position: fixed; bottom: -100%; left: 0; right: 0; height: 70vh; background: var(--glass); border-top: 2px solid var(--gold); z-index: 2000; transition: 0.4s ease; border-radius: 30px 30px 0 0; display: flex; flex-direction: column; }
         #comment-drawer.open { bottom: 0; }
         .drawer-handle { width: 40px; height: 5px; background: var(--border); border-radius: 10px; margin: 15px auto; }
         
         .interaction-bar { display: flex; gap: 20px; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
         .interaction-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+        /* Chat Bubbles */
+        .msg-bubble { padding: 10px 14px; border-radius: 15px; max-width: 80%; margin-bottom: 8px; font-size: 0.9rem; line-height: 1.4; }
+        .msg-sent { background: var(--primary); color: white; align-self: flex-end; }
+        .msg-rcvd { background: rgba(255,255,255,0.1); color: white; align-self: flex-start; }
     </style>
 </head>
 <body>
@@ -82,16 +84,15 @@
                     <input type="text" id="m-search" class="search-input" placeholder="Search Marketplace..." oninput="searchItems()">
                 </div>
                 <div class="elite-card">
-                    <h3 style="color:var(--gold); margin-bottom:10px; font-size:0.9rem;">SELL AN ITEM</h3>
                     <input type="text" id="m-title" class="form-input" placeholder="Item Name">
                     <input type="number" id="m-price" class="form-input" placeholder="Price ₦">
                     <div id="m-previews" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;"></div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <label style="cursor:pointer; color:var(--gold); font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-                            <i data-lucide="image-plus" size="18"></i> Photos
+                        <label style="cursor:pointer; color:var(--gold); font-size:0.8rem;">
+                            <i data-lucide="image-plus" size="18"></i> Add Photos
                             <input type="file" id="m-files" class="hidden" accept="image/*" multiple onchange="previewMarket(this)">
                         </label>
-                        <button class="btn-elite" onclick="publishMarket()" style="width:auto; padding:8px 25px;">Post</button>
+                        <button class="btn-elite" onclick="publishMarket()" style="width:auto; padding:8px 25px;">Post Item</button>
                     </div>
                 </div>
                 <div id="market-feed"></div>
@@ -101,7 +102,6 @@
                 <div class="elite-card">
                     <textarea id="t-text" class="form-input" placeholder="What's happening?" style="height:50px; resize:none;"></textarea>
                     <button class="btn-elite" onclick="publishTimeline()" style="width:auto; float:right; background:var(--gold); color:black;">Post</button>
-                    <div style="clear:both;"></div>
                 </div>
                 <div id="timeline-feed"></div>
             </section>
@@ -115,8 +115,8 @@
                 <div class="elite-card" style="text-align:center;">
                     <img id="p-img" style="width:90px; height:90px; border-radius:50%; border:2px solid var(--gold); margin-bottom:15px;">
                     <h2 id="p-name">---</h2>
-                    <p id="p-matric" style="color:var(--text-muted); font-size:0.8rem; margin-bottom:20px;"></p>
-                    <button onclick="logout()" class="btn-elite" style="background:#450a0a;">Log Out</button>
+                    <p id="p-matric" style="color:var(--text-muted); font-size:0.8rem;"></p>
+                    <button onclick="logout()" class="btn-elite" style="background:#450a0a; margin-top:20px;">Log Out</button>
                 </div>
             </section>
         </div>
@@ -131,10 +131,11 @@
 
     <div id="comment-drawer">
         <div class="drawer-handle" onclick="closeComments()"></div>
-        <div id="comment-list" style="flex:1; overflow-y:auto; padding:20px;"></div>
-        <div style="padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.4);">
-            <input type="text" id="c-input" class="form-input" placeholder="Add a comment..." style="margin-bottom:0">
-            <button class="btn-elite" onclick="postComment()" style="width:auto; padding:0 20px;"><i data-lucide="send" size="18"></i></button>
+        <div id="drawer-title" style="text-align:center; font-size:0.8rem; color:var(--gold); margin-bottom:10px;"></div>
+        <div id="comment-list" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column;"></div>
+        <div id="drawer-input-area" style="padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.4);">
+            <input type="text" id="c-input" class="form-input" placeholder="Type here..." style="margin-bottom:0">
+            <button id="drawer-send-btn" class="btn-elite" style="width:auto; padding:0 20px;"><i data-lucide="send" size="18"></i></button>
         </div>
     </div>
 
@@ -144,140 +145,82 @@
         const db = firebase.firestore();
 
         let currentUser = JSON.parse(localStorage.getItem('urban_user'));
-        let marketImgs = [], activePostId = null;
+        let marketImgs = [], activePostId = null, activeChatPartner = null, chatListener = null;
 
-        window.onload = () => {
-            if(currentUser) {
-                showApp();
-            }
-            lucide.createIcons();
-        };
-
+        window.onload = () => { if(currentUser) showApp(); lucide.createIcons(); };
         function haptic() { if(window.navigator.vibrate) window.navigator.vibrate(50); }
 
-        // --- AUTH LOGIC ---
         function checkPin() {
             if(document.getElementById('node-pin').value === "1231") {
                 document.getElementById('pin-screen').classList.add('hidden');
                 document.getElementById('auth-screen').classList.remove('hidden');
-            } else { alert("Access Denied"); }
+            } else { alert("Invalid Access Code"); }
         }
 
         async function handleRegistration() {
             const name = document.getElementById('reg-name').value;
             const matric = document.getElementById('reg-matric').value;
             if(!name || !matric) return alert("Fill all fields");
-            
-            currentUser = { id: "U"+Date.now(), name, matric, pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`, sales: 0 };
+            currentUser = { id: "U"+Date.now(), name, matric, pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
             await db.collection("users").doc(currentUser.id).set(currentUser);
             localStorage.setItem('urban_user', JSON.stringify(currentUser));
             showApp();
         }
 
         function showApp() {
-            document.querySelectorAll('.gate-screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('pin-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('top-avatar').innerHTML = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
             document.getElementById('p-img').src = currentUser.pic;
             document.getElementById('p-name').innerText = currentUser.name;
-            document.getElementById('p-matric').innerText = "Matric: " + currentUser.matric;
+            document.getElementById('p-matric').innerText = "ID: " + currentUser.matric;
             renderMarket(); renderTimeline(); renderDirectory();
         }
 
-        // --- MARKETPLACE & PAYMENTS ---
+        // --- MARKET ---
         function previewMarket(input) {
             marketImgs = []; const area = document.getElementById('m-previews'); area.innerHTML = "";
             Array.from(input.files).slice(0,6).forEach(file => {
                 const r = new FileReader();
-                r.onload = e => { marketImgs.push(e.target.result); area.innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:10px; border:1px solid var(--gold);">`; };
+                r.onload = e => { marketImgs.push(e.target.result); area.innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:10px;">`; };
                 r.readAsDataURL(file);
             });
         }
 
-// --- FIXED MARKET LOGIC ---
-async function publishMarket() {
-    const title = document.getElementById('m-title').value;
-    const price = document.getElementById('m-price').value;
-    
-    // Only checks Market fields, ignores Timeline
-    if(!title || !price || marketImgs.length === 0) {
-        return alert("Please add a Name, Price, and at least one Photo.");
-    }
-    
-    haptic(); // Success vibration
-    await db.collection("marketplace").add({
-        uId: currentUser.id, 
-        uName: currentUser.name, 
-        title, 
-        price, 
-        images: marketImgs,
-        status: "available", 
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    // Clear only market fields after success
-    document.getElementById('m-title').value = "";
-    document.getElementById('m-price').value = "";
-    document.getElementById('m-previews').innerHTML = "";
-    alert("Item Listed Successfully!");
-}
-
-// --- FIXED TIMELINE LOGIC ---
-async function publishTimeline() {
-    const text = document.getElementById('t-text').value;
-    
-    // Only checks Timeline field, ignores Market
-    if(!text) return alert("Write something first!");
-
-    haptic();
-    await db.collection("timeline").add({
-        uId: currentUser.id, 
-        uName: currentUser.name, 
-        uPic: currentUser.pic,
-        text, 
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    document.getElementById('t-text').value = "";
-}
-
+        async function publishMarket() {
+            const title = document.getElementById('m-title').value;
+            const price = document.getElementById('m-price').value;
+            if(!title || !price || marketImgs.length === 0) return alert("Details missing");
+            await db.collection("marketplace").add({ uId: currentUser.id, uName: currentUser.name, title, price, images: marketImgs, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            location.reload();
+        }
 
         function renderMarket() {
             db.collection("marketplace").orderBy("timestamp", "desc").onSnapshot(snap => {
                 const f = document.getElementById('market-feed'); f.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const check = d.uSales >= 5 ? `<span style="color:var(--gold); margin-left:5px;">★</span>` : '';
-                    f.innerHTML += `
-                        <div class="elite-card" style="padding:0">
-                            <img src="${d.images[0]}" style="width:100%; height:250px; object-fit:cover;">
-                            <div style="padding:15px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <div><b>${d.title}</b><br><small style="color:var(--text-muted)">Seller: ${d.uName}${check}</small></div>
-                                    <span class="price-badge">₦${d.price}</span>
-                                </div>
-                                <div style="margin-top:15px; display:flex; gap:10px;">
-                                    <button class="btn-elite" onclick="payItem('${doc.id}', ${d.price})">BUY ITEM</button>
-                                    <button class="btn-outline" style="width:auto;" onclick="startChat('${d.uId}', '${d.uName}')"><i data-lucide="message-circle" size="18"></i></button>
-                                </div>
-                            </div>
-                        </div>`;
+                    f.innerHTML += `<div class="elite-card" style="padding:0">
+                        <img src="${d.images[0]}" style="width:100%; height:200px; object-fit:cover;">
+                        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                            <div><b>${d.title}</b><br><small>${d.uName}</small></div>
+                            <span class="price-badge">₦${d.price}</span>
+                        </div>
+                        <div style="padding:0 15px 15px; display:flex; gap:10px;">
+                            <button class="btn-elite" onclick="startChat('${d.uId}', '${d.uName}')">Contact Seller</button>
+                        </div>
+                    </div>`;
                 });
-                lucide.createIcons();
             });
         }
 
-        function payItem(id, amt) {
-            haptic();
-            let handler = PaystackPop.setup({
-                key: 'pk_test_YOUR_KEY', // Change to your public key
-                email: currentUser.name + "@dg.com",
-                amount: amt * 100,
-                callback: (res) => {
-                    db.collection("marketplace").doc(id).update({ status: "escrow", buyerId: currentUser.id });
-                    alert("Payment Secured in Escrow!");
-                }
-            });
-            handler.openIframe();
+        // --- TIMELINE ---
+        async function publishTimeline() {
+            const text = document.getElementById('t-text').value;
+            if(!text) return;
+            await db.collection("timeline").add({ uId: currentUser.id, uName: currentUser.name, uPic: currentUser.pic, text, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('t-text').value = "";
         }
 
         function renderTimeline() {
@@ -285,47 +228,92 @@ async function publishTimeline() {
                 const f = document.getElementById('timeline-feed'); f.innerHTML = "";
                 snap.forEach(doc => {
                     const t = doc.data();
-                    f.innerHTML += `
-                        <div class="elite-card">
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                                <img src="${t.uPic}" style="width:30px; border-radius:50%"><b>${t.uName}</b>
-                            </div>
-                            <p>${t.text}</p>
-                            <div class="interaction-bar">
-                                <button class="interaction-btn" onclick="openComments('${doc.id}')"><i data-lucide="message-square" size="18"></i> Comment</button>
-                                <button class="interaction-btn" style="margin-left:auto;" onclick="startChat('${t.uId}', '${t.uName}')"><i data-lucide="send" size="18"></i> DM</button>
-                            </div>
-                        </div>`;
+                    f.innerHTML += `<div class="elite-card">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <img src="${t.uPic}" style="width:30px; border-radius:50%"><b>${t.uName}</b>
+                        </div>
+                        <p>${t.text}</p>
+                        <div class="interaction-bar">
+                            <button class="interaction-btn" onclick="openComments('${doc.id}')"><i data-lucide="message-square" size="18"></i> Comment</button>
+                        </div>
+                    </div>`;
                 });
                 lucide.createIcons();
             });
         }
 
+        // --- CHAT ENGINE ---
+        function startChat(partnerId, partnerName) {
+            if(partnerId === currentUser.id) return;
+            haptic();
+            activeChatPartner = partnerId;
+            const roomId = [currentUser.id, partnerId].sort().join('_');
+            
+            document.getElementById('drawer-title').innerText = "Chat with " + partnerName;
+            document.getElementById('comment-drawer').classList.add('open');
+            document.getElementById('drawer-send-btn').onclick = sendMessage;
+            
+            if(chatListener) chatListener();
+            chatListener = db.collection("chats").doc(roomId).collection("messages").orderBy("timestamp", "asc").onSnapshot(snap => {
+                const list = document.getElementById('comment-list'); list.innerHTML = "";
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    const side = m.senderId === currentUser.id ? 'msg-sent' : 'msg-rcvd';
+                    list.innerHTML += `<div class="msg-bubble ${side}">${m.text}</div>`;
+                });
+                list.scrollTop = list.scrollHeight;
+            });
+        }
+
+        async function sendMessage() {
+            const text = document.getElementById('c-input').value;
+            if(!text || !activeChatPartner) return;
+            const roomId = [currentUser.id, activeChatPartner].sort().join('_');
+            await db.collection("chats").doc(roomId).collection("messages").add({
+                senderId: currentUser.id, text, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('c-input').value = "";
+            haptic();
+        }
+
         // --- COMMENTS ---
         function openComments(id) {
-            haptic(); activePostId = id;
+            activePostId = id;
+            document.getElementById('drawer-title').innerText = "Comments";
             document.getElementById('comment-drawer').classList.add('open');
+            document.getElementById('drawer-send-btn').onclick = postComment;
+            
             db.collection("timeline").doc(id).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
                 const list = document.getElementById('comment-list'); list.innerHTML = "";
                 snap.forEach(c => {
                     const data = c.data();
-                    list.innerHTML += `<div style="margin-bottom:12px; border-left:2px solid var(--gold); padding-left:10px;">
-                        <small style="color:var(--gold)">${data.uName}</small><p>${data.text}</p>
-                    </div>`;
+                    list.innerHTML += `<div style="margin-bottom:10px;"><small style="color:var(--gold)">${data.uName}</small><p>${data.text}</p></div>`;
                 });
             });
         }
 
         async function postComment() {
-            const val = document.getElementById('c-input').value;
-            if(!val) return;
+            const text = document.getElementById('c-input').value;
+            if(!text) return;
             await db.collection("timeline").doc(activePostId).collection("comments").add({
-                uName: currentUser.name, text: val, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                uName: currentUser.name, text, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('c-input').value = "";
         }
 
-        // --- UTILS ---
+        function renderDirectory() {
+            db.collection("users").onSnapshot(snap => {
+                const d = document.getElementById('directory'); d.innerHTML = "";
+                snap.forEach(doc => {
+                    const u = doc.data(); if(u.id === currentUser.id) return;
+                    d.innerHTML += `<div class="elite-card" onclick="startChat('${u.id}', '${u.name}')" style="display:flex; align-items:center; gap:15px;">
+                        <img src="${u.pic}" style="width:40px; border-radius:10px;">
+                        <div><b>${u.name}</b><br><small>Elite Member</small></div>
+                    </div>`;
+                });
+            });
+        }
+
         function switchTab(t) {
             haptic();
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -334,68 +322,8 @@ async function publishTimeline() {
             document.getElementById('n-'+t).classList.add('active');
         }
 
-        function searchItems() {
-            const term = document.getElementById('m-search').value.toLowerCase();
-            document.querySelectorAll('#market-feed .elite-card').forEach(c => {
-                c.style.display = c.innerText.toLowerCase().includes(term) ? "block" : "none";
-            });
-        }
-
-        function startChat(id, name) { switchTab('chat'); alert("Opening secure chat with " + name); }
-        function closeComments() { document.getElementById('comment-drawer').classList.remove('open'); }
+        function closeComments() { document.getElementById('comment-drawer').classList.remove('open'); if(chatListener) chatListener(); }
         function logout() { localStorage.clear(); location.reload(); }
-        
-        // --- PRO REAL-TIME CHAT ENGINE ---
-let activeChatPartner = null;
-
-function startChat(id, name) {
-    haptic();
-    activeChatPartner = id;
-    
-    // Create a unique Room ID (Alphabetical to ensure both users join the same room)
-    const chatRoomId = [currentUser.id, id].sort().join('_');
-    
-    // Open a sliding UI (We'll use a drawer similar to comments)
-    document.getElementById('comment-drawer').classList.add('open');
-    document.getElementById('comment-list').innerHTML = `<div style="text-align:center; color:var(--gold)">Secure Channel with ${name}</div>`;
-    
-    // Listen for messages in this specific room
-    db.collection("chats").doc(chatRoomId).collection("messages")
-        .orderBy("timestamp", "asc")
-        .onSnapshot(snap => {
-            const list = document.getElementById('comment-list');
-            list.innerHTML = ""; // Clear for fresh load
-            snap.forEach(doc => {
-                const m = doc.data();
-                const isMe = m.senderId === currentUser.id;
-                list.innerHTML += `
-                    <div style="display:flex; justify-content:${isMe ? 'flex-end' : 'flex-start'}; margin-bottom:10px;">
-                        <div style="background:${isMe ? var(--primary) : 'rgba(255,255,255,0.1)'}; 
-                                    padding:10px; border-radius:12px; max-width:70%; font-size:0.9rem;">
-                            ${m.text}
-                        </div>
-                    </div>`;
-            });
-            list.scrollTop = list.scrollHeight; // Auto-scroll to bottom
-        });
-}
-
-async function postComment() { // This now acts as the 'Send Message' button
-    const text = document.getElementById('c-input').value;
-    if(!text || !activeChatPartner) return;
-    
-    const chatRoomId = [currentUser.id, activeChatPartner].sort().join('_');
-    
-    await db.collection("chats").doc(chatRoomId).collection("messages").add({
-        senderId: currentUser.id,
-        text: text,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    document.getElementById('c-input').value = "";
-    haptic();
-}
-
     </script>
 </body>
 </html>
