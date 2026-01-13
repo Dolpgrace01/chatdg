@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     
     <style>
         :root {
@@ -24,17 +25,19 @@
 
         header { position: sticky; top: 0; background: var(--glass); backdrop-filter: blur(16px); padding: 15px 20px; border-bottom: 1px solid var(--border); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Search Bar Style */
+        /* PIN & Auth Gates */
+        .gate-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        
+        /* Search & Cards */
         .search-container { margin-bottom: 20px; position: relative; }
-        .search-input { width: 100%; padding: 14px 14px 14px 45px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; color: white; outline: none; transition: 0.3s; }
-        .search-input:focus { border-color: var(--gold); background: rgba(0,0,0,0.4); }
+        .search-input { width: 100%; padding: 14px 14px 14px 45px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; color: white; outline: none; }
         .search-icon { position: absolute; left: 15px; top: 13px; color: var(--text-muted); }
 
         .elite-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; padding: 15px; position: relative; }
         .price-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; }
         
         .btn-elite { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-elite:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; }
         .form-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; outline: none; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 5px 30px; border-top: 1px solid var(--border); z-index: 1000; }
@@ -52,136 +55,154 @@
 </head>
 <body>
 
-    <header>
-        <div style="font-weight:800; color:var(--gold);">DG <span style="color:var(--text)">HUB</span></div>
-        <div id="top-avatar-container" onclick="switchTab('profile')"></div>
-    </header>
+    <div id="pin-screen" class="gate-screen">
+        <i data-lucide="shield-check" color="#fbbf24" size="50"></i>
+        <h1 style="margin:20px 0;">ACCESS <span style="color:var(--gold)">NODE</span></h1>
+        <input type="password" id="node-pin" class="form-input" placeholder="Enter PIN" style="width:180px; text-align:center;">
+        <button class="btn-elite" style="width:180px;" onclick="checkPin()">Access</button>
+    </div>
 
-    <div class="container">
-        
-        <section id="tab-market">
-            <div class="search-container">
-                <i data-lucide="search" class="search-icon" size="20"></i>
-                <input type="text" id="market-search" class="search-input" placeholder="Search items for sale..." oninput="searchMarket()">
-            </div>
+    <div id="auth-screen" class="gate-screen hidden">
+        <h2 style="margin-bottom:20px; color:var(--gold)">Identity Setup</h2>
+        <input type="text" id="reg-name" class="form-input" placeholder="Display Name">
+        <input type="text" id="reg-matric" class="form-input" placeholder="Matric Number">
+        <button class="btn-elite" onclick="handleRegistration()">Verify & Enter</button>
+    </div>
 
-            <div class="elite-card">
-                <textarea id="m-desc" class="form-input" placeholder="What are you selling?" style="height:60px; resize:none;"></textarea>
-                <input type="number" id="m-price" class="form-input" placeholder="Price ₦">
-                <div id="m-preview-area" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="cursor:pointer; color:var(--gold); font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-                        <i data-lucide="camera" size="18"></i> Add Photos
-                        <input type="file" id="m-file-input" class="hidden" accept="image/*" multiple onchange="handleMarketMedia(this)">
-                    </label>
-                    <button class="btn-elite" onclick="publishMarket()" style="width:auto; padding:8px 25px;">Sell Item</button>
+    <div id="main-app" class="hidden">
+        <header>
+            <div style="font-weight:800; color:var(--gold);">DG <span style="color:var(--text)">HUB</span></div>
+            <div id="top-avatar" onclick="switchTab('profile')"></div>
+        </header>
+
+        <div class="container">
+            <section id="tab-market">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon" size="20"></i>
+                    <input type="text" id="m-search" class="search-input" placeholder="Search Marketplace..." oninput="searchItems()">
                 </div>
-            </div>
-            <div id="market-feed"></div>
-        </section>
-
-        <section id="tab-timeline" class="hidden">
-            <div class="elite-card">
-                <textarea id="t-post" class="form-input" placeholder="Share an update..." style="height:50px; resize:none;"></textarea>
-                <div id="t-preview-area"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="cursor:pointer; color:var(--primary); font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-                        <i data-lucide="image" size="18"></i> Photo
-                        <input type="file" id="t-file-input" class="hidden" accept="image/*" onchange="handleTimelineMedia(this)">
-                    </label>
-                    <button class="btn-elite" onclick="publishTimeline()" style="width:auto; padding:8px 25px; background:var(--gold); color:black;">Post</button>
+                <div class="elite-card">
+                    <h3 style="color:var(--gold); margin-bottom:10px; font-size:0.9rem;">SELL AN ITEM</h3>
+                    <input type="text" id="m-title" class="form-input" placeholder="Item Name">
+                    <input type="number" id="m-price" class="form-input" placeholder="Price ₦">
+                    <div id="m-previews" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <label style="cursor:pointer; color:var(--gold); font-size:0.8rem; display:flex; align-items:center; gap:5px;">
+                            <i data-lucide="image-plus" size="18"></i> Photos
+                            <input type="file" id="m-files" class="hidden" accept="image/*" multiple onchange="previewMarket(this)">
+                        </label>
+                        <button class="btn-elite" onclick="publishMarket()" style="width:auto; padding:8px 25px;">Post</button>
+                    </div>
                 </div>
-            </div>
-            <div id="timeline-feed"></div>
-        </section>
+                <div id="market-feed"></div>
+            </section>
 
-        <section id="tab-chat" class="hidden"><div id="user-directory"></div></section>
-        <section id="tab-profile" class="hidden">
-            <div class="elite-card" style="text-align:center;">
-                <img id="p-avatar" style="width:90px; height:90px; border-radius:50%; border:2px solid var(--gold); margin-bottom:10px;">
-                <h2 id="p-name">Elite User</h2>
-                <button onclick="logout()" class="btn-elite" style="margin-top:20px; background:#450a0a;">Log Out</button>
-            </div>
-        </section>
+            <section id="tab-feed" class="hidden">
+                <div class="elite-card">
+                    <textarea id="t-text" class="form-input" placeholder="What's happening?" style="height:50px; resize:none;"></textarea>
+                    <button class="btn-elite" onclick="publishTimeline()" style="width:auto; float:right; background:var(--gold); color:black;">Post</button>
+                    <div style="clear:both;"></div>
+                </div>
+                <div id="timeline-feed"></div>
+            </section>
+
+            <section id="tab-chat" class="hidden">
+                <h3 style="color:var(--gold); margin-bottom:15px;">Elite Directory</h3>
+                <div id="directory"></div>
+            </section>
+
+            <section id="tab-profile" class="hidden">
+                <div class="elite-card" style="text-align:center;">
+                    <img id="p-img" style="width:90px; height:90px; border-radius:50%; border:2px solid var(--gold); margin-bottom:15px;">
+                    <h2 id="p-name">---</h2>
+                    <p id="p-matric" style="color:var(--text-muted); font-size:0.8rem; margin-bottom:20px;"></p>
+                    <button onclick="logout()" class="btn-elite" style="background:#450a0a;">Log Out</button>
+                </div>
+            </section>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-link active" id="n-market" onclick="switchTab('market')"><i data-lucide="shopping-bag"></i><small>SellR</small></div>
+            <div class="nav-link" id="n-feed" onclick="switchTab('feed')"><i data-lucide="layout"></i><small>Feed</small></div>
+            <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="message-square"></i><small>Chat</small></div>
+            <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i><small>Me</small></div>
+        </nav>
     </div>
 
     <div id="comment-drawer">
         <div class="drawer-handle" onclick="closeComments()"></div>
         <div id="comment-list" style="flex:1; overflow-y:auto; padding:20px;"></div>
         <div style="padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.4);">
-            <input type="text" id="comment-input" class="form-input" placeholder="Write a comment..." style="margin-bottom:0">
+            <input type="text" id="c-input" class="form-input" placeholder="Add a comment..." style="margin-bottom:0">
             <button class="btn-elite" onclick="postComment()" style="width:auto; padding:0 20px;"><i data-lucide="send" size="18"></i></button>
         </div>
     </div>
-
-    <nav class="bottom-nav">
-        <div class="nav-link active" id="n-market" onclick="switchTab('market')"><i data-lucide="shopping-cart"></i><small>SellR</small></div>
-        <div class="nav-link" id="n-timeline" onclick="switchTab('timeline')"><i data-lucide="layout"></i><small>Feed</small></div>
-        <div class="nav-link" id="n-chat" onclick="switchTab('chat')"><i data-lucide="messages-square"></i><small>Chats</small></div>
-        <div class="nav-link" id="n-profile" onclick="switchTab('profile')"><i data-lucide="user"></i><small>Me</small></div>
-    </nav>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyC7ui6tasM3GgtetrLiqSO3qMbuzOvcdMU", authDomain: "dgmarketplace-6ae42.firebaseapp.com", projectId: "dgmarketplace-6ae42", storageBucket: "dgmarketplace-6ae42.firebasestorage.app", messagingSenderId: "650691092405", appId: "1:650691092405:web:e174e43bf5b93d7f13c3fc" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let currentUser = JSON.parse(localStorage.getItem('urban_user')) || { name: "Guest", id: "000", pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" };
-        let marketImgs = [], timelineImg = null, activePostId = null;
+        let currentUser = JSON.parse(localStorage.getItem('urban_user'));
+        let marketImgs = [], activePostId = null;
 
-        window.onload = () => { setupUI(); renderMarket(); renderTimeline(); lucide.createIcons(); };
+        window.onload = () => {
+            if(currentUser) {
+                showApp();
+            }
+            lucide.createIcons();
+        };
 
         function haptic() { if(window.navigator.vibrate) window.navigator.vibrate(50); }
 
-        function setupUI() {
-            document.getElementById('top-avatar-container').innerHTML = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
-            document.getElementById('p-avatar').src = currentUser.pic;
+        // --- AUTH LOGIC ---
+        function checkPin() {
+            if(document.getElementById('node-pin').value === "1231") {
+                document.getElementById('pin-screen').classList.add('hidden');
+                document.getElementById('auth-screen').classList.remove('hidden');
+            } else { alert("Access Denied"); }
+        }
+
+        async function handleRegistration() {
+            const name = document.getElementById('reg-name').value;
+            const matric = document.getElementById('reg-matric').value;
+            if(!name || !matric) return alert("Fill all fields");
+            
+            currentUser = { id: "U"+Date.now(), name, matric, pic: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`, sales: 0 };
+            await db.collection("users").doc(currentUser.id).set(currentUser);
+            localStorage.setItem('urban_user', JSON.stringify(currentUser));
+            showApp();
+        }
+
+        function showApp() {
+            document.querySelectorAll('.gate-screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('top-avatar').innerHTML = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
+            document.getElementById('p-img').src = currentUser.pic;
             document.getElementById('p-name').innerText = currentUser.name;
+            document.getElementById('p-matric').innerText = "Matric: " + currentUser.matric;
+            renderMarket(); renderTimeline(); renderDirectory();
         }
 
-        function switchTab(t) {
-            haptic();
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-'+t).classList.remove('hidden');
-            document.getElementById('n-'+t).classList.add('active');
-        }
-
-        // Search Function
-        function searchMarket() {
-            const term = document.getElementById('market-search').value.toLowerCase();
-            const cards = document.querySelectorAll('#market-feed .elite-card');
-            cards.forEach(card => {
-                const text = card.innerText.toLowerCase();
-                card.style.display = text.includes(term) ? "block" : "none";
-            });
-        }
-
-        // Separate Market & Timeline Logic
-        function handleMarketMedia(input) {
-            marketImgs = [];
-            const area = document.getElementById('m-preview-area'); area.innerHTML = "";
-            Array.from(input.files).forEach(file => {
+        // --- MARKETPLACE & PAYMENTS ---
+        function previewMarket(input) {
+            marketImgs = []; const area = document.getElementById('m-previews'); area.innerHTML = "";
+            Array.from(input.files).slice(0,6).forEach(file => {
                 const r = new FileReader();
-                r.onload = e => { marketImgs.push(e.target.result); area.innerHTML += `<img src="${e.target.result}" style="width:60px;height:60px;border-radius:10px;">`; };
+                r.onload = e => { marketImgs.push(e.target.result); area.innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:10px; border:1px solid var(--gold);">`; };
                 r.readAsDataURL(file);
             });
         }
 
         async function publishMarket() {
-            const desc = document.getElementById('m-desc').value;
+            const title = document.getElementById('m-title').value;
             const price = document.getElementById('m-price').value;
-            if(!desc || !price || marketImgs.length === 0) return alert("Market Post: Add description, price and image");
+            if(!title || !price || marketImgs.length === 0) return alert("Details missing");
             haptic();
-            await db.collection("marketplace").add({ uName: currentUser.name, desc, price, images: marketImgs, sales: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            location.reload();
-        }
-
-        async function publishTimeline() {
-            const text = document.getElementById('t-post').value;
-            if(!text) return alert("Please enter text for timeline");
-            haptic();
-            await db.collection("timeline").add({ uName: currentUser.name, uPic: currentUser.pic, text, image: timelineImg, likes: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection("marketplace").add({
+                uId: currentUser.id, uName: currentUser.name, title, price, images: marketImgs,
+                status: "available", timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
             location.reload();
         }
 
@@ -190,39 +211,129 @@
                 const f = document.getElementById('market-feed'); f.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    f.innerHTML += `<div class="elite-card" style="padding:0">
-                        <img src="${d.images[0]}" style="width:100%;height:250px;object-fit:cover;">
-                        <div style="padding:15px;">
-                            <div style="display:flex;justify-content:space-between;"><b>${d.desc}</b><span class="price-badge">₦${d.price}</span></div>
-                            <button class="btn-elite" style="margin-top:15px;">BUY ITEM</button>
-                        </div>
-                    </div>`;
+                    const check = d.uSales >= 5 ? `<span style="color:var(--gold); margin-left:5px;">★</span>` : '';
+                    f.innerHTML += `
+                        <div class="elite-card" style="padding:0">
+                            <img src="${d.images[0]}" style="width:100%; height:250px; object-fit:cover;">
+                            <div style="padding:15px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div><b>${d.title}</b><br><small style="color:var(--text-muted)">Seller: ${d.uName}${check}</small></div>
+                                    <span class="price-badge">₦${d.price}</span>
+                                </div>
+                                <div style="margin-top:15px; display:flex; gap:10px;">
+                                    <button class="btn-elite" onclick="payItem('${doc.id}', ${d.price})">BUY ITEM</button>
+                                    <button class="btn-outline" style="width:auto;" onclick="startChat('${d.uId}', '${d.uName}')"><i data-lucide="message-circle" size="18"></i></button>
+                                </div>
+                            </div>
+                        </div>`;
                 });
+                lucide.createIcons();
             });
+        }
+
+        function payItem(id, amt) {
+            haptic();
+            let handler = PaystackPop.setup({
+                key: 'pk_test_YOUR_KEY', // Change to your public key
+                email: currentUser.name + "@dg.com",
+                amount: amt * 100,
+                callback: (res) => {
+                    db.collection("marketplace").doc(id).update({ status: "escrow", buyerId: currentUser.id });
+                    alert("Payment Secured in Escrow!");
+                }
+            });
+            handler.openIframe();
+        }
+
+        // --- SOCIAL FEED ---
+        async function publishTimeline() {
+            const text = document.getElementById('t-text').value;
+            if(!text) return;
+            haptic();
+            await db.collection("timeline").add({
+                uId: currentUser.id, uName: currentUser.name, uPic: currentUser.pic,
+                text, likes: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('t-text').value = "";
         }
 
         function renderTimeline() {
             db.collection("timeline").orderBy("timestamp", "desc").onSnapshot(snap => {
                 const f = document.getElementById('timeline-feed'); f.innerHTML = "";
                 snap.forEach(doc => {
-                    const d = doc.data();
-                    f.innerHTML += `<div class="elite-card">
-                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
-                            <img src="${d.uPic}" style="width:30px;height:30px;border-radius:50%"><b>${d.uName}</b>
-                        </div>
-                        <p>${d.text}</p>
-                        <div class="interaction-bar">
-                            <button class="interaction-btn" onclick="openComments('${doc.id}')"><i data-lucide="message-square" size="18"></i> Comment</button>
-                        </div>
-                    </div>`;
+                    const t = doc.data();
+                    f.innerHTML += `
+                        <div class="elite-card">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <img src="${t.uPic}" style="width:30px; border-radius:50%"><b>${t.uName}</b>
+                            </div>
+                            <p>${t.text}</p>
+                            <div class="interaction-bar">
+                                <button class="interaction-btn" onclick="openComments('${doc.id}')"><i data-lucide="message-square" size="18"></i> Comment</button>
+                                <button class="interaction-btn" style="margin-left:auto;" onclick="startChat('${t.uId}', '${t.uName}')"><i data-lucide="send" size="18"></i> DM</button>
+                            </div>
+                        </div>`;
                 });
                 lucide.createIcons();
             });
         }
 
-        function openComments(id) { activePostId = id; document.getElementById('comment-drawer').classList.add('open'); haptic(); }
+        // --- COMMENTS ---
+        function openComments(id) {
+            haptic(); activePostId = id;
+            document.getElementById('comment-drawer').classList.add('open');
+            db.collection("timeline").doc(id).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
+                const list = document.getElementById('comment-list'); list.innerHTML = "";
+                snap.forEach(c => {
+                    const data = c.data();
+                    list.innerHTML += `<div style="margin-bottom:12px; border-left:2px solid var(--gold); padding-left:10px;">
+                        <small style="color:var(--gold)">${data.uName}</small><p>${data.text}</p>
+                    </div>`;
+                });
+            });
+        }
+
+        async function postComment() {
+            const val = document.getElementById('c-input').value;
+            if(!val) return;
+            await db.collection("timeline").doc(activePostId).collection("comments").add({
+                uName: currentUser.name, text: val, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('c-input').value = "";
+        }
+
+        // --- UTILS ---
+        function switchTab(t) {
+            haptic();
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-'+t).classList.remove('hidden');
+            document.getElementById('n-'+t).classList.add('active');
+        }
+
+        function searchItems() {
+            const term = document.getElementById('m-search').value.toLowerCase();
+            document.querySelectorAll('#market-feed .elite-card').forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(term) ? "block" : "none";
+            });
+        }
+
+        function startChat(id, name) { switchTab('chat'); alert("Opening secure chat with " + name); }
         function closeComments() { document.getElementById('comment-drawer').classList.remove('open'); }
         function logout() { localStorage.clear(); location.reload(); }
+        
+        function renderDirectory() {
+            db.collection("users").onSnapshot(snap => {
+                const d = document.getElementById('directory'); d.innerHTML = "";
+                snap.forEach(doc => {
+                    const u = doc.data(); if(u.id === currentUser.id) return;
+                    d.innerHTML += `<div class="elite-card" style="display:flex; align-items:center; gap:15px;" onclick="startChat('${u.id}', '${u.name}')">
+                        <img src="${u.pic}" style="width:40px; border-radius:10px; border:1px solid var(--gold)">
+                        <div><b>${u.name}</b><br><small style="color:var(--text-muted)">Verified Elite</small></div>
+                    </div>`;
+                });
+            });
+        }
     </script>
 </body>
 </html>
