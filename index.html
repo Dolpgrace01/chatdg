@@ -15,7 +15,7 @@
         :root {
             --bg: #01120b; --card: #064e3b40; --primary: #10b981; --gold: #fbbf24;
             --text: #f8fafc; --text-muted: #94a3b8; --border: rgba(251, 191, 36, 0.2);
-            --glass: rgba(1, 18, 11, 0.98);
+            --glass: rgba(1, 18, 11, 0.98); --danger: #ef4444;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -28,18 +28,24 @@
         .elite-card { background: var(--card); border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; padding: 15px; position: relative; }
         .price-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; }
         
-        .btn-elite { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-elite { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-elite:active { transform: scale(0.96); opacity: 0.8; }
+        
         .form-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; outline: none; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass); display: flex; justify-content: space-around; padding: 12px 5px 30px; border-top: 1px solid var(--border); z-index: 1000; }
         .nav-link { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; transition: 0.2s; }
         .nav-link.active { color: var(--gold); }
 
-        .preview-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 1px solid var(--gold); }
+        /* Comment Drawer */
+        #comment-drawer { position: fixed; bottom: -100%; left: 0; right: 0; height: 75vh; background: var(--glass); backdrop-filter: blur(25px); border-top: 2px solid var(--gold); z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 30px 30px 0 0; display: flex; flex-direction: column; }
+        #comment-drawer.open { bottom: 0; }
+        .drawer-handle { width: 40px; height: 5px; background: var(--border); border-radius: 10px; margin: 15px auto; cursor: pointer; }
+        
         .interaction-bar { display: flex; gap: 20px; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
         .interaction-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.85rem; }
-        .interaction-btn.active { color: var(--primary); }
         
+        .preview-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 1px solid var(--gold); }
         .gold-check { color: var(--gold); display: inline-flex; align-items: center; margin-left: 4px; }
     </style>
 </head>
@@ -54,13 +60,12 @@
         
         <section id="tab-market">
             <div class="elite-card">
-                <h3 style="color:var(--gold); margin-bottom:12px; font-size:0.9rem;">LIST NEW ITEM</h3>
-                <textarea id="m-desc" class="form-input" placeholder="Product name & description..." style="height:60px; resize:none;"></textarea>
+                <textarea id="m-desc" class="form-input" placeholder="Item Name & Details..." style="height:60px; resize:none;"></textarea>
                 <input type="number" id="m-price" class="form-input" placeholder="Price ₦">
                 <div id="m-preview-area" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;"></div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <label style="cursor:pointer; color:var(--gold); font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-                        <i data-lucide="image-plus" size="18"></i> Photos (Max 6)
+                        <i data-lucide="image-plus" size="18"></i> Add Photos
                         <input type="file" id="m-file-input" class="hidden" accept="image/*" multiple onchange="handleMarketMedia(this)">
                     </label>
                     <button class="btn-elite" onclick="publishMarket()" style="width:auto; padding:8px 25px;">Sell Item</button>
@@ -71,11 +76,11 @@
 
         <section id="tab-timeline" class="hidden">
             <div class="elite-card">
-                <textarea id="t-post" class="form-input" placeholder="What's happening?" style="height:50px; resize:none;"></textarea>
+                <textarea id="t-post" class="form-input" placeholder="What's on your mind?" style="height:50px; resize:none;"></textarea>
                 <div id="t-preview-area" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;"></div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <label style="cursor:pointer; color:var(--primary); font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-                        <i data-lucide="plus-square" size="18"></i> Media
+                        <i data-lucide="plus-square" size="18"></i> Add Media
                         <input type="file" id="t-file-input" class="hidden" accept="image/*" onchange="handleTimelineMedia(this)">
                     </label>
                     <button class="btn-elite" onclick="publishTimeline()" style="width:auto; padding:8px 25px; background:var(--gold); color:black;">Post</button>
@@ -85,7 +90,7 @@
         </section>
 
         <section id="tab-chat" class="hidden">
-            <h3 style="color:var(--gold); margin-bottom:15px;">Elite Connections</h3>
+            <h3 style="color:var(--gold); margin-bottom:15px;">Messages</h3>
             <div id="user-directory"></div>
         </section>
 
@@ -93,11 +98,24 @@
             <div class="elite-card" style="text-align:center;">
                 <img id="p-avatar" style="width:90px; height:90px; border-radius:50%; border:2px solid var(--gold); margin-bottom:10px;">
                 <h2 id="p-name">---</h2>
-                <div id="p-badge-container"></div>
-                <p id="p-matric" style="color:var(--text-muted); font-size:0.8rem; margin-top:5px;"></p>
-                <button onclick="logout()" class="btn-elite" style="margin-top:20px; background:#450a0a;">Log Out</button>
+                <div id="p-badge" style="margin-top:5px;"></div>
+                <p id="p-matric" style="color:var(--text-muted); font-size:0.8rem; margin-top:10px;"></p>
+                <button onclick="logout()" class="btn-elite" style="margin-top:20px; background:var(--danger);">Log Out</button>
             </div>
         </section>
+    </div>
+
+    <div id="comment-drawer">
+        <div class="drawer-handle" onclick="closeComments()"></div>
+        <div style="padding: 0 20px 10px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between;">
+            <h3 style="color:var(--gold)">Comments</h3>
+            <i data-lucide="x" onclick="closeComments()" style="cursor:pointer"></i>
+        </div>
+        <div id="comment-list" style="flex:1; overflow-y:auto; padding:20px;"></div>
+        <div style="padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.4); padding-bottom: 40px;">
+            <input type="text" id="comment-input" class="form-input" placeholder="Type a comment..." style="margin-bottom:0">
+            <button class="btn-elite" onclick="postComment()" style="width:auto; padding:0 20px;"><i data-lucide="send" size="18"></i></button>
+        </div>
     </div>
 
     <nav class="bottom-nav">
@@ -113,8 +131,7 @@
         const db = firebase.firestore();
 
         let currentUser = JSON.parse(localStorage.getItem('urban_user'));
-        let marketImgs = [];
-        let timelineImg = null;
+        let marketImgs = [], timelineImg = null, activePostId = null;
 
         window.onload = () => {
             if(!currentUser) return window.location.href = "login.html";
@@ -125,7 +142,10 @@
             lucide.createIcons();
         };
 
+        function haptic() { if(window.navigator.vibrate) window.navigator.vibrate(50); }
+
         function switchTab(tab) {
+            haptic();
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.remove('hidden');
@@ -133,14 +153,13 @@
         }
 
         function setupUI() {
-            const avatarHtml = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
-            document.getElementById('top-avatar-container').innerHTML = avatarHtml;
+            document.getElementById('top-avatar-container').innerHTML = `<img src="${currentUser.pic}" style="width:35px; height:35px; border-radius:10px; border:1px solid var(--gold);">`;
             document.getElementById('p-avatar').src = currentUser.pic;
             document.getElementById('p-name').innerText = currentUser.name;
             document.getElementById('p-matric').innerText = "Matric: " + currentUser.matric;
         }
 
-        // --- MARKET LOGIC ---
+        // --- MARKET ---
         function handleMarketMedia(input) {
             marketImgs = [];
             const area = document.getElementById('m-preview-area');
@@ -158,11 +177,12 @@
         async function publishMarket() {
             const desc = document.getElementById('m-desc').value;
             const price = document.getElementById('m-price').value;
-            if(!desc || !price || marketImgs.length === 0) return alert("Complete listing details!");
-
+            if(!desc || !price || marketImgs.length === 0) return alert("Fill all details!");
+            
+            haptic();
             await db.collection("marketplace").add({
                 uId: currentUser.id, uName: currentUser.name,
-                desc, price, images: marketImgs, salesCount: 0,
+                desc, price, images: marketImgs, sales: 0,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             location.reload();
@@ -173,18 +193,18 @@
                 const f = document.getElementById('market-feed'); f.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const checkmark = d.salesCount >= 5 ? `<span class="gold-check"><i data-lucide="badge-check" size="14"></i></span>` : '';
+                    const check = d.sales >= 5 ? `<span class="gold-check"><i data-lucide="badge-check" size="14"></i></span>` : '';
                     f.innerHTML += `
                         <div class="elite-card" style="padding:0">
                             <img src="${d.images[0]}" style="width:100%; height:280px; object-fit:cover;">
                             <div style="padding:15px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                    <div><b>${d.desc}</b><br><small style="color:var(--text-muted)">Seller: ${d.uName}${checkmark}</small></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <div><b>${d.desc}</b><br><small style="color:var(--text-muted)">${d.uName}${check}</small></div>
                                     <span class="price-badge">₦${d.price}</span>
                                 </div>
                                 <div style="display:flex; gap:10px;">
-                                    <button class="btn-elite" onclick="payItem('${doc.id}', ${d.price})"><i data-lucide="shopping-cart" size="18"></i> BUY ITEM</button>
-                                    <button class="btn-elite" style="background:transparent; border:1px solid var(--gold); width:auto;" onclick="startChat('${d.uId}', '${d.uName}')"><i data-lucide="message-circle" size="18"></i></button>
+                                    <button class="btn-elite" onclick="haptic(); alert('Redirecting to Paystack...')">BUY ITEM</button>
+                                    <button class="btn-elite" style="background:transparent; border:1px solid var(--gold); width:auto;" onclick="startChat('${d.uId}', '${d.uName}')"><i data-lucide="message-circle"></i></button>
                                 </div>
                             </div>
                         </div>`;
@@ -193,7 +213,7 @@
             });
         }
 
-        // --- FEED LOGIC (Social Features) ---
+        // --- FEED & COMMENTS ---
         function handleTimelineMedia(input) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -205,7 +225,8 @@
 
         async function publishTimeline() {
             const text = document.getElementById('t-post').value;
-            if(!text) return alert("Write something!");
+            if(!text) return;
+            haptic();
             await db.collection("timeline").add({
                 uId: currentUser.id, uName: currentUser.name, uPic: currentUser.pic,
                 text, image: timelineImg, likes: 0,
@@ -223,13 +244,13 @@
                         <div class="elite-card">
                             <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
                                 <img src="${d.uPic}" style="width:35px; height:35px; border-radius:50%">
-                                <div><b>${d.uName}</b></div>
+                                <b>${d.uName}</b>
                             </div>
                             <p>${d.text}</p>
                             ${d.image ? `<img src="${d.image}" style="width:100%; border-radius:15px; margin-top:10px;">` : ''}
                             <div class="interaction-bar">
                                 <button class="interaction-btn" onclick="likePost('${doc.id}')"><i data-lucide="heart" size="18"></i> ${d.likes || 0}</button>
-                                <button class="interaction-btn" onclick="alert('Comment section opening...')"><i data-lucide="message-square" size="18"></i> Comment</button>
+                                <button class="interaction-btn" onclick="openComments('${doc.id}')"><i data-lucide="message-square" size="18"></i> Comment</button>
                                 <button class="interaction-btn" style="margin-left:auto;" onclick="startChat('${d.uId}', '${d.uName}')"><i data-lucide="send" size="18"></i> DM</button>
                             </div>
                         </div>`;
@@ -238,23 +259,60 @@
             });
         }
 
-        function startChat(id, name) { alert(`Starting direct encrypted chat with ${name}...`); }
-        async function likePost(id) { const ref = db.collection("timeline").doc(id); await ref.update({ likes: firebase.firestore.FieldValue.increment(1) }); }
+        async function likePost(id) { 
+            haptic(); 
+            await db.collection("timeline").doc(id).update({ likes: firebase.firestore.FieldValue.increment(1) }); 
+        }
+
+        function openComments(id) {
+            haptic();
+            activePostId = id;
+            document.getElementById('comment-drawer').classList.add('open');
+            db.collection("timeline").doc(id).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
+                const list = document.getElementById('comment-list'); list.innerHTML = "";
+                snap.forEach(cdoc => {
+                    const c = cdoc.data();
+                    list.innerHTML += `<div style="margin-bottom:12px; border-left:2px solid var(--gold); padding-left:10px;">
+                        <small style="color:var(--gold)">${c.uName}</small><p style="font-size:0.9rem">${c.text}</p>
+                    </div>`;
+                });
+            });
+        }
+
+        function closeComments() { document.getElementById('comment-drawer').classList.remove('open'); }
+
+        async function postComment() {
+            const val = document.getElementById('comment-input').value;
+            if(!val) return;
+            haptic();
+            await db.collection("timeline").doc(activePostId).collection("comments").add({
+                uName: currentUser.name, text: val, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('comment-input').value = "";
+        }
+
+        function startChat(id, name) {
+            haptic();
+            switchTab('chat');
+            alert(`Encrypted chat channel opening for ${name}...`);
+        }
+
         function renderUsers() {
             db.collection("users").onSnapshot(snap => {
                 const d = document.getElementById('user-directory'); d.innerHTML = "";
                 snap.forEach(doc => {
                     const u = doc.data(); if(u.id === currentUser.id) return;
-                    d.innerHTML += `<div class="elite-card" style="display:flex; align-items:center; gap:15px; margin-bottom:10px;">
+                    d.innerHTML += `<div class="elite-card" style="display:flex; align-items:center; gap:15px;" onclick="startChat('${u.id}', '${u.name}')">
                         <img src="${u.pic}" style="width:45px; border-radius:12px; border:1px solid var(--gold)">
-                        <div style="flex:1"><b>${u.name}</b><br><small style="color:var(--text-muted)">Verified Student</small></div>
-                        <i data-lucide="message-circle" color="var(--gold)" onclick="startChat('${u.id}', '${u.name}')"></i>
+                        <div style="flex:1"><b>${u.name}</b><br><small style="color:var(--text-muted)">Elite Member</small></div>
+                        <i data-lucide="chevron-right" size="18"></i>
                     </div>`;
                 });
                 lucide.createIcons();
             });
         }
-        function logout() { localStorage.clear(); location.reload(); }
+
+        function logout() { haptic(); localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
